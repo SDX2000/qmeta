@@ -9,19 +9,33 @@ int main(/*int argc, char *argv[]*/)
 {
     //QCoreApplication a(argc, argv);
 
-    QString inp(QStringLiteral("2+3*4-1"));
+    //QString inp(QStringLiteral("2+3*4-1"));
 
+    QTextStream cin(stdin);
+    QTextStream cout(stdout);
     Parser parser;
 
-    try
+
+    while(true)
     {
-        int result;
-        parser.parse(inp, result);
-        qDebug()<<result<<endl;
-    }
-    catch(ParseError &ex)
-    {
-        qDebug()<<ex.getMessage()<<endl;
+        cout << QSL("> ");
+        cout.flush();
+        QString inp = cin.readLine();
+
+        if (inp.toLower() == QSL("q")) {
+            break;
+        }
+
+        try
+        {
+            int result;
+            parser.parse(inp, result);
+            cout<<result<<endl;
+        }
+        catch(ParseError &ex)
+        {
+            qDebug()<<ex.getMessage()<<endl;
+        }
     }
 
     //return a.exec();
