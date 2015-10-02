@@ -1,23 +1,23 @@
 #include "programinterpreter.h"
 
 
-ParseStatus ProgramInterpreter::parse(QString inp, int &result)
+ParseStatus* ProgramInterpreter::parse(QString inp, int &result)
 {
     QStringRef  inpRef = inp.midRef(0);
     return parse(inpRef, result);
 }
 
-ParseStatus ProgramInterpreter::parse(QStringRef inp, int &result)
+ParseStatus* ProgramInterpreter::parse(QStringRef inp, int &result)
 {
     return program(inp, result);
 }
 
-ParseStatus ProgramInterpreter::value(QStringRef &inp, int &result)
+ParseStatus* ProgramInterpreter::value(QStringRef &inp, int &result)
 {
     return integer(inp, result);
 }
 
-ParseStatus ProgramInterpreter::assignment(QStringRef& inp, int &result)
+ParseStatus* ProgramInterpreter::assignment(QStringRef& inp, int &result)
 {
     //assignment  = identifier "=" expression
 
@@ -36,7 +36,7 @@ ParseStatus ProgramInterpreter::assignment(QStringRef& inp, int &result)
     return ParseStatus::success();
 }
 
-ParseStatus ProgramInterpreter::program(QStringRef& inp, int &result)
+ParseStatus* ProgramInterpreter::program(QStringRef& inp, int &result)
 {
     TRY_CHOICE(assignment(inp, result));
 
@@ -48,7 +48,7 @@ ParseStatus ProgramInterpreter::program(QStringRef& inp, int &result)
 }
 
 
-ParseStatus ProgramInterpreter::factor(QStringRef& inp, int &result)
+ParseStatus* ProgramInterpreter::factor(QStringRef& inp, int &result)
 {
     TRY_CHOICE(integer(inp, result));
 
@@ -64,7 +64,7 @@ ParseStatus ProgramInterpreter::factor(QStringRef& inp, int &result)
 }
 
 
-ParseStatus ProgramInterpreter::term(QStringRef &inp, int &result)
+ParseStatus* ProgramInterpreter::term(QStringRef &inp, int &result)
 {
     EXPECT(factor(inp, result));
 
@@ -86,7 +86,7 @@ ParseStatus ProgramInterpreter::term(QStringRef &inp, int &result)
 }
 
 
-ParseStatus ProgramInterpreter::expression(QStringRef &inp, int &result)
+ParseStatus* ProgramInterpreter::expression(QStringRef &inp, int &result)
 {
     EXPECT(term(inp, result));
 

@@ -27,7 +27,7 @@ int main(/*int argc, char *argv[]*/)
         }
 
         int result;
-        if (interp.parse(inp, result)) {
+        if (interp.parse(inp, result)->isOk()) {
             cout<<result<<endl;
         } else {
             cout<<"Syntax error."<<endl;

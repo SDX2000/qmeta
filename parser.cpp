@@ -21,22 +21,22 @@ value       = integer
 
 /////////////////////  TERMINALS  //////////////////////
 
-ParseStatus Parser::advance(QStringRef &inp, int count)
+ParseStatus* Parser::advance(QStringRef &inp, int count)
 {
-    EXPECT(inp.length() >= count);
+    EXPECT_B(inp.length() >= count);
 
     inp = inp.mid(count);
 
     return ParseStatus::success();
 }
 
-ParseStatus Parser::digit(QStringRef &inp, int &digit)
+ParseStatus* Parser::digit(QStringRef &inp, int &digit)
 {
-    EXPECT(!inp.isEmpty());
+    EXPECT_B(!inp.isEmpty());
 
     QChar c = inp.at(0);
 
-    EXPECT(c.isDigit());
+    EXPECT_B(c.isDigit());
 
     digit = c.digitValue();
 
@@ -44,46 +44,46 @@ ParseStatus Parser::digit(QStringRef &inp, int &digit)
 }
 
 
-ParseStatus Parser::someChar(QStringRef &inp, QChar &c)
+ParseStatus* Parser::someChar(QStringRef &inp, QChar &c)
 {
-    EXPECT(!inp.isEmpty());
+    EXPECT_B(!inp.isEmpty());
 
     c = inp.at(0);
 
     return advance(inp, 1);
 }
 
-ParseStatus Parser::someCharOf(QStringRef &inp, bool (QChar::*is_x)() const)
+ParseStatus* Parser::someCharOf(QStringRef &inp, bool (QChar::*is_x)() const)
 {
-    EXPECT(!inp.isEmpty());
+    EXPECT_B(!inp.isEmpty());
 
     QChar ch = inp.at(0);
 
-    EXPECT((ch.*is_x)());
+    EXPECT_B((ch.*is_x)());
 
     return advance(inp, 1);
 }
 
-ParseStatus Parser::someCharOf(QStringRef &inp, QChar &c, bool (QChar::*is_x)() const)
+ParseStatus* Parser::someCharOf(QStringRef &inp, QChar &c, bool (QChar::*is_x)() const)
 {
-    EXPECT(!inp.isEmpty());
+    EXPECT_B(!inp.isEmpty());
 
     QChar ch = inp.at(0);
 
-    EXPECT((ch.*is_x)());
+    EXPECT_B((ch.*is_x)());
 
     c = ch;
 
     return advance(inp, 1);
 }
 
-ParseStatus Parser::oneOf(QStringRef& inp, QChar &opOut, QString chars)
+ParseStatus* Parser::oneOf(QStringRef& inp, QChar &opOut, QString chars)
 {
-    EXPECT(!inp.isEmpty());
+    EXPECT_B(!inp.isEmpty());
 
     QChar c = inp.at(0);
 
-    EXPECT(chars.contains(c));
+    EXPECT_B(chars.contains(c));
 
     opOut = c;
 
@@ -91,39 +91,39 @@ ParseStatus Parser::oneOf(QStringRef& inp, QChar &opOut, QString chars)
 }
 
 
-ParseStatus Parser::thisChar(QStringRef &inp, QChar c)
+ParseStatus* Parser::thisChar(QStringRef &inp, QChar c)
 {
-    EXPECT(!inp.isEmpty());
+    EXPECT_B(!inp.isEmpty());
 
-    EXPECT(inp.at(0) == c);
+    EXPECT_B(inp.at(0) == c);
 
     return advance(inp, 1);
 }
 
-ParseStatus Parser::thisStr(QStringRef &inp, QString str)
+ParseStatus* Parser::thisStr(QStringRef &inp, QString str)
 {
-    EXPECT(inp.startsWith(str));
+    EXPECT_B(inp.startsWith(str));
 
     return advance(inp, str.length());;
 }
 
-ParseStatus Parser::strOf(QStringRef &inp, bool (QChar::*is_x)() const)
+ParseStatus* Parser::strOf(QStringRef &inp, bool (QChar::*is_x)() const)
 {
-    EXPECT(!inp.isEmpty());
+    EXPECT_B(!inp.isEmpty());
 
     int count = 0;
 
     for (; count < inp.length() && (inp.at(count).*is_x)(); count++) {
     }
 
-    EXPECT(count);
+    EXPECT_B(count);
 
     return advance(inp, count);
 }
 
 /////////////////////  NONTERMINALS  //////////////////////
 
-ParseStatus Parser::strOf(QStringRef &inp, QStringRef &str, bool (QChar::*is_x)() const)
+ParseStatus* Parser::strOf(QStringRef &inp, QStringRef &str, bool (QChar::*is_x)() const)
 {
     CHECK_POINT(cp0, inp);
 
@@ -134,17 +134,17 @@ ParseStatus Parser::strOf(QStringRef &inp, QStringRef &str, bool (QChar::*is_x)(
     return ParseStatus::success();
 }
 
-ParseStatus Parser::space(QStringRef &inp)
+ParseStatus* Parser::space(QStringRef &inp)
 {
     return strOf(inp, &QChar::isSpace);
 }
 
-ParseStatus Parser::space(QStringRef &inp, QStringRef &space)
+ParseStatus* Parser::space(QStringRef &inp, QStringRef &space)
 {
     return strOf(inp, space, &QChar::isSpace);
 }
 
-ParseStatus Parser::identifier(QStringRef &inp, QStringRef& ident)
+ParseStatus* Parser::identifier(QStringRef &inp, QStringRef& ident)
 {
     CHECK_POINT(cp0, inp);
 
@@ -160,7 +160,7 @@ ParseStatus Parser::identifier(QStringRef &inp, QStringRef& ident)
     return ParseStatus::success();
 }
 
-ParseStatus Parser::integer(QStringRef &inp, int &result)
+ParseStatus* Parser::integer(QStringRef &inp, int &result)
 {
     int sign = 1;
 
