@@ -17,7 +17,8 @@ TEMPLATE = app
 SOURCES += main.cpp \
     parser.cpp \
     programinterpreter.cpp \
-    utils.cpp
+    utils.cpp \
+    parsestatus.cpp
 
 DEFINES += QT_RESTRICTED_CAST_FROM_ASCII \
            QT_NO_CAST_TO_ASCII
@@ -25,4 +26,5 @@ DEFINES += QT_RESTRICTED_CAST_FROM_ASCII \
 HEADERS += \
     parser.h \
     programinterpreter.h \
-    utils.h
+    utils.h \
+    parsestatus.h

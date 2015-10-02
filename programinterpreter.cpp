@@ -1,23 +1,23 @@
 #include "programinterpreter.h"
 
 
-bool ProgramInterpreter::parse(QString inp, int &result)
+ParseStatus ProgramInterpreter::parse(QString inp, int &result)
 {
     QStringRef  inpRef = inp.midRef(0);
     return parse(inpRef, result);
 }
 
-bool ProgramInterpreter::parse(QStringRef inp, int &result)
+ParseStatus ProgramInterpreter::parse(QStringRef inp, int &result)
 {
     return program(inp, result);
 }
 
-bool ProgramInterpreter::value(QStringRef &inp, int &result)
+ParseStatus ProgramInterpreter::value(QStringRef &inp, int &result)
 {
     return integer(inp, result);
 }
 
-bool ProgramInterpreter::assignment(QStringRef& inp, int &result)
+ParseStatus ProgramInterpreter::assignment(QStringRef& inp, int &result)
 {
     //assignment  = identifier "=" expression
 
@@ -33,10 +33,10 @@ bool ProgramInterpreter::assignment(QStringRef& inp, int &result)
 
     EXPECT(expression(inp, result));
 
-    return true;
+    return ParseStatus::success();
 }
 
-bool ProgramInterpreter::program(QStringRef& inp, int &result)
+ParseStatus ProgramInterpreter::program(QStringRef& inp, int &result)
 {
     TRY_CHOICE(assignment(inp, result));
 
@@ -44,11 +44,11 @@ bool ProgramInterpreter::program(QStringRef& inp, int &result)
 
     EXPECT(expression(inp, result));
 
-    return true;
+    return ParseStatus::success();
 }
 
 
-bool ProgramInterpreter::factor(QStringRef& inp, int &result)
+ParseStatus ProgramInterpreter::factor(QStringRef& inp, int &result)
 {
     TRY_CHOICE(integer(inp, result));
 
@@ -60,11 +60,11 @@ bool ProgramInterpreter::factor(QStringRef& inp, int &result)
 
     EXPECT(thisStr(inp, QSL(")")));
 
-    return true;
+    return ParseStatus::success();
 }
 
 
-bool ProgramInterpreter::term(QStringRef &inp, int &result)
+ParseStatus ProgramInterpreter::term(QStringRef &inp, int &result)
 {
     EXPECT(factor(inp, result));
 
@@ -82,11 +82,11 @@ bool ProgramInterpreter::term(QStringRef &inp, int &result)
         }
     }
 
-    return true;
+    return ParseStatus::success();
 }
 
 
-bool ProgramInterpreter::expression(QStringRef &inp, int &result)
+ParseStatus ProgramInterpreter::expression(QStringRef &inp, int &result)
 {
     EXPECT(term(inp, result));
 
@@ -103,5 +103,5 @@ bool ProgramInterpreter::expression(QStringRef &inp, int &result)
         }
     }
 
-    return true;
+    return ParseStatus::success();
 }

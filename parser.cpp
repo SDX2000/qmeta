@@ -21,16 +21,16 @@ value       = integer
 
 /////////////////////  TERMINALS  //////////////////////
 
-bool Parser::advance(QStringRef &inp, int count)
+ParseStatus Parser::advance(QStringRef &inp, int count)
 {
     EXPECT(inp.length() >= count);
 
     inp = inp.mid(count);
 
-    return true;
+    return ParseStatus::success();
 }
 
-bool Parser::digit(QStringRef &inp, int &digit)
+ParseStatus Parser::digit(QStringRef &inp, int &digit)
 {
     EXPECT(!inp.isEmpty());
 
@@ -44,7 +44,7 @@ bool Parser::digit(QStringRef &inp, int &digit)
 }
 
 
-bool Parser::someChar(QStringRef &inp, QChar &c)
+ParseStatus Parser::someChar(QStringRef &inp, QChar &c)
 {
     EXPECT(!inp.isEmpty());
 
@@ -53,7 +53,7 @@ bool Parser::someChar(QStringRef &inp, QChar &c)
     return advance(inp, 1);
 }
 
-bool Parser::someCharOf(QStringRef &inp, bool (QChar::*is_x)() const)
+ParseStatus Parser::someCharOf(QStringRef &inp, bool (QChar::*is_x)() const)
 {
     EXPECT(!inp.isEmpty());
 
@@ -64,7 +64,7 @@ bool Parser::someCharOf(QStringRef &inp, bool (QChar::*is_x)() const)
     return advance(inp, 1);
 }
 
-bool Parser::someCharOf(QStringRef &inp, QChar &c, bool (QChar::*is_x)() const)
+ParseStatus Parser::someCharOf(QStringRef &inp, QChar &c, bool (QChar::*is_x)() const)
 {
     EXPECT(!inp.isEmpty());
 
@@ -77,7 +77,7 @@ bool Parser::someCharOf(QStringRef &inp, QChar &c, bool (QChar::*is_x)() const)
     return advance(inp, 1);
 }
 
-bool Parser::oneOf(QStringRef& inp, QChar &opOut, QString chars)
+ParseStatus Parser::oneOf(QStringRef& inp, QChar &opOut, QString chars)
 {
     EXPECT(!inp.isEmpty());
 
@@ -91,7 +91,7 @@ bool Parser::oneOf(QStringRef& inp, QChar &opOut, QString chars)
 }
 
 
-bool Parser::thisChar(QStringRef &inp, QChar c)
+ParseStatus Parser::thisChar(QStringRef &inp, QChar c)
 {
     EXPECT(!inp.isEmpty());
 
@@ -100,14 +100,14 @@ bool Parser::thisChar(QStringRef &inp, QChar c)
     return advance(inp, 1);
 }
 
-bool Parser::thisStr(QStringRef &inp, QString str)
+ParseStatus Parser::thisStr(QStringRef &inp, QString str)
 {
     EXPECT(inp.startsWith(str));
 
     return advance(inp, str.length());;
 }
 
-bool Parser::strOf(QStringRef &inp, bool (QChar::*is_x)() const)
+ParseStatus Parser::strOf(QStringRef &inp, bool (QChar::*is_x)() const)
 {
     EXPECT(!inp.isEmpty());
 
@@ -123,7 +123,7 @@ bool Parser::strOf(QStringRef &inp, bool (QChar::*is_x)() const)
 
 /////////////////////  NONTERMINALS  //////////////////////
 
-bool Parser::strOf(QStringRef &inp, QStringRef &str, bool (QChar::*is_x)() const)
+ParseStatus Parser::strOf(QStringRef &inp, QStringRef &str, bool (QChar::*is_x)() const)
 {
     CHECK_POINT(cp0, inp);
 
@@ -131,20 +131,20 @@ bool Parser::strOf(QStringRef &inp, QStringRef &str, bool (QChar::*is_x)() const
 
     str = mid(cp0, inp);
 
-    return true;
+    return ParseStatus::success();
 }
 
-bool Parser::space(QStringRef &inp)
+ParseStatus Parser::space(QStringRef &inp)
 {
     return strOf(inp, &QChar::isSpace);
 }
 
-bool Parser::space(QStringRef &inp, QStringRef &space)
+ParseStatus Parser::space(QStringRef &inp, QStringRef &space)
 {
     return strOf(inp, space, &QChar::isSpace);
 }
 
-bool Parser::identifier(QStringRef &inp, QStringRef& ident)
+ParseStatus Parser::identifier(QStringRef &inp, QStringRef& ident)
 {
     CHECK_POINT(cp0, inp);
 
@@ -157,10 +157,10 @@ bool Parser::identifier(QStringRef &inp, QStringRef& ident)
 
     ident =  mid(cp0, inp);
 
-    return true;
+    return ParseStatus::success();
 }
 
-bool Parser::integer(QStringRef &inp, int &result)
+ParseStatus Parser::integer(QStringRef &inp, int &result)
 {
     int sign = 1;
 
@@ -173,7 +173,7 @@ bool Parser::integer(QStringRef &inp, int &result)
 
     result = int(numbers.toInt()) * sign;
 
-    return true;
+    return ParseStatus::success();
 }
 
 

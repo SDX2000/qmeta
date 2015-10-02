@@ -7,15 +7,15 @@
 class ProgramInterpreter : public Parser
 {
 public:
-    bool parse(QStringRef inp, int& result);
-    bool parse(QString inp, int& result);
+    ParseStatus parse(QStringRef inp, int& result);
+    ParseStatus parse(QString inp, int& result);
 private:
-    bool assignment(QStringRef& inp, int &result);
-    bool value(QStringRef &inp, int& result);
-    bool factor(QStringRef& inp, int &result);
-    bool term(QStringRef &inp, int& result);
-    bool expression(QStringRef &inp, int& result);
-    bool program(QStringRef& inp, int &result);
+    ParseStatus assignment(QStringRef& inp, int &result);
+    ParseStatus value(QStringRef &inp, int& result);
+    ParseStatus factor(QStringRef& inp, int &result);
+    ParseStatus term(QStringRef &inp, int& result);
+    ParseStatus expression(QStringRef &inp, int& result);
+    ParseStatus program(QStringRef& inp, int &result);
 };
 
 #endif // PROGRAMINTERPRETER_H
