@@ -44,12 +44,14 @@ private:
     bool space(QStringRef &inp);
     bool space(QStringRef &inp, QStringRef& space);
     bool identifier(QStringRef &inp, QStringRef& ident);
+    bool assignment(QStringRef& inp, int &result);
 
     bool value(QStringRef &inp, int& result);
     bool integer(QStringRef &inp, int& result);
     bool factor(QStringRef& inp, int &result);
     bool term(QStringRef &inp, int& result);
     bool expression(QStringRef &inp, int& result);
+    bool program(QStringRef& inp, int &result);
 };
 
 QStringRef mid(QStringRef lhs, QStringRef rhs);

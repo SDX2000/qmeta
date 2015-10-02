@@ -3,10 +3,12 @@
 #include <algorithm>
 
 /*
-expr    = term (( "+" | "-" ) term)*
-term    = factor (( "*" | "/" ) factor)*
-factor  = value | "(" expr ")"
-value   = integer
+program     = assignment | expression
+assignment  = identifier "=" expression
+expression  = term (( "+" | "-" ) term)*
+term        = factor (( "*" | "/" ) factor)*
+factor      = value | "(" expression ")"
+value       = integer
 */
 
 //QTextStream qStdOut()
@@ -24,7 +26,7 @@ bool Interpreter::parse(QString inp, int &result)
 
 bool Interpreter::parse(QStringRef inp, int &result)
 {
-    return expression(inp, result);
+    return program(inp, result);
 }
 
 /////////////////////  TERMINALS  //////////////////////
@@ -164,6 +166,37 @@ bool Interpreter::value(QStringRef &inp, int &result)
 {
     return integer(inp, result);
 }
+
+bool Interpreter::assignment(QStringRef& inp, int &result)
+{
+    //assignment  = identifier "=" expression
+
+    QStringRef ident;
+
+    EXPECT(identifier(inp, ident));
+
+    space(inp);
+
+    EXPECT(thisChar(inp, QChar('=')));
+
+    space(inp);
+
+    EXPECT(expression(inp, result));
+
+    return true;
+}
+
+bool Interpreter::program(QStringRef& inp, int &result)
+{
+    TRY_CHOICE(assignment(inp, result));
+
+    //Else...
+
+    EXPECT(expression(inp, result));
+
+    return true;
+}
+
 
 bool Interpreter::factor(QStringRef& inp, int &result)
 {
