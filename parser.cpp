@@ -19,7 +19,7 @@ void Interpreter::parse(QString inp, int &result)
     expr(m_inputStr.midRef(0), result);
 }
 
-QStringRef Interpreter::expect(QStringRef inp, QString str)
+QStringRef Interpreter::expectStr(QStringRef inp, QString str)
 {
     if (!inp.startsWith(str)) {
         throw ParseError(QSL("ERROR: Expected %1").arg(str));
@@ -56,13 +56,32 @@ QStringRef Interpreter::factor(QStringRef inp, int &result)
     if(inp != inp0)
         return inp;
 
-    inp = expect(inp, QSL("("));
+    inp = expectStr(inp, QSL("("));
 
     inp = expr(inp.mid(1), result);
 
-    inp = expect(inp, QSL(")"));
+    inp = expectStr(inp, QSL(")"));
 
     return inp;
+}
+
+bool Interpreter::advance(QStringRef &str, int count)
+{
+    if(str.length() < count)
+        return false;
+
+    str = str.mid(count);
+    return true;
+}
+
+bool Interpreter::somechar(QStringRef &inp, QChar &c)
+{
+    if(inp.isEmpty())
+        return false;
+
+    c = inp.at(0);
+
+    return advance(inp, 1);
 }
 
 
@@ -72,14 +91,11 @@ QStringRef Interpreter::term(QStringRef inp, int &result)
         return inp;
 
     inp = factor(inp, result);
-    QString lastOp;
+    QChar lastOp;
 
 
-    while(!inp.isEmpty() && (inp.at(0) == QSL("*") || inp.at(0) == QSL("/")))
+    while(somechar(inp, lastOp))
     {
-        lastOp = inp.at(0);
-        inp = inp.mid(1);
-
         int r;
         inp = factor(inp, r);
 

@@ -48,11 +48,13 @@ public:
     void parse(QString inp, int& result);
 
 private:
-    QStringRef expect(QStringRef inp,  QString str);
-    QStringRef value(QStringRef inp,   int& result);
-    QStringRef factor(QStringRef inp,  int& result);
-    QStringRef term(QStringRef inp,    int& result);
-    QStringRef expr(QStringRef inp,    int& result);
+    QStringRef expectStr(QStringRef inp, QString expectStr);
+    QStringRef value(QStringRef inp, int& result);
+    QStringRef factor(QStringRef inp, int& result);
+    QStringRef term(QStringRef inp, int& result);
+    QStringRef expr(QStringRef inp, int& result);
+    bool somechar(QStringRef& inp, QChar &c);
+    bool advance(QStringRef &str, int length);
 
 private:
     QString     m_inputStr;
