@@ -15,10 +15,14 @@ CONFIG += c++11
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    parser.cpp
+    parser.cpp \
+    programinterpreter.cpp \
+    utils.cpp
 
 DEFINES += QT_RESTRICTED_CAST_FROM_ASCII \
            QT_NO_CAST_TO_ASCII
 
 HEADERS += \
-    parser.h
+    parser.h \
+    programinterpreter.h \
+    utils.h

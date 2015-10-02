@@ -3,7 +3,7 @@
 #include <QTextStream>
 #include <QDebug>
 
-#include "parser.h"
+#include "programinterpreter.h"
 
 int main(/*int argc, char *argv[]*/)
 {
@@ -13,7 +13,7 @@ int main(/*int argc, char *argv[]*/)
 
     QTextStream cin(stdin);
     QTextStream cout(stdout);
-    Interpreter interp;
+    ProgramInterpreter interp;
 
 
     while(true)

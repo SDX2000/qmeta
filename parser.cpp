@@ -18,29 +18,19 @@ value       = integer
 //}
 
 
-bool Interpreter::parse(QString inp, int &result)
-{
-    QStringRef  inpRef = inp.midRef(0);
-    return parse(inpRef, result);
-}
-
-bool Interpreter::parse(QStringRef inp, int &result)
-{
-    return program(inp, result);
-}
 
 /////////////////////  TERMINALS  //////////////////////
 
-bool Interpreter::advance(QStringRef &str, int count)
+bool Parser::advance(QStringRef &inp, int count)
 {
-    EXPECT(str.length() >= count);
+    EXPECT(inp.length() >= count);
 
-    str = str.mid(count);
+    inp = inp.mid(count);
 
     return true;
 }
 
-bool Interpreter::digit(QStringRef &inp, int &digit)
+bool Parser::digit(QStringRef &inp, int &digit)
 {
     EXPECT(!inp.isEmpty());
 
@@ -54,7 +44,7 @@ bool Interpreter::digit(QStringRef &inp, int &digit)
 }
 
 
-bool Interpreter::someChar(QStringRef &inp, QChar &c)
+bool Parser::someChar(QStringRef &inp, QChar &c)
 {
     EXPECT(!inp.isEmpty());
 
@@ -63,7 +53,7 @@ bool Interpreter::someChar(QStringRef &inp, QChar &c)
     return advance(inp, 1);
 }
 
-bool Interpreter::oneOf(QStringRef& inp, QChar &opOut, QString chars)
+bool Parser::oneOf(QStringRef& inp, QChar &opOut, QString chars)
 {
     EXPECT(!inp.isEmpty());
 
@@ -76,7 +66,7 @@ bool Interpreter::oneOf(QStringRef& inp, QChar &opOut, QString chars)
     return advance(inp, 1);
 }
 
-bool Interpreter::thisChar(QStringRef &inp, QChar c)
+bool Parser::thisChar(QStringRef &inp, QChar c)
 {
     EXPECT(!inp.isEmpty());
 
@@ -85,14 +75,14 @@ bool Interpreter::thisChar(QStringRef &inp, QChar c)
     return advance(inp, 1);
 }
 
-bool Interpreter::thisStr(QStringRef &inp, QString str)
+bool Parser::thisStr(QStringRef &inp, QString str)
 {
     EXPECT(inp.startsWith(str));
 
     return advance(inp, str.length());;
 }
 
-bool Interpreter::strOf(QStringRef &inp, bool (QChar::*is_x)() const)
+bool Parser::strOf(QStringRef &inp, bool (QChar::*is_x)() const)
 {
     EXPECT(!inp.isEmpty());
 
@@ -108,7 +98,7 @@ bool Interpreter::strOf(QStringRef &inp, bool (QChar::*is_x)() const)
 
 /////////////////////  NONTERMINALS  //////////////////////
 
-bool Interpreter::strOf(QStringRef &inp, QStringRef &str, bool (QChar::*is_x)() const)
+bool Parser::strOf(QStringRef &inp, QStringRef &str, bool (QChar::*is_x)() const)
 {
     CHECK_POINT(cp0, inp);
 
@@ -119,17 +109,17 @@ bool Interpreter::strOf(QStringRef &inp, QStringRef &str, bool (QChar::*is_x)() 
     return true;
 }
 
-bool Interpreter::space(QStringRef &inp)
+bool Parser::space(QStringRef &inp)
 {
     return strOf(inp, &QChar::isSpace);
 }
 
-bool Interpreter::space(QStringRef &inp, QStringRef &space)
+bool Parser::space(QStringRef &inp, QStringRef &space)
 {
     return strOf(inp, space, &QChar::isSpace);
 }
 
-bool Interpreter::identifier(QStringRef &inp, QStringRef& ident)
+bool Parser::identifier(QStringRef &inp, QStringRef& ident)
 {
     CHECK_POINT(cp0, inp);
 
@@ -146,7 +136,7 @@ bool Interpreter::identifier(QStringRef &inp, QStringRef& ident)
     return ok;
 }
 
-bool Interpreter::integer(QStringRef &inp, int &result)
+bool Parser::integer(QStringRef &inp, int &result)
 {
     int sign = 1;
 
@@ -160,105 +150,6 @@ bool Interpreter::integer(QStringRef &inp, int &result)
     result = int(numbers.toInt()) * sign;
 
     return true;
-}
-
-bool Interpreter::value(QStringRef &inp, int &result)
-{
-    return integer(inp, result);
-}
-
-bool Interpreter::assignment(QStringRef& inp, int &result)
-{
-    //assignment  = identifier "=" expression
-
-    QStringRef ident;
-
-    EXPECT(identifier(inp, ident));
-
-    space(inp);
-
-    EXPECT(thisChar(inp, QChar('=')));
-
-    space(inp);
-
-    EXPECT(expression(inp, result));
-
-    return true;
-}
-
-bool Interpreter::program(QStringRef& inp, int &result)
-{
-    TRY_CHOICE(assignment(inp, result));
-
-    //Else...
-
-    EXPECT(expression(inp, result));
-
-    return true;
-}
-
-
-bool Interpreter::factor(QStringRef& inp, int &result)
-{
-    TRY_CHOICE(integer(inp, result));
-
-    //Else...
-
-    EXPECT(thisStr(inp, QSL("(")));
-
-    EXPECT(expression(inp, result));
-
-    EXPECT(thisStr(inp, QSL(")")));
-
-    return true;
-}
-
-
-bool Interpreter::term(QStringRef &inp, int &result)
-{
-    EXPECT(factor(inp, result));
-
-    QChar lastOp;
-    while (oneOf(inp, lastOp, QSL("*/")))
-    {
-        int f;
-
-        EXPECT(factor(inp, f));
-
-        if (lastOp == QChar('*')) {
-            result *= f;
-        } else if (lastOp == QChar('/')) {
-            result /= f;
-        }
-    }
-
-    return true;
-}
-
-
-bool Interpreter::expression(QStringRef &inp, int &result)
-{
-    EXPECT(term(inp, result));
-
-    QChar lastOp;
-    while (oneOf(inp, lastOp, QSL("+-")))
-    {
-        int t;
-        EXPECT(term(inp, t));
-
-        if (lastOp == QChar('+')) {
-            result += t;
-        } else if (lastOp == QChar('-')) {
-            result -= t;
-        }
-    }
-
-    return true;
-}
-
-QStringRef mid(QStringRef lhs, QStringRef rhs)
-{
-    return lhs.string()->midRef(lhs.position(), rhs.position() - lhs.position());
 }
 
 

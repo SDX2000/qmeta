@@ -2,34 +2,42 @@
 #define PARSER_H
 
 #include <QString>
-#include <QTextStream>
+#include "utils.h"
+//#include <QTextStream>
 
 
 #define QSL(str) QStringLiteral(str)
 
 //QTextStream qStdOut();
 
-#define EXPECT(X)       \
-    if (!(X)) {         \
-        return false;   \
-    }
+//Note: There is no need to checkpoint EXPECT
+//since all back tracking happens at TRY_CHOICE and TRY_CHOICE saves
+//a check point.
+#define EXPECT(X)                   \
+    if (!(X)) {                     \
+        return false;               \
+    }                               \
 
-#define TRY_CHOICE(X)     \
-    if (X) {         \
-        return true; \
-    }
+#define TRY_CHOICE(X)                   \
+    do                                  \
+    {                                   \
+        QStringRef _checkPoint = inp;   \
+        if (X) {                        \
+            return true;                \
+        }                               \
+        inp = _checkPoint;              \
+    }                                   \
+    while(0);
 
 #define CHECK_POINT(CP, INP) \
     QStringRef CP = INP;
 
 
-class Interpreter
+class Parser
 {
-public:
-    bool parse(QStringRef inp, int& result);
-    bool parse(QString inp, int& result);
+    bool advance(QStringRef &inp, int length);
 
-private:
+protected:
     //TERMINALS//
     bool thisStr(QStringRef &inp, QString thisStr);
     bool digit(QStringRef &inp, int& digit);
@@ -38,21 +46,13 @@ private:
     bool someChar(QStringRef& inp, QChar& c);
     bool thisChar(QStringRef &inp, QChar c);
     bool oneOf(QStringRef& inp, QChar &opOut, QString operators);
-    bool advance(QStringRef &thisStr, int length);
 
     //NONTERMINALS//
     bool space(QStringRef &inp);
     bool space(QStringRef &inp, QStringRef& space);
     bool identifier(QStringRef &inp, QStringRef& ident);
-    bool assignment(QStringRef& inp, int &result);
-
-    bool value(QStringRef &inp, int& result);
     bool integer(QStringRef &inp, int& result);
-    bool factor(QStringRef& inp, int &result);
-    bool term(QStringRef &inp, int& result);
-    bool expression(QStringRef &inp, int& result);
-    bool program(QStringRef& inp, int &result);
 };
 
-QStringRef mid(QStringRef lhs, QStringRef rhs);
+
 #endif // PARSER_H
