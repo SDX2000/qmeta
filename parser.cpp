@@ -50,6 +50,7 @@ bool Interpreter::digit(QStringRef &inp, int &digit)
     return advance(inp, 1);
 }
 
+
 bool Interpreter::someChar(QStringRef &inp, QChar &c)
 {
     EXPECT(!inp.isEmpty());
@@ -89,27 +90,53 @@ bool Interpreter::thisStr(QStringRef &inp, QString str)
     return advance(inp, str.length());;
 }
 
-bool Interpreter::integer(QStringRef &inp, int &result)
+
+
+bool Interpreter::strOf(QStringRef &inp, QStringRef &str, bool (QChar::*is_x)() const)
 {
     EXPECT(!inp.isEmpty());
 
-    int count = 0, sign = 1;
+    int count = 0;
+
+    for (; count < inp.length() && (inp.at(count).*is_x)(); count++) {
+    }
+
+    EXPECT(count);
+
+    str = inp.left(count);
+
+    return advance(inp, count);
+}
+
+
+/////////////////////  NONTERMINALS  //////////////////////
+
+bool Interpreter::space(QStringRef &inp, QStringRef &space)
+{
+    return strOf(inp, space, &QChar::isSpace);
+}
+
+bool Interpreter::space(QStringRef &inp)
+{
+    QStringRef temp;
+    return strOf(inp, temp, &QChar::isSpace);
+}
+
+bool Interpreter::integer(QStringRef &inp, int &result)
+{
+    int sign = 1;
 
     if (thisChar(inp, QChar('-'))) {
         sign = -1;
     }
 
-    for (; count < inp.length() && inp.at(count).isDigit(); count++) {
-    }
+    QStringRef numbers;
+    EXPECT(strOf(inp, numbers, &QChar::isDigit));
 
-    EXPECT(count);
+    result = int(numbers.toInt()) * sign;
 
-    result = int(inp.left(count).toInt()) * sign;
-
-    return advance(inp, count);;
+    return true;
 }
-
-/////////////////////  NONTERMINALS  //////////////////////
 
 bool Interpreter::value(QStringRef &inp, int &result)
 {

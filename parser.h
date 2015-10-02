@@ -28,15 +28,18 @@ public:
 private:
     //TERMINALS//
     bool thisStr(QStringRef &inp, QString thisStr);
-    bool value(QStringRef &inp, int& result);
-    bool integer(QStringRef &inp, int& result);
-    bool digit(QStringRef &inp, int &digit);
-    bool someChar(QStringRef& inp, QChar &c);
+    bool digit(QStringRef &inp, int& digit);
+    bool strOf(QStringRef &inp, QStringRef &str, bool (QChar::*is_x)() const);
+    bool someChar(QStringRef& inp, QChar& c);
     bool thisChar(QStringRef &inp, QChar c);
     bool oneOf(QStringRef& inp, QChar &opOut, QString operators);
     bool advance(QStringRef &thisStr, int length);
 
     //NONTERMINALS//
+    bool value(QStringRef &inp, int& result);
+    bool integer(QStringRef &inp, int& result);
+    bool space(QStringRef &inp);
+    bool space(QStringRef &inp, QStringRef& space);
     bool factor(QStringRef& inp, int &result);
     bool term(QStringRef &inp, int& result);
     bool expr(QStringRef &inp, int& result);
