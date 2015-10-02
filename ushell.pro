@@ -17,7 +17,7 @@ TEMPLATE = app
 SOURCES += main.cpp \
     parser.cpp
 
-DEFINES += QT_NO_CAST_FROM_ASCII \
+DEFINES += QT_RESTRICTED_CAST_FROM_ASCII \
            QT_NO_CAST_TO_ASCII
 
 HEADERS += \

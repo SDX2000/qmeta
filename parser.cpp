@@ -13,25 +13,27 @@ factor  = value | "(" expr ")"
 //}
 
 
-void Interpreter::parse(QString inp, int &result)
+bool Interpreter::parse(QString inp, int &result)
 {
-    m_inputStr = inp;
-    expr(m_inputStr.midRef(0), result);
+    QStringRef  inpRef = inp.midRef(0);
+    return expr(inpRef, result);
 }
 
-QStringRef Interpreter::expectStr(QStringRef inp, QString str)
+bool Interpreter::str(QStringRef &inp, QString str)
 {
     if (!inp.startsWith(str)) {
-        throw ParseError(QSL("ERROR: Expected %1").arg(str));
+        return false;
     }
 
-    return inp.mid(str.length());
+    advance(inp, str.length());
+    return true;
 }
 
-QStringRef Interpreter::value(QStringRef inp, int &result)
+bool Interpreter::value(QStringRef &inp, int &result)
 {
-    if(inp.isEmpty())
-        return inp;
+    if(inp.isEmpty()) {
+        return false;
+    }
 
     int count = 0;
 
@@ -40,35 +42,41 @@ QStringRef Interpreter::value(QStringRef inp, int &result)
 
     if (count) {
         result = int(inp.left(count).toInt());
+        advance(inp, count);
+        return true;
     }
 
-    return inp.mid(count);
+    return false;
 }
 
-QStringRef Interpreter::factor(QStringRef inp, int &result)
+bool Interpreter::factor(QStringRef& inp, int &result)
 {
-    if(inp.isEmpty())
-        return inp;
+    if(inp.isEmpty()) {
+        return false;
+    }
 
-    QStringRef inp0 = inp;
-    inp = value(inp0, result);
+    if(value(inp, result)) {
+        return true;
+    }
 
-    if(inp != inp0)
-        return inp;
+    if (!str(inp, QSL("("))) {
+        return false;
+    }
 
-    inp = expectStr(inp, QSL("("));
+    expr(inp, result);
 
-    inp = expr(inp.mid(1), result);
+    if (!str(inp, QSL(")"))) {
+        return false;
+    }
 
-    inp = expectStr(inp, QSL(")"));
-
-    return inp;
+    return true;
 }
 
 bool Interpreter::advance(QStringRef &str, int count)
 {
-    if(str.length() < count)
+    if(str.length() < count) {
         return false;
+    }
 
     str = str.mid(count);
     return true;
@@ -76,62 +84,84 @@ bool Interpreter::advance(QStringRef &str, int count)
 
 bool Interpreter::somechar(QStringRef &inp, QChar &c)
 {
-    if(inp.isEmpty())
+    if(inp.isEmpty()) {
         return false;
+    }
 
     c = inp.at(0);
 
     return advance(inp, 1);
 }
 
-
-QStringRef Interpreter::term(QStringRef inp, int &result)
+bool Interpreter::thischar(QStringRef& inp, QChar &opOut, QString operators)
 {
-    if(inp.isEmpty())
-        return inp;
+    if(inp.isEmpty()) {
+        return false;
+    }
 
-    inp = factor(inp, result);
+    QChar c = inp.at(0);
+    if (operators.contains(c)) {
+        opOut = c;
+        advance(inp, 1);
+        return true;
+    }
+
+    return false;
+}
+
+bool Interpreter::term(QStringRef &inp, int &result)
+{
+    if(inp.isEmpty()) {
+        return false;
+    }
+
+    if(!factor(inp, result)) {
+       return false;
+    }
+
     QChar lastOp;
-
-
-    while(somechar(inp, lastOp))
+    while(thischar(inp, lastOp, QSL("*/")))
     {
-        int r;
-        inp = factor(inp, r);
+        int f;
+        if(!factor(inp, f)) {
+            return false;
+        }
 
-        if (lastOp == QSL("*")) {
-            result *= r;
-        } else if (lastOp == QSL("/")) {
-            result /= r;
+        if (lastOp == QChar('*')) {
+            result *= f;
+        } else if (lastOp == QChar('/')) {
+            result /= f;
         }
     }
 
-    return inp;
+    return true;
 }
 
 
-QStringRef Interpreter::expr(QStringRef inp, int &result)
+bool Interpreter::expr(QStringRef &inp, int &result)
 {
-    if(inp.isEmpty())
-        return inp;
+    if(inp.isEmpty()) {
+        return false;
+    }
 
-    inp = term(inp, result);
-    QString lastOp;
+    if(!term(inp, result)) {
+        return false;
+    }
 
-    while (!inp.isEmpty() && (inp.at(0) == QSL("+") || inp.at(0) == QSL("-")))
+    QChar lastOp;
+    while (thischar(inp, lastOp, QSL("+-")))
     {
-        lastOp = inp.at(0);
-        inp = inp.mid(1);
+        int t;
+        if(!term(inp, t)) {
+            return false;
+        }
 
-        int r;
-        inp = term(inp, r);
-
-        if (lastOp == QSL("+")) {
-            result += r;
-        } else if (lastOp == QSL("-")) {
-            result -= r;
+        if (lastOp == QChar('+')) {
+            result += t;
+        } else if (lastOp == QChar('-')) {
+            result -= t;
         }
     }
 
-    return inp;
+    return true;
 }

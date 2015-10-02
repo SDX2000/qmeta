@@ -45,19 +45,17 @@ private:
 class Interpreter
 {
 public:
-    void parse(QString inp, int& result);
+    bool parse(QString inp, int& result);
 
 private:
-    QStringRef expectStr(QStringRef inp, QString expectStr);
-    QStringRef value(QStringRef inp, int& result);
-    QStringRef factor(QStringRef inp, int& result);
-    QStringRef term(QStringRef inp, int& result);
-    QStringRef expr(QStringRef inp, int& result);
+    bool str(QStringRef &inp, QString str);
+    bool value(QStringRef &inp, int& result);
+    bool factor(QStringRef& inp, int &result);
+    bool term(QStringRef &inp, int& result);
+    bool expr(QStringRef &inp, int& result);
     bool somechar(QStringRef& inp, QChar &c);
+    bool thischar(QStringRef& inp, QChar &opOut, QString operators);
     bool advance(QStringRef &str, int length);
-
-private:
-    QString     m_inputStr;
 };
 
 
