@@ -19,21 +19,49 @@ bool Interpreter::parse(QString inp, int &result)
     return expr(inpRef, result);
 }
 
-bool Interpreter::str(QStringRef &inp, QString str)
+/////////////////////  TERMINALS  //////////////////////
+
+bool Interpreter::advance(QStringRef &str, int count)
 {
-    if (!inp.startsWith(str)) {
-        return false;
+    EXPECT(str.length() >= count);
+
+    str = str.mid(count);
+    return true;
+}
+
+bool Interpreter::somechar(QStringRef &inp, QChar &c)
+{
+    EXPECT(!inp.isEmpty());
+
+    c = inp.at(0);
+
+    return advance(inp, 1);
+}
+
+bool Interpreter::thischar(QStringRef& inp, QChar &opOut, QString operators)
+{
+    EXPECT(!inp.isEmpty());
+
+    QChar c = inp.at(0);
+    if (operators.contains(c)) {
+        opOut = c;
+        advance(inp, 1);
+        return true;
     }
 
+    return false;
+}
+
+bool Interpreter::str(QStringRef &inp, QString str)
+{
+    EXPECT(inp.startsWith(str));
     advance(inp, str.length());
     return true;
 }
 
 bool Interpreter::value(QStringRef &inp, int &result)
 {
-    if(inp.isEmpty()) {
-        return false;
-    }
+    EXPECT(!inp.isEmpty());
 
     int count = 0;
 
@@ -49,83 +77,38 @@ bool Interpreter::value(QStringRef &inp, int &result)
     return false;
 }
 
+/////////////////////  NONTERMINALS  //////////////////////
+
 bool Interpreter::factor(QStringRef& inp, int &result)
 {
-    if(inp.isEmpty()) {
-        return false;
-    }
+    EXPECT(!inp.isEmpty());
 
-    if(value(inp, result)) {
-        return true;
-    }
+    MAYBE(value(inp, result));
 
-    if (!str(inp, QSL("("))) {
-        return false;
-    }
+    //Else...
 
-    expr(inp, result);
+    EXPECT(!str(inp, QSL("(")))
 
-    if (!str(inp, QSL(")"))) {
-        return false;
-    }
+    EXPECT(expr(inp, result));
+
+    EXPECT(!str(inp, QSL(")")))
 
     return true;
 }
 
-bool Interpreter::advance(QStringRef &str, int count)
-{
-    if(str.length() < count) {
-        return false;
-    }
-
-    str = str.mid(count);
-    return true;
-}
-
-bool Interpreter::somechar(QStringRef &inp, QChar &c)
-{
-    if(inp.isEmpty()) {
-        return false;
-    }
-
-    c = inp.at(0);
-
-    return advance(inp, 1);
-}
-
-bool Interpreter::thischar(QStringRef& inp, QChar &opOut, QString operators)
-{
-    if(inp.isEmpty()) {
-        return false;
-    }
-
-    QChar c = inp.at(0);
-    if (operators.contains(c)) {
-        opOut = c;
-        advance(inp, 1);
-        return true;
-    }
-
-    return false;
-}
 
 bool Interpreter::term(QStringRef &inp, int &result)
 {
-    if(inp.isEmpty()) {
-        return false;
-    }
+    EXPECT(!inp.isEmpty());
 
-    if(!factor(inp, result)) {
-       return false;
-    }
+    EXPECT(factor(inp, result));
 
     QChar lastOp;
     while(thischar(inp, lastOp, QSL("*/")))
     {
         int f;
-        if(!factor(inp, f)) {
-            return false;
-        }
+
+        EXPECT(factor(inp, f));
 
         if (lastOp == QChar('*')) {
             result *= f;
@@ -140,21 +123,15 @@ bool Interpreter::term(QStringRef &inp, int &result)
 
 bool Interpreter::expr(QStringRef &inp, int &result)
 {
-    if(inp.isEmpty()) {
-        return false;
-    }
+    EXPECT(!inp.isEmpty());
 
-    if(!term(inp, result)) {
-        return false;
-    }
+    EXPECT(term(inp, result));
 
     QChar lastOp;
     while (thischar(inp, lastOp, QSL("+-")))
     {
         int t;
-        if(!term(inp, t)) {
-            return false;
-        }
+        EXPECT(term(inp, t));
 
         if (lastOp == QChar('+')) {
             result += t;

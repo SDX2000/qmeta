@@ -8,6 +8,16 @@
 
 //QTextStream qStdOut();
 
+#define EXPECT(X)       \
+    if (!(X)) {         \
+        return false;   \
+    }
+
+#define MAYBE(X)       \
+    if (X) {         \
+        return true; \
+    }
+
 class ParseError
 {
 public:
