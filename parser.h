@@ -44,6 +44,8 @@ protected:
     bool strOf(QStringRef &inp, bool (QChar::*is_x)() const);
     bool strOf(QStringRef &inp, QStringRef &str, bool (QChar::*is_x)() const);
     bool someChar(QStringRef& inp, QChar& c);
+    bool someCharOf(QStringRef &inp, bool (QChar::*is_x)() const);
+    bool someCharOf(QStringRef &inp, QChar &c, bool (QChar::*is_x)() const);
     bool thisChar(QStringRef &inp, QChar c);
     bool oneOf(QStringRef& inp, QChar &opOut, QString operators);
 

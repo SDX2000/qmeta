@@ -53,6 +53,30 @@ bool Parser::someChar(QStringRef &inp, QChar &c)
     return advance(inp, 1);
 }
 
+bool Parser::someCharOf(QStringRef &inp, bool (QChar::*is_x)() const)
+{
+    EXPECT(!inp.isEmpty());
+
+    QChar ch = inp.at(0);
+
+    EXPECT((ch.*is_x)());
+
+    return advance(inp, 1);
+}
+
+bool Parser::someCharOf(QStringRef &inp, QChar &c, bool (QChar::*is_x)() const)
+{
+    EXPECT(!inp.isEmpty());
+
+    QChar ch = inp.at(0);
+
+    EXPECT((ch.*is_x)());
+
+    c = ch;
+
+    return advance(inp, 1);
+}
+
 bool Parser::oneOf(QStringRef& inp, QChar &opOut, QString chars)
 {
     EXPECT(!inp.isEmpty());
@@ -65,6 +89,7 @@ bool Parser::oneOf(QStringRef& inp, QChar &opOut, QString chars)
 
     return advance(inp, 1);
 }
+
 
 bool Parser::thisChar(QStringRef &inp, QChar c)
 {
@@ -123,17 +148,16 @@ bool Parser::identifier(QStringRef &inp, QStringRef& ident)
 {
     CHECK_POINT(cp0, inp);
 
-    bool ok = false;
-
-    ok = ok || thisChar(inp, QChar('_'));
-
-    ok = ok || strOf(inp, &QChar::isLetterOrNumber);
-
-    if(ok) {
-        ident =  mid(cp0, inp);
+    if(!thisChar(inp, QChar('_'))) {
+        inp = cp0;
+        EXPECT(someCharOf(inp, &QChar::isLetter));
     }
 
-    return ok;
+    strOf(inp, &QChar::isLetterOrNumber);
+
+    ident =  mid(cp0, inp);
+
+    return true;
 }
 
 bool Parser::integer(QStringRef &inp, int &result)
