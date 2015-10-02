@@ -26,16 +26,13 @@ int main(/*int argc, char *argv[]*/)
             break;
         }
 
-        try
-        {
-            int result;
-            interp.parse(inp, result);
+        int result;
+        if (interp.parse(inp, result)) {
             cout<<result<<endl;
+        } else {
+            cout<<"Syntax error."<<endl;
         }
-        catch(ParseError &ex)
-        {
-            qDebug()<<ex.getMessage()<<endl;
-        }
+
     }
 
     //return a.exec();

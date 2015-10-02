@@ -18,40 +18,6 @@
         return true; \
     }
 
-class ParseError
-{
-public:
-    ParseError(QString msg)
-        : m_msg(msg)
-    {
-    }
-
-    const QString& getMessage() const
-    {
-        return m_msg;
-    }
-
-private:
-    QString m_msg;
-};
-
-class ArgumentException
-{
-public:
-    ArgumentException(QString msg)
-        : m_msg(msg)
-    {
-    }
-
-    const QString& getMessage() const
-    {
-        return m_msg;
-    }
-
-private:
-    QString m_msg;
-};
-
 class Interpreter
 {
 public:
@@ -67,7 +33,4 @@ private:
     bool thischar(QStringRef& inp, QChar &opOut, QString operators);
     bool advance(QStringRef &str, int length);
 };
-
-
-
 #endif // PARSER_H

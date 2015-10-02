@@ -87,11 +87,11 @@ bool Interpreter::factor(QStringRef& inp, int &result)
 
     //Else...
 
-    EXPECT(!str(inp, QSL("(")))
+    EXPECT(str(inp, QSL("(")));
 
     EXPECT(expr(inp, result));
 
-    EXPECT(!str(inp, QSL(")")))
+    EXPECT(str(inp, QSL(")")));
 
     return true;
 }
