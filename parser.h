@@ -13,24 +13,32 @@
         return false;   \
     }
 
-#define MAYBE(X)       \
+#define TRY_CHOICE(X)     \
     if (X) {         \
         return true; \
     }
 
+
 class Interpreter
 {
 public:
+    bool parse(QStringRef inp, int& result);
     bool parse(QString inp, int& result);
 
 private:
-    bool str(QStringRef &inp, QString str);
+    //TERMINALS//
+    bool thisStr(QStringRef &inp, QString thisStr);
     bool value(QStringRef &inp, int& result);
+    bool integer(QStringRef &inp, int& result);
+    bool digit(QStringRef &inp, int &digit);
+    bool someChar(QStringRef& inp, QChar &c);
+    bool thisChar(QStringRef &inp, QChar c);
+    bool oneOf(QStringRef& inp, QChar &opOut, QString operators);
+    bool advance(QStringRef &thisStr, int length);
+
+    //NONTERMINALS//
     bool factor(QStringRef& inp, int &result);
     bool term(QStringRef &inp, int& result);
     bool expr(QStringRef &inp, int& result);
-    bool somechar(QStringRef& inp, QChar &c);
-    bool thischar(QStringRef& inp, QChar &opOut, QString operators);
-    bool advance(QStringRef &str, int length);
 };
 #endif // PARSER_H
