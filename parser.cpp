@@ -13,13 +13,13 @@ factor  = value | "(" expr ")"
 //}
 
 
-void Parser::parse(QString inp, int &result)
+void Interpreter::parse(QString inp, int &result)
 {
     m_inputStr = inp;
     expr(m_inputStr.midRef(0), result);
 }
 
-QStringRef Parser::expect(QStringRef inp, QString str)
+QStringRef Interpreter::expect(QStringRef inp, QString str)
 {
     if (!inp.startsWith(str)) {
         throw ParseError(QSL("ERROR: Expected %1").arg(str));
@@ -28,7 +28,7 @@ QStringRef Parser::expect(QStringRef inp, QString str)
     return inp.mid(str.length());
 }
 
-QStringRef Parser::value(QStringRef inp, int &result)
+QStringRef Interpreter::value(QStringRef inp, int &result)
 {
     if(inp.isEmpty())
         return inp;
@@ -45,7 +45,7 @@ QStringRef Parser::value(QStringRef inp, int &result)
     return inp.mid(count);
 }
 
-QStringRef Parser::factor(QStringRef inp, int &result)
+QStringRef Interpreter::factor(QStringRef inp, int &result)
 {
     if(inp.isEmpty())
         return inp;
@@ -66,7 +66,7 @@ QStringRef Parser::factor(QStringRef inp, int &result)
 }
 
 
-QStringRef Parser::term(QStringRef inp, int &result)
+QStringRef Interpreter::term(QStringRef inp, int &result)
 {
     if(inp.isEmpty())
         return inp;
@@ -94,7 +94,7 @@ QStringRef Parser::term(QStringRef inp, int &result)
 }
 
 
-QStringRef Parser::expr(QStringRef inp, int &result)
+QStringRef Interpreter::expr(QStringRef inp, int &result)
 {
     if(inp.isEmpty())
         return inp;

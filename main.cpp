@@ -13,7 +13,7 @@ int main(/*int argc, char *argv[]*/)
 
     QTextStream cin(stdin);
     QTextStream cout(stdout);
-    Parser parser;
+    Interpreter interp;
 
 
     while(true)
@@ -29,7 +29,7 @@ int main(/*int argc, char *argv[]*/)
         try
         {
             int result;
-            parser.parse(inp, result);
+            interp.parse(inp, result);
             cout<<result<<endl;
         }
         catch(ParseError &ex)
