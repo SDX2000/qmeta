@@ -1,4 +1,6 @@
 #include "parser.h"
+#include <assert.h>
+#include <algorithm>
 
 /*
 expr    = term (( "+" | "-" ) term)*
@@ -22,7 +24,7 @@ bool Interpreter::parse(QString inp, int &result)
 
 bool Interpreter::parse(QStringRef inp, int &result)
 {
-    return expr(inp, result);
+    return expression(inp, result);
 }
 
 /////////////////////  TERMINALS  //////////////////////
@@ -35,7 +37,6 @@ bool Interpreter::advance(QStringRef &str, int count)
 
     return true;
 }
-
 
 bool Interpreter::digit(QStringRef &inp, int &digit)
 {
@@ -82,7 +83,6 @@ bool Interpreter::thisChar(QStringRef &inp, QChar c)
     return advance(inp, 1);
 }
 
-
 bool Interpreter::thisStr(QStringRef &inp, QString str)
 {
     EXPECT(inp.startsWith(str));
@@ -90,9 +90,7 @@ bool Interpreter::thisStr(QStringRef &inp, QString str)
     return advance(inp, str.length());;
 }
 
-
-
-bool Interpreter::strOf(QStringRef &inp, QStringRef &str, bool (QChar::*is_x)() const)
+bool Interpreter::strOf(QStringRef &inp, bool (QChar::*is_x)() const)
 {
     EXPECT(!inp.isEmpty());
 
@@ -103,23 +101,47 @@ bool Interpreter::strOf(QStringRef &inp, QStringRef &str, bool (QChar::*is_x)() 
 
     EXPECT(count);
 
-    str = inp.left(count);
-
     return advance(inp, count);
 }
 
-
 /////////////////////  NONTERMINALS  //////////////////////
+
+bool Interpreter::strOf(QStringRef &inp, QStringRef &str, bool (QChar::*is_x)() const)
+{
+    CHECK_POINT(cp0, inp);
+
+    EXPECT(strOf(inp, is_x));
+
+    str = mid(cp0, inp);
+
+    return true;
+}
+
+bool Interpreter::space(QStringRef &inp)
+{
+    return strOf(inp, &QChar::isSpace);
+}
 
 bool Interpreter::space(QStringRef &inp, QStringRef &space)
 {
     return strOf(inp, space, &QChar::isSpace);
 }
 
-bool Interpreter::space(QStringRef &inp)
+bool Interpreter::identifier(QStringRef &inp, QStringRef& ident)
 {
-    QStringRef temp;
-    return strOf(inp, temp, &QChar::isSpace);
+    CHECK_POINT(cp0, inp);
+
+    bool ok = false;
+
+    ok = ok || thisChar(inp, QChar('_'));
+
+    ok = ok || strOf(inp, &QChar::isLetterOrNumber);
+
+    if(ok) {
+        ident =  mid(cp0, inp);
+    }
+
+    return ok;
 }
 
 bool Interpreter::integer(QStringRef &inp, int &result)
@@ -151,7 +173,7 @@ bool Interpreter::factor(QStringRef& inp, int &result)
 
     EXPECT(thisStr(inp, QSL("(")));
 
-    EXPECT(expr(inp, result));
+    EXPECT(expression(inp, result));
 
     EXPECT(thisStr(inp, QSL(")")));
 
@@ -181,7 +203,7 @@ bool Interpreter::term(QStringRef &inp, int &result)
 }
 
 
-bool Interpreter::expr(QStringRef &inp, int &result)
+bool Interpreter::expression(QStringRef &inp, int &result)
 {
     EXPECT(term(inp, result));
 
@@ -200,3 +222,10 @@ bool Interpreter::expr(QStringRef &inp, int &result)
 
     return true;
 }
+
+QStringRef mid(QStringRef lhs, QStringRef rhs)
+{
+    return lhs.string()->midRef(lhs.position(), rhs.position() - lhs.position());
+}
+
+

@@ -4,6 +4,7 @@
 #include <QString>
 #include <QTextStream>
 
+
 #define QSL(str) QStringLiteral(str)
 
 //QTextStream qStdOut();
@@ -18,6 +19,9 @@
         return true; \
     }
 
+#define CHECK_POINT(CP, INP) \
+    QStringRef CP = INP;
+
 
 class Interpreter
 {
@@ -29,6 +33,7 @@ private:
     //TERMINALS//
     bool thisStr(QStringRef &inp, QString thisStr);
     bool digit(QStringRef &inp, int& digit);
+    bool strOf(QStringRef &inp, bool (QChar::*is_x)() const);
     bool strOf(QStringRef &inp, QStringRef &str, bool (QChar::*is_x)() const);
     bool someChar(QStringRef& inp, QChar& c);
     bool thisChar(QStringRef &inp, QChar c);
@@ -36,12 +41,16 @@ private:
     bool advance(QStringRef &thisStr, int length);
 
     //NONTERMINALS//
-    bool value(QStringRef &inp, int& result);
-    bool integer(QStringRef &inp, int& result);
     bool space(QStringRef &inp);
     bool space(QStringRef &inp, QStringRef& space);
+    bool identifier(QStringRef &inp, QStringRef& ident);
+
+    bool value(QStringRef &inp, int& result);
+    bool integer(QStringRef &inp, int& result);
     bool factor(QStringRef& inp, int &result);
     bool term(QStringRef &inp, int& result);
-    bool expr(QStringRef &inp, int& result);
+    bool expression(QStringRef &inp, int& result);
 };
+
+QStringRef mid(QStringRef lhs, QStringRef rhs);
 #endif // PARSER_H
