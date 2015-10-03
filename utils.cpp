@@ -1,5 +1,7 @@
 #include "utils.h"
 
+
+
 QStringRef mid(QStringRef lhs, QStringRef rhs)
 {
     if(rhs.size() == 0 && rhs.position() == 0) {
@@ -10,3 +12,9 @@ QStringRef mid(QStringRef lhs, QStringRef rhs)
 
     return lhs.string()->midRef(lhs.position(), rhs.position() - lhs.position());
 }
+
+//QTextStream qStdOut()
+//{
+//    static QTextStream ts( stdout );
+//    return ts;
+//}

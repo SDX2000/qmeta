@@ -11,11 +11,7 @@ factor      = value | "(" expression ")"
 value       = integer
 */
 
-//QTextStream qStdOut()
-//{
-//    static QTextStream ts( stdout );
-//    return ts;
-//}
+
 
 
 

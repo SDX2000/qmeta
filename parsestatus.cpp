@@ -7,14 +7,14 @@ ParseStatus* ParseStatus::success()
     return &ps;
 }
 
-ParseStatus* ParseStatus::failure(QStringRef pos)
+ParseStatus* ParseStatus::failure(QStringRef pos, QString msg)
 {
-    return new ParseStatus(false, pos);
+    return new ParseStatus(false, pos, msg);
 }
 
-ParseStatus* ParseStatus::failure(QStringRef pos, ParseStatus *innerFailure)
+ParseStatus* ParseStatus::failure(QStringRef pos, QString msg, ParseStatus *innerFailure)
 {
-    return new ParseStatus(false, pos, innerFailure);
+    return new ParseStatus(false, pos, msg, innerFailure);
 }
 
 ParseStatus::~ParseStatus()
@@ -28,15 +28,17 @@ ParseStatus::ParseStatus(bool status)
 {
 }
 
-ParseStatus::ParseStatus(bool status, QStringRef pos)
+ParseStatus::ParseStatus(bool status, QStringRef pos, QString msg)
     : m_status(status)
+    , m_msg(msg)
     , m_innerFailure(nullptr)
     , m_pos(pos)
 {
 }
 
-ParseStatus::ParseStatus(bool status, QStringRef pos, ParseStatus *innerFailure)
+ParseStatus::ParseStatus(bool status, QStringRef pos, QString msg, ParseStatus *innerFailure)
     : m_status(status)
+    , m_msg(msg)
     , m_innerFailure(innerFailure)
     , m_pos(pos)
 {

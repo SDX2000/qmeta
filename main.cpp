@@ -9,8 +9,6 @@ int main(/*int argc, char *argv[]*/)
 {
     //QCoreApplication a(argc, argv);
 
-    //QString inp(QStringLiteral("2+3*4-1"));
-
     QTextStream cin(stdin);
     QTextStream cout(stdout);
     ProgramInterpreter interp;
@@ -27,12 +25,15 @@ int main(/*int argc, char *argv[]*/)
         }
 
         int result;
-        if (interp.parse(inp, result)->isOk()) {
+        const ParseStatus * ps = interp.parse(inp, result);
+        if (ps->isOk()) {
             cout<<result<<endl;
         } else {
-            cout<<"Syntax error."<<endl;
+            do {
+                cout<<ps->toString().toStdString().c_str()<<" ";
+            }while((ps = ps->getInnerFailure()));
+            cout<<endl;
         }
-
     }
 
     //return a.exec();

@@ -4,40 +4,36 @@
 #include <QString>
 #include "utils.h"
 #include "parsestatus.h"
-//#include <QTextStream>
 
 
-#define QSL(str) QStringLiteral(str)
-
-//QTextStream qStdOut();
 
 //Note: There is no need to checkpoint EXPECT
-//since all back tracking happens at TRY_CHOICE and TRY_CHOICE saves
-//a check point.
+//since all back tracking happens at TRY_CHOICE
+//and TRY_CHOICE saves a check point.
 #define EXPECT(X) \
     do \
     { \
         ParseStatus* __ps = (X);\
         if (!__ps->isOk()) { \
-            return ParseStatus::failure(inp, __ps); \
+            return ParseStatus::failure(inp, "Expected: " #X, __ps); \
         } \
     } while(0); \
 
 #define EXPECT_B(X) \
     if (!(X)) { \
-        return ParseStatus::failure(inp); \
+        return ParseStatus::failure(inp, #X); \
     }
 
 
-#define TRY_CHOICE(X)                       \
-    do                                      \
-    {                                       \
-        QStringRef _checkPoint = inp;       \
-        if ((X)->isOk()) {                            \
-            return ParseStatus::success();  \
-        }                                   \
-        inp = _checkPoint;                  \
-    }                                       \
+#define TRY_CHOICE(X) \
+    do \
+    { \
+        QStringRef _checkPoint = inp; \
+        if ((X)->isOk()) { \
+            return ParseStatus::success(); \
+        } \
+        inp = _checkPoint; \
+    } \
     while(0);
 
 #define CHECK_POINT(CP, INP) \
