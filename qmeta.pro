@@ -7,7 +7,7 @@
 QT += core
 QT -= gui
 
-TARGET = ushell
+TARGET = qmeta
 CONFIG += console
 CONFIG -= app_bundle
 CONFIG += c++11

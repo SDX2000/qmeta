@@ -58,11 +58,11 @@ void execute(QString prog)
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
-    QCoreApplication::setApplicationName("ushell");
+    QCoreApplication::setApplicationName("qmeta");
     QCoreApplication::setApplicationVersion("0.0.0");
 
     QCommandLineParser parser;
-    parser.setApplicationDescription("A modern crossplatform shell script and REPL.");
+    parser.setApplicationDescription("An ometa parser/interpreter in Qt.");
     parser.addHelpOption();
     parser.addVersionOption();
 
