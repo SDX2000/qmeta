@@ -51,14 +51,61 @@
 
 class QMetaParserBase
 {
+public:
+    virtual ParseStatusPtr parse(QString inp, QVariant& ast);
+    virtual ParseStatusPtr parse(QStringRef inp, QVariant &ast) = 0;
+    virtual ~QMetaParserBase() {}
+
+private:
     ParseStatusPtr advance(QStringRef &inp, int length);
+
+    //Accessible only through applyRule
+    ParseStatusPtr spaces(QStringRef &inp, QVariant& spaces);
+    ParseStatusPtr identifier(QStringRef &inp, QVariant &ident);
+    ParseStatusPtr integer(QStringRef &inp, QVariant &result);
+
+public:
+    enum RuleEnum {
+        //TERMINALS
+        THIS_STR,       //Cannot memoize rule with arguments yet
+        DIGIT,
+        STR_OF,         //Cannot memoize rule with arguments yet
+        SOME_CHAR,
+        SOME_CHAR_OF,   //Cannot memoize rule with arguments yet
+        THIS_CHAR,      //Cannot memoize rule with arguments yet
+        ONE_OF,         //Cannot memoize rule with arguments yet
+
+        //NONTERMINALS
+        SPACES,
+        IDENTIFIER,
+        INTEGER,
+        THIS_TOKEN,     //Cannot memoize rule with arguments yet
+
+        NEXT_RULE,
+    };
+
+    struct MemoKey
+    {
+        int      ruleId;
+        int      position;
+
+        bool operator == (const MemoKey& rhs) const {
+            return ruleId == rhs.ruleId && position == rhs.position;
+        }
+    };
+
+    struct MemoEntry
+    {
+        int        nextPos; //Takes RuleEnum values
+        QVariant   result;
+    };
 
 protected:
     //TERMINALS//
     ParseStatusPtr thisStr(QStringRef &inp, QString thisStr);
     ParseStatusPtr digit(QStringRef &inp, int& digit);
     ParseStatusPtr strOf(QStringRef &inp, bool (QChar::*is_x)() const);
-    ParseStatusPtr strOf(QStringRef &inp, QStringRef &str, bool (QChar::*is_x)() const);
+    ParseStatusPtr strOf(QStringRef &inp, QVariant &str, bool (QChar::*is_x)() const);
     ParseStatusPtr someChar(QStringRef& inp, QChar& c);
     ParseStatusPtr someCharOf(QStringRef &inp, bool (QChar::*is_x)() const);
     ParseStatusPtr someCharOf(QStringRef &inp, QChar &c, bool (QChar::*is_x)() const);
@@ -66,14 +113,15 @@ protected:
     ParseStatusPtr oneOf(QStringRef& inp, QChar &opOut, QString operators);
 
     //NONTERMINALS//
-    ParseStatusPtr spaces(QStringRef &inp);
-    ParseStatusPtr spaces(QStringRef &inp, QStringRef& spaces);
-    ParseStatusPtr identifier(QStringRef &inp, QString &ident);
-    ParseStatusPtr integer(QStringRef &inp, int& result);
-    ParseStatusPtr thisToken(QStringRef &inp, QString str);
+    virtual ParseStatusPtr spaces(QStringRef &inp);
+    virtual ParseStatusPtr thisToken(QStringRef &inp, QString str);
 
     //HELPER FUNCTIONS//
-    QChar unescape(QChar c);
+    virtual QChar unescape(QChar c);
+    virtual ParseStatusPtr applyRule(int ruleId, QStringRef &inp, QVariant& result);
+
+protected:
+    QHash<MemoKey, MemoEntry> m_memo;
 };
 
 

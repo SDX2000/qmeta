@@ -2,14 +2,29 @@
 #define PROGRAMINTERPRETER_H
 
 #include <QString>
+#include <QHash>
 #include "qmeta_parser_base.h"
 
 class QMetaParser : public QMetaParserBase
 {
 public:
-    ParseStatusPtr parse(QStringRef inp, QVariant& ast);
-    ParseStatusPtr parse(QString inp, QVariant &ast);
-private:
+    ParseStatusPtr parse(QStringRef inp, QVariant& ast) override;
+    ParseStatusPtr parse(QString inp, QVariant& ast);
+protected:
+    enum RuleEnum {
+        GRAMMAR = NEXT_RULE,
+        RULE,
+        CHOICES,
+        CHOICE,
+        HOST_EXPR,
+        TERM,
+        TERM1,
+        TERM2,
+        SOME_TOKEN,
+        ESCAPED_CHAR,
+    };
+
+protected:
     ParseStatusPtr grammar(QStringRef& inp, QVariant& ast);
     ParseStatusPtr rule(QStringRef& inp, QVariant& ast);
     ParseStatusPtr choices(QStringRef& inp, QVariant& ast);

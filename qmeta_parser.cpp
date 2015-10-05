@@ -3,9 +3,7 @@
 
 ParseStatusPtr QMetaParser::parse(QString inp, QVariant& ast)
 {
-    ENTER();
-    QStringRef  inpRef = inp.midRef(0);
-    return parse(inpRef, ast);
+    return QMetaParserBase::parse(inp, ast);
 }
 
 ParseStatusPtr QMetaParser::parse(QStringRef inp, QVariant &ast)
@@ -35,8 +33,8 @@ ParseStatusPtr QMetaParser::rule(QStringRef &inp, QVariant &ast)
     ENTER();
     QList<QVariant> l;
     l.append(QString(QSL("RULE")));
-    QString id;
-    EXPECT(identifier(inp, id));
+    QVariant id;
+    EXPECT(applyRule(IDENTIFIER, inp, id));
     l.append(id);
 
     EXPECT(thisToken(inp, QSL("=")));
@@ -148,9 +146,9 @@ ParseStatusPtr QMetaParser::term(QStringRef &inp, QVariant &ast)
 
         TRY(thisToken(inp, QSL(":")), choice1);
 
-        QString id;
-        TRY(identifier(inp, id), choice1);
-        l.append(QSL("id:")+id);
+        QVariant id;
+        TRY(applyRule(IDENTIFIER, inp, id), choice1);
+        l.append(id);
 
         ast = l;
         return ParseStatus::success();
@@ -301,8 +299,8 @@ choice2:
         QList<QVariant> l;
         l.append(QString(QSL("APPLY")));
 
-        QString ruleName;
-        TRY(identifier(inp, ruleName), choice3);
+        QVariant ruleName;
+        TRY(applyRule(IDENTIFIER, inp, ruleName), choice3);
         l.append(ruleName);
 
         ast = l;
