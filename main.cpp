@@ -29,7 +29,7 @@ void doREPL()
 
         QVariant result;
         const ParseStatus * ps = interp.parse(inp, result);
-        if (ps->isOk()) {
+        if (ps) {
             cout<<result.toString().toStdString().c_str()<<endl;
         } else {
             do {
@@ -45,7 +45,7 @@ void execute(QString prog)
     QMetaParser interp;
     QVariant result;
     const ParseStatus * ps = interp.parse(prog, result);
-    if (ps->isOk()) {
+    if (ps) {
         cout<<result.toString().toStdString().c_str()<<endl;
     } else {
         do {

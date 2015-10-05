@@ -30,4 +30,5 @@ HEADERS += \
     qmeta_parser_base.h
 
 DISTFILES += \
-    tests/ometa.qm
+    tests/ometa.qm \
+    tests/simple.qm

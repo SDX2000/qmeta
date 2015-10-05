@@ -13,7 +13,7 @@
     do \
     { \
         ParseStatusPtr __ps = (X);\
-        if (!__ps->isOk()) { \
+        if (!*__ps) { \
             return ParseStatus::failure(inp, "Expected: " #X, __ps); \
         } \
     } while(0); \
@@ -28,12 +28,22 @@
     do \
     { \
         QStringRef _checkPoint = inp; \
-        if ((X)->isOk()) { \
+        if (*(X)) { \
             return ParseStatus::success(); \
         } \
         inp = _checkPoint; \
     } \
     while(0);
+
+#define TRY(X, NEXT) \
+    if (!*(X)) { \
+        goto NEXT; \
+    } \
+
+#define TRY_INV(X, NEXT) \
+    if (*(X)) { \
+        goto NEXT; \
+    } \
 
 #define CHECK_POINT(CP, INP) \
     QStringRef CP = INP;
@@ -56,10 +66,14 @@ protected:
     ParseStatusPtr oneOf(QStringRef& inp, QChar &opOut, QString operators);
 
     //NONTERMINALS//
-    ParseStatusPtr space(QStringRef &inp);
-    ParseStatusPtr space(QStringRef &inp, QStringRef& space);
-    ParseStatusPtr identifier(QStringRef &inp, QStringRef& ident);
+    ParseStatusPtr spaces(QStringRef &inp);
+    ParseStatusPtr spaces(QStringRef &inp, QStringRef& spaces);
+    ParseStatusPtr identifier(QStringRef &inp, QString &ident);
     ParseStatusPtr integer(QStringRef &inp, int& result);
+    ParseStatusPtr thisToken(QStringRef &inp, QString str);
+
+    //HELPER FUNCTIONS//
+    QChar unescape(QChar c);
 };
 
 

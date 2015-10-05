@@ -118,17 +118,17 @@ ParseStatusPtr QMetaParserBase::strOf(QStringRef &inp, QStringRef &str, bool (QC
     return ParseStatus::success();
 }
 
-ParseStatusPtr QMetaParserBase::space(QStringRef &inp)
+ParseStatusPtr QMetaParserBase::spaces(QStringRef &inp)
 {
     return strOf(inp, &QChar::isSpace);
 }
 
-ParseStatusPtr QMetaParserBase::space(QStringRef &inp, QStringRef &space)
+ParseStatusPtr QMetaParserBase::spaces(QStringRef &inp, QStringRef &space)
 {
     return strOf(inp, space, &QChar::isSpace);
 }
 
-ParseStatusPtr QMetaParserBase::identifier(QStringRef &inp, QStringRef& ident)
+ParseStatusPtr QMetaParserBase::identifier(QStringRef &inp, QString& ident)
 {
     CHECK_POINT(cp0, inp);
 
@@ -139,7 +139,7 @@ ParseStatusPtr QMetaParserBase::identifier(QStringRef &inp, QStringRef& ident)
 
     strOf(inp, &QChar::isLetterOrNumber);
 
-    ident =  mid(cp0, inp);
+    ident =  mid(cp0, inp).toString();
 
     return ParseStatus::success();
 }
@@ -160,4 +160,38 @@ ParseStatusPtr QMetaParserBase::integer(QStringRef &inp, int &result)
     return ParseStatus::success();
 }
 
+ParseStatusPtr QMetaParserBase::thisToken(QStringRef &inp, QString str)
+{
+    spaces(inp);
+    EXPECT(thisStr(inp, str));
+    spaces(inp);
+    return ParseStatus::success();
+}
 
+QChar QMetaParserBase::unescape(QChar c)
+{
+    if ('\'' == c)
+        return '\'';
+    if ('"' == c)
+        return '"';
+    if ('?' == c)
+        return '\?';
+    if ('\\' == c)
+        return '\\';
+    if ('a' == c)
+        return '\a';
+    if ('b' == c)
+        return '\b';
+    if ('f' == c)
+        return '\f';
+    if ('n' == c)
+        return '\n';
+    if ('r' == c)
+        return '\r';
+    if ('t' == c)
+        return '\t';
+    if ('v' == c)
+        return '\v';
+
+    return QChar(-1);
+}

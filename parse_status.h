@@ -16,7 +16,7 @@ public:
     static ParseStatusPtr failure(QStringRef pos, QString msg);
     static ParseStatusPtr failure(QStringRef pos, QString msg, ParseStatusPtr innerFailure);
 
-    bool isOk() const{
+    operator bool() const{
         return m_status;
     }
 

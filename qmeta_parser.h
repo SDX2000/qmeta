@@ -14,9 +14,11 @@ private:
     ParseStatusPtr rule(QStringRef& inp, QVariant& ast);
     ParseStatusPtr choices(QStringRef& inp, QVariant& ast);
     ParseStatusPtr choice(QStringRef& inp, QVariant& ast);
+    ParseStatusPtr hostExpr(QStringRef& inp, QVariant& ast);
     ParseStatusPtr term(QStringRef &inp, QVariant& ast);
     ParseStatusPtr term1(QStringRef &inp, QVariant& ast);
     ParseStatusPtr term2(QStringRef &inp, QVariant& ast);
+    ParseStatusPtr someToken(QStringRef &inp, QVariant& ast);
     ParseStatusPtr escapedChar(QStringRef &inp, QChar& c);
 };
 

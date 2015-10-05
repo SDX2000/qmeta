@@ -22,4 +22,6 @@ void safeDeleteArray(T* &p) {
     p = nullptr;
 }
 
+#define ENTER() std::cout<<"Entering:"<<__FUNCTION__<<std::endl;
+
 #endif // UTILS_H

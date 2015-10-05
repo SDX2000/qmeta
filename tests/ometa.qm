@@ -1,22 +1,24 @@
 //Every QMeta parser implicitly derives from QMetaParserBase
 qmeta QMetaParser {
-  grammar           = (rule ';')*;
-  rule              = identifier:n "=" choices:cs;
-  choices           = choice:x "|" choices:y
-                    | choice:x;
-  choice            = term*:ts ( "->" hostExpr:a|~.);
-  hostExpr          = "{" .*:xs "}";
-  term              = term1:v ":" identifier:n
+  grammar           = (rule ";")*;
+  rule              = identifier "=" choices;
+  choices           = choice "|" choices
+                    | choice;
+  choice            = term* ( "->" hostExpr)?;
+  hostExpr          = "{" .* "}";
+  term              = term1 ":" identifier
                     | term1;
-  term1             = "~"  term2:f
-                    | "?"  hostExpr:e
-                    | term2:f "*"
-                    | term2:f "+"
+  term1             = "~"  term2
+                    | "?" hostExpr
+                    | term2 "*"
+                    | term2 "+"
+                    | term2 "?"
                     | term2;
-  term2             = "'"  (~'\'' escapedChar):c '\''
-                    | "\"" (~'"'  escapedChar)*:cs '"'
-                    | identifier:x
-                    | "(" choice:x ")";
-  escapedChar       = '\\' char:c
-                    | char:c;
+  term2             = '\''  (~'\'' escapedChar) '\''
+                    | someToken
+                    | identifier
+                    | "(" choice ")";
+  someToken         = spaces? '"' (~'"'  escapedChar)* '"' spaces?
+  escapedChar       = '\\' char
+                    | char;
 }
