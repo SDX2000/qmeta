@@ -15,16 +15,19 @@ CONFIG += c++11
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    parser.cpp \
-    programinterpreter.cpp \
     utils.cpp \
-    parsestatus.cpp
+    parse_status.cpp \
+    qmeta_parser.cpp \
+    qmeta_parser_base.cpp
 
 DEFINES += QT_RESTRICTED_CAST_FROM_ASCII \
            QT_NO_CAST_TO_ASCII
 
 HEADERS += \
-    parser.h \
-    programinterpreter.h \
     utils.h \
-    parsestatus.h
+    parse_status.h \
+    qmeta_parser.h \
+    qmeta_parser_base.h
+
+DISTFILES += \
+    tests/ometa.qm

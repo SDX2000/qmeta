@@ -1,18 +1,18 @@
-#include "parsestatus.h"
+#include "parse_status.h"
 #include "utils.h"
 
-ParseStatus* ParseStatus::success()
+ParseStatusPtr ParseStatus::success()
 {
     static ParseStatus ps(true);
     return &ps;
 }
 
-ParseStatus* ParseStatus::failure(QStringRef pos, QString msg)
+ParseStatusPtr ParseStatus::failure(QStringRef pos, QString msg)
 {
     return new ParseStatus(false, pos, msg);
 }
 
-ParseStatus* ParseStatus::failure(QStringRef pos, QString msg, ParseStatus *innerFailure)
+ParseStatusPtr ParseStatus::failure(QStringRef pos, QString msg, ParseStatusPtr innerFailure)
 {
     return new ParseStatus(false, pos, msg, innerFailure);
 }
@@ -36,7 +36,7 @@ ParseStatus::ParseStatus(bool status, QStringRef pos, QString msg)
 {
 }
 
-ParseStatus::ParseStatus(bool status, QStringRef pos, QString msg, ParseStatus *innerFailure)
+ParseStatus::ParseStatus(bool status, QStringRef pos, QString msg, ParseStatusPtr innerFailure)
     : m_status(status)
     , m_msg(msg)
     , m_innerFailure(innerFailure)

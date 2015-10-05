@@ -1,23 +1,11 @@
-#include "parser.h"
+#include "qmeta_parser_base.h"
 #include <assert.h>
 #include <algorithm>
-
-/*
-program     = assignment | expression
-assignment  = identifier "=" expression
-expression  = term (( "+" | "-" ) term)*
-term        = factor (( "*" | "/" ) factor)*
-factor      = value | "(" expression ")"
-value       = integer
-*/
-
-
-
 
 
 /////////////////////  TERMINALS  //////////////////////
 
-ParseStatus* Parser::advance(QStringRef &inp, int count)
+ParseStatusPtr QMetaParserBase::advance(QStringRef &inp, int count)
 {
     EXPECT_B(inp.length() >= count);
 
@@ -26,7 +14,7 @@ ParseStatus* Parser::advance(QStringRef &inp, int count)
     return ParseStatus::success();
 }
 
-ParseStatus* Parser::digit(QStringRef &inp, int &digit)
+ParseStatusPtr QMetaParserBase::digit(QStringRef &inp, int& digit)
 {
     EXPECT_B(!inp.isEmpty());
 
@@ -40,7 +28,7 @@ ParseStatus* Parser::digit(QStringRef &inp, int &digit)
 }
 
 
-ParseStatus* Parser::someChar(QStringRef &inp, QChar &c)
+ParseStatusPtr QMetaParserBase::someChar(QStringRef &inp, QChar& c)
 {
     EXPECT_B(!inp.isEmpty());
 
@@ -49,7 +37,7 @@ ParseStatus* Parser::someChar(QStringRef &inp, QChar &c)
     return advance(inp, 1);
 }
 
-ParseStatus* Parser::someCharOf(QStringRef &inp, bool (QChar::*is_x)() const)
+ParseStatusPtr QMetaParserBase::someCharOf(QStringRef &inp, bool (QChar::*is_x)() const)
 {
     EXPECT_B(!inp.isEmpty());
 
@@ -60,7 +48,7 @@ ParseStatus* Parser::someCharOf(QStringRef &inp, bool (QChar::*is_x)() const)
     return advance(inp, 1);
 }
 
-ParseStatus* Parser::someCharOf(QStringRef &inp, QChar &c, bool (QChar::*is_x)() const)
+ParseStatusPtr QMetaParserBase::someCharOf(QStringRef &inp, QChar &c, bool (QChar::*is_x)() const)
 {
     EXPECT_B(!inp.isEmpty());
 
@@ -73,7 +61,7 @@ ParseStatus* Parser::someCharOf(QStringRef &inp, QChar &c, bool (QChar::*is_x)()
     return advance(inp, 1);
 }
 
-ParseStatus* Parser::oneOf(QStringRef& inp, QChar &opOut, QString chars)
+ParseStatusPtr QMetaParserBase::oneOf(QStringRef& inp, QChar &opOut, QString chars)
 {
     EXPECT_B(!inp.isEmpty());
 
@@ -87,7 +75,7 @@ ParseStatus* Parser::oneOf(QStringRef& inp, QChar &opOut, QString chars)
 }
 
 
-ParseStatus* Parser::thisChar(QStringRef &inp, QChar c)
+ParseStatusPtr QMetaParserBase::thisChar(QStringRef &inp, QChar c)
 {
     EXPECT_B(!inp.isEmpty());
 
@@ -96,14 +84,14 @@ ParseStatus* Parser::thisChar(QStringRef &inp, QChar c)
     return advance(inp, 1);
 }
 
-ParseStatus* Parser::thisStr(QStringRef &inp, QString str)
+ParseStatusPtr QMetaParserBase::thisStr(QStringRef &inp, QString str)
 {
     EXPECT_B(inp.startsWith(str));
 
     return advance(inp, str.length());;
 }
 
-ParseStatus* Parser::strOf(QStringRef &inp, bool (QChar::*is_x)() const)
+ParseStatusPtr QMetaParserBase::strOf(QStringRef &inp, bool (QChar::*is_x)() const)
 {
     EXPECT_B(!inp.isEmpty());
 
@@ -119,7 +107,7 @@ ParseStatus* Parser::strOf(QStringRef &inp, bool (QChar::*is_x)() const)
 
 /////////////////////  NONTERMINALS  //////////////////////
 
-ParseStatus* Parser::strOf(QStringRef &inp, QStringRef &str, bool (QChar::*is_x)() const)
+ParseStatusPtr QMetaParserBase::strOf(QStringRef &inp, QStringRef &str, bool (QChar::*is_x)() const)
 {
     CHECK_POINT(cp0, inp);
 
@@ -130,17 +118,17 @@ ParseStatus* Parser::strOf(QStringRef &inp, QStringRef &str, bool (QChar::*is_x)
     return ParseStatus::success();
 }
 
-ParseStatus* Parser::space(QStringRef &inp)
+ParseStatusPtr QMetaParserBase::space(QStringRef &inp)
 {
     return strOf(inp, &QChar::isSpace);
 }
 
-ParseStatus* Parser::space(QStringRef &inp, QStringRef &space)
+ParseStatusPtr QMetaParserBase::space(QStringRef &inp, QStringRef &space)
 {
     return strOf(inp, space, &QChar::isSpace);
 }
 
-ParseStatus* Parser::identifier(QStringRef &inp, QStringRef& ident)
+ParseStatusPtr QMetaParserBase::identifier(QStringRef &inp, QStringRef& ident)
 {
     CHECK_POINT(cp0, inp);
 
@@ -156,7 +144,7 @@ ParseStatus* Parser::identifier(QStringRef &inp, QStringRef& ident)
     return ParseStatus::success();
 }
 
-ParseStatus* Parser::integer(QStringRef &inp, int &result)
+ParseStatusPtr QMetaParserBase::integer(QStringRef &inp, int &result)
 {
     int sign = 1;
 

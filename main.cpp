@@ -5,7 +5,7 @@
 #include <QCommandLineParser>
 #include <QFile>
 
-#include "programinterpreter.h"
+#include "qmeta_parser.h"
 
 #include <iostream>
 
@@ -15,7 +15,7 @@ void doREPL()
 {
     QTextStream cin(stdin);
     QTextStream cout(stdout);
-    ProgramInterpreter interp;
+    QMetaParser interp;
 
     while(true)
     {
@@ -27,14 +27,14 @@ void doREPL()
             break;
         }
 
-        int result;
+        QVariant result;
         const ParseStatus * ps = interp.parse(inp, result);
         if (ps->isOk()) {
-            cout<<result<<endl;
+            cout<<result.toString().toStdString().c_str()<<endl;
         } else {
             do {
                 cout<<ps->toString().toStdString().c_str()<<" ";
-            }while((ps = ps->getInnerFailure()));
+            } while((ps = ps->getInnerFailure()));
             cout<<endl;
         }
     }
@@ -42,11 +42,11 @@ void doREPL()
 
 void execute(QString prog)
 {
-    ProgramInterpreter interp;
-    int result;
+    QMetaParser interp;
+    QVariant result;
     const ParseStatus * ps = interp.parse(prog, result);
     if (ps->isOk()) {
-        cout<<result<<endl;
+        cout<<result.toString().toStdString().c_str()<<endl;
     } else {
         do {
             cout<<ps->toString().toStdString().c_str()<<" ";
