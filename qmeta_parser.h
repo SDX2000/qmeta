@@ -8,6 +8,7 @@
 class QMetaParser : public QMetaParserBase
 {
 public:
+    QMetaParser();
     ParseStatusPtr parse(QStringRef inp, QVariant& ast) override;
     ParseStatusPtr parse(QString inp, QVariant& ast);
 protected:
@@ -25,6 +26,10 @@ protected:
     };
 
 protected:
+    ParseStatusPtr escapedChar(QStringRef &inp, QChar& c);
+
+private:
+    //Use applyRule() to access these functions
     ParseStatusPtr grammar(QStringRef& inp, QVariant& ast);
     ParseStatusPtr rule(QStringRef& inp, QVariant& ast);
     ParseStatusPtr choices(QStringRef& inp, QVariant& ast);
@@ -34,7 +39,9 @@ protected:
     ParseStatusPtr term1(QStringRef &inp, QVariant& ast);
     ParseStatusPtr term2(QStringRef &inp, QVariant& ast);
     ParseStatusPtr someToken(QStringRef &inp, QVariant& ast);
-    ParseStatusPtr escapedChar(QStringRef &inp, QChar& c);
+
+private:
+    void initRuleMap();
 };
 
 #endif // PROGRAMINTERPRETER_H

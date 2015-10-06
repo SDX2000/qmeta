@@ -6,10 +6,15 @@ ParseStatusPtr QMetaParser::parse(QString inp, QVariant& ast)
     return QMetaParserBase::parse(inp, ast);
 }
 
+QMetaParser::QMetaParser()
+{
+    initRuleMap();
+}
+
 ParseStatusPtr QMetaParser::parse(QStringRef inp, QVariant &ast)
 {
     ENTER();
-    return grammar(inp, ast);
+    return applyRule(GRAMMAR, inp, ast);
 }
 
 ParseStatusPtr QMetaParser::grammar(QStringRef& inp, QVariant &ast)
@@ -18,7 +23,7 @@ ParseStatusPtr QMetaParser::grammar(QStringRef& inp, QVariant &ast)
     QList<QVariant> l;
 
     QVariant _ast;
-    while (rule(inp, _ast)) {
+    while (applyRule(RULE, inp, _ast)) {
         EXPECT(thisToken(inp, QSL(";")));
         l.append(_ast);
     }
@@ -40,7 +45,7 @@ ParseStatusPtr QMetaParser::rule(QStringRef &inp, QVariant &ast)
     EXPECT(thisToken(inp, QSL("=")));
 
     QVariant _ast;
-    EXPECT(choices(inp, _ast));
+    EXPECT(applyRule(CHOICES, inp, _ast));
     l.append(_ast);
 
     ast = l;
@@ -58,11 +63,11 @@ ParseStatusPtr QMetaParser::choices(QStringRef &inp, QVariant &ast)
         l.append(QString(QSL("OR")));
 
         QVariant _ast;
-        TRY(choice(inp, _ast), choice1);
+        TRY(applyRule(CHOICE, inp, _ast), choice1);
         l.append(_ast);
 
         TRY(thisToken(inp, QSL("|")), choice1);
-        TRY(choices(inp, _ast), choice1);
+        TRY(applyRule(CHOICES, inp, _ast), choice1);
 
         ast = l;
         return ParseStatus::success();
@@ -72,7 +77,7 @@ choice1:
     {
         inp = cp0;
         QVariant _ast;
-        EXPECT(choice(inp, _ast));
+        EXPECT(applyRule(CHOICE, inp, _ast));
         ast = _ast;
     }
 
@@ -85,12 +90,12 @@ ParseStatusPtr QMetaParser::choice(QStringRef &inp, QVariant &ast)
     QList<QVariant> l;
 
     QVariant _ast;
-    while (term(inp, _ast)) {
+    while (applyRule(TERM, inp, _ast)) {
         l.append(_ast);
         if (thisToken(inp, QSL("->"))) {
             l.append(QString(QSL("HOSTEXPR")));
             QVariant _hostExpr;
-            EXPECT(hostExpr(inp, _hostExpr));
+            EXPECT(applyRule(HOST_EXPR, inp, _hostExpr));
             l.append(_hostExpr);
         }
     }
@@ -141,7 +146,7 @@ ParseStatusPtr QMetaParser::term(QStringRef &inp, QVariant &ast)
         l.append(QString(QSL("term")));
 
         QVariant _ast;
-        TRY(term1(inp, _ast), choice1);
+        TRY(applyRule(TERM1, inp, _ast), choice1);
         l.append(_ast);
 
         TRY(thisToken(inp, QSL(":")), choice1);
@@ -158,7 +163,7 @@ choice1:
     {
         inp = cp0;
         QVariant _ast;
-        EXPECT(term1(inp, _ast));
+        EXPECT(applyRule(TERM1, inp, _ast));
         ast = _ast;
     }
 
@@ -177,7 +182,7 @@ ParseStatusPtr QMetaParser::term1(QStringRef &inp, QVariant &ast)
         TRY(thisToken(inp, QSL("~")), choice1);
 
         QVariant _ast;
-        TRY(term2(inp, _ast), choice1);
+        TRY(applyRule(TERM2, inp, _ast), choice1);
         l.append(_ast);
 
         ast = l;
@@ -193,7 +198,7 @@ choice1:
         TRY(thisToken(inp, QSL("?")), choice2);
 
         QVariant _ast;
-        TRY(hostExpr(inp, _ast), choice2);
+        TRY(applyRule(HOST_EXPR, inp, _ast), choice2);
         l.append(_ast);
 
         ast = l;
@@ -207,7 +212,7 @@ choice2:
         l.append(QString(QSL("MANY")));
 
         QVariant _ast;
-        TRY(term2(inp, _ast), choice3);
+        TRY(applyRule(TERM2, inp, _ast), choice3);
         l.append(_ast);
 
         TRY(thisToken(inp, QSL("*")), choice3);
@@ -223,7 +228,7 @@ choice3:
         l.append(QString(QSL("MANY1")));
 
         QVariant _ast;
-        TRY(term2(inp, _ast), choice4);
+        TRY(applyRule(TERM2, inp, _ast), choice4);
         l.append(_ast);
 
         TRY(thisToken(inp, QSL("+")), choice4);
@@ -239,7 +244,7 @@ choice4:
         l.append(QString(QSL("OPTIONAL")));
 
         QVariant _ast;
-        TRY(term2(inp, _ast), choice5);
+        TRY(applyRule(TERM2, inp, _ast), choice5);
         l.append(_ast);
 
         TRY(thisToken(inp, QSL("?")), choice5);
@@ -252,7 +257,7 @@ choice5:
     {
         inp = cp0;
         QVariant _ast;
-        EXPECT(term2(inp, _ast));
+        EXPECT(applyRule(TERM2, inp, _ast));
         ast = _ast;
     }
 
@@ -288,7 +293,7 @@ choice1:
     {
         inp = cp0;
         QVariant _ast;
-        TRY(someToken(inp, _ast), choice2);
+        TRY(applyRule(SOME_TOKEN, inp, _ast), choice2);
         ast = _ast;
         return ParseStatus::success();
     }
@@ -313,7 +318,7 @@ choice3:
         EXPECT(thisToken(inp, QSL("(")));
 
         QVariant _ast;
-        EXPECT(choice(inp, _ast));
+        EXPECT(applyRule(CHOICE, inp, _ast));
 
         EXPECT(thisToken(inp, QSL(")")));
 
@@ -380,4 +385,20 @@ choice1:
         c = _c;
     }
     return ParseStatus::success();
+}
+
+void QMetaParser::initRuleMap()
+{
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpmf-conversions"
+    m_rule[GRAMMAR] = reinterpret_cast<RuleFuncPtr>(&QMetaParser::grammar);
+    m_rule[RULE] = reinterpret_cast<RuleFuncPtr>(&QMetaParser::rule);
+    m_rule[CHOICES] = reinterpret_cast<RuleFuncPtr>(&QMetaParser::choices);
+    m_rule[CHOICE] = reinterpret_cast<RuleFuncPtr>(&QMetaParser::choice);
+    m_rule[HOST_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaParser::hostExpr);
+    m_rule[TERM] = reinterpret_cast<RuleFuncPtr>(&QMetaParser::term);
+    m_rule[TERM1] = reinterpret_cast<RuleFuncPtr>(&QMetaParser::term1);
+    m_rule[TERM2] = reinterpret_cast<RuleFuncPtr>(&QMetaParser::term2);
+    m_rule[SOME_TOKEN] = reinterpret_cast<RuleFuncPtr>(&QMetaParser::someToken);
+#pragma GCC diagnostic pop
 }

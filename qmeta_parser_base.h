@@ -64,7 +64,7 @@ private:
     ParseStatusPtr spaces(QStringRef &inp, QVariant& spaces);
     ParseStatusPtr identifier(QStringRef &inp, QVariant &ident);
     ParseStatusPtr integer(QStringRef &inp, QVariant &result);
-
+    void initRuleMap();
 
 public:
     enum RuleEnum {
@@ -121,10 +121,11 @@ protected:
     //HELPER FUNCTIONS//
     virtual QChar unescape(QChar c);
     virtual ParseStatusPtr applyRule(int ruleId, QStringRef &inp, QVariant& result);
-    virtual void initRuleMap();
+
 
 protected:
-    typedef ParseStatusPtr (QMetaParserBase::*RuleFuncPtr)(QStringRef &inp, QVariant &result);
+    typedef ParseStatusPtr (QMetaParserBase::*RuleMemberFuncPtr)(QStringRef &inp, QVariant &result);
+    typedef ParseStatusPtr (*RuleFuncPtr)(QMetaParserBase* self, QStringRef &inp, QVariant &result);
     QHash<MemoKey, MemoEntry> m_memo;
     QHash<int, RuleFuncPtr> m_rule;
 };

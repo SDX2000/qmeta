@@ -232,7 +232,7 @@ ParseStatusPtr QMetaParserBase::applyRule(int ruleId, QStringRef &inp, QVariant 
     QVariant res;
     ParseStatusPtr pstatus;
     RuleFuncPtr ruleFunc = m_rule[ruleId];
-    pstatus = (this->*ruleFunc)(inp, res);
+    pstatus = ruleFunc(this, inp, res);
 
     m_memo.insert(key, {inp.position(), res});
     result = res;
@@ -241,9 +241,12 @@ ParseStatusPtr QMetaParserBase::applyRule(int ruleId, QStringRef &inp, QVariant 
 
 void QMetaParserBase::initRuleMap()
 {
-    m_rule[SPACES] = &QMetaParserBase::spaces;
-    m_rule[IDENTIFIER] = &QMetaParserBase::identifier;
-    m_rule[INTEGER] = &QMetaParserBase::integer;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpmf-conversions"
+    m_rule[SPACES] = reinterpret_cast<RuleFuncPtr>(static_cast<RuleMemberFuncPtr>(&QMetaParserBase::spaces));
+    m_rule[IDENTIFIER] = reinterpret_cast<RuleFuncPtr>(&QMetaParserBase::identifier);
+    m_rule[INTEGER] = reinterpret_cast<RuleFuncPtr>(&QMetaParserBase::integer);
+#pragma GCC diagnostic pop
 }
 
 
