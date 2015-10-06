@@ -4,6 +4,11 @@
 
 //////////////////// PUBLIC FUNCTIONS ///////////////////
 
+QMetaParserBase::QMetaParserBase()
+{
+    initRuleMap();
+}
+
 ParseStatusPtr QMetaParserBase::parse(QString inp, QVariant& ast)
 {
     QStringRef  inpRef = inp.midRef(0);
@@ -210,6 +215,11 @@ QChar QMetaParserBase::unescape(QChar c)
 
 ParseStatusPtr QMetaParserBase::applyRule(int ruleId, QStringRef &inp, QVariant &result)
 {
+    if (!m_rule.contains(ruleId)) {
+        assert(false);
+        return ParseStatus::failure(inp, "Invalid ruleId given to apply_rule.");
+    }
+
     MemoKey key = {ruleId, inp.position()};
 
     if (m_memo.contains(key)) {
@@ -221,25 +231,19 @@ ParseStatusPtr QMetaParserBase::applyRule(int ruleId, QStringRef &inp, QVariant 
 
     QVariant res;
     ParseStatusPtr pstatus;
-
-    switch (ruleId){
-        case SPACES:
-            pstatus = spaces(inp, res);
-            break;
-        case IDENTIFIER:
-            pstatus = identifier(inp, res);
-            break;
-        case INTEGER:
-            pstatus = integer(inp, res);
-            break;
-        default:
-            assert(false);
-            return ParseStatus::failure(inp, "Invalid ruleId given to apply_rule.");
-    }
+    RuleFuncPtr ruleFunc = m_rule[ruleId];
+    pstatus = (this->*ruleFunc)(inp, res);
 
     m_memo.insert(key, {inp.position(), res});
     result = res;
     return pstatus;
+}
+
+void QMetaParserBase::initRuleMap()
+{
+    m_rule[SPACES] = &QMetaParserBase::spaces;
+    m_rule[IDENTIFIER] = &QMetaParserBase::identifier;
+    m_rule[INTEGER] = &QMetaParserBase::integer;
 }
 
 
