@@ -57,6 +57,7 @@ public:
     virtual ParseStatusPtr parse(QStringRef inp, QVariant &ast) = 0;
     virtual ~QMetaParserBase() {}
 
+    const int FAIL = -1;
 private:
     ParseStatusPtr advance(QStringRef &inp, int length);
 

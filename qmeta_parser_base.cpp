@@ -224,6 +224,9 @@ ParseStatusPtr QMetaParserBase::applyRule(int ruleId, QStringRef &inp, QVariant 
 
     if (m_memo.contains(key)) {
         MemoEntry me = m_memo.value(key);
+        if (me.nextPos < 0) {
+            return ParseStatus::failure(inp, "Left recursion detected.");
+        }
         result = me.result;
         inp = inp.string()->midRef(me.nextPos);
         return ParseStatus::success();
@@ -232,10 +235,12 @@ ParseStatusPtr QMetaParserBase::applyRule(int ruleId, QStringRef &inp, QVariant 
     QVariant res;
     ParseStatusPtr pstatus;
     RuleFuncPtr ruleFunc = m_rule[ruleId];
+    m_memo.insert(key, {FAIL, res});
     pstatus = ruleFunc(this, inp, res);
-
-    m_memo.insert(key, {inp.position(), res});
-    result = res;
+    if (*pstatus) {
+        m_memo.insert(key, {inp.position(), res});
+        result = res;
+    }
     return pstatus;
 }
 
