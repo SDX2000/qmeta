@@ -7,12 +7,12 @@ ParseStatusPtr ParseStatus::success()
     return &ps;
 }
 
-ParseStatusPtr ParseStatus::failure(QStringRef pos, QString msg)
+ParseStatusPtr ParseStatus::failure(int pos, QString msg)
 {
     return new ParseStatus(false, pos, msg);
 }
 
-ParseStatusPtr ParseStatus::failure(QStringRef pos, QString msg, ParseStatusPtr innerFailure)
+ParseStatusPtr ParseStatus::failure(int pos, QString msg, ParseStatusPtr innerFailure)
 {
     return new ParseStatus(false, pos, msg, innerFailure);
 }
@@ -28,7 +28,7 @@ ParseStatus::ParseStatus(bool status)
 {
 }
 
-ParseStatus::ParseStatus(bool status, QStringRef pos, QString msg)
+ParseStatus::ParseStatus(bool status, int pos, QString msg)
     : m_status(status)
     , m_msg(msg)
     , m_innerFailure(nullptr)
@@ -36,7 +36,7 @@ ParseStatus::ParseStatus(bool status, QStringRef pos, QString msg)
 {
 }
 
-ParseStatus::ParseStatus(bool status, QStringRef pos, QString msg, ParseStatusPtr innerFailure)
+ParseStatus::ParseStatus(bool status, int pos, QString msg, ParseStatusPtr innerFailure)
     : m_status(status)
     , m_msg(msg)
     , m_innerFailure(innerFailure)

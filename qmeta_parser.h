@@ -9,8 +9,8 @@ class QMetaParser : public QMetaParserBase
 {
 public:
     QMetaParser();
-    ParseStatusPtr parse(QStringRef inp, QVariant& ast) override;
-    ParseStatusPtr parse(QString inp, QVariant& ast);
+    bool parse(QString inp, QVariant& ast, ParseStatusPtr &ps);
+    bool parse(int pos, QVariant& ast, ParseStatusPtr &ps) override;
 protected:
     enum RuleEnum {
         GRAMMAR = NEXT_RULE,
@@ -26,19 +26,19 @@ protected:
     };
 
 protected:
-    ParseStatusPtr escapedChar(QStringRef &inp, QChar& c);
+    bool escapedChar(int &pos, QChar& c, ParseStatusPtr &ps);
 
 private:
     //Use applyRule() to access these functions
-    ParseStatusPtr grammar(QStringRef& inp, QVariant& ast);
-    ParseStatusPtr rule(QStringRef& inp, QVariant& ast);
-    ParseStatusPtr choices(QStringRef& inp, QVariant& ast);
-    ParseStatusPtr choice(QStringRef& inp, QVariant& ast);
-    ParseStatusPtr hostExpr(QStringRef& inp, QVariant& ast);
-    ParseStatusPtr term(QStringRef &inp, QVariant& ast);
-    ParseStatusPtr term1(QStringRef &inp, QVariant& ast);
-    ParseStatusPtr term2(QStringRef &inp, QVariant& ast);
-    ParseStatusPtr someToken(QStringRef &inp, QVariant& ast);
+    bool grammar(int& pos, QVariant& ast, ParseStatusPtr &ps);
+    bool rule(int& pos, QVariant& ast, ParseStatusPtr &ps);
+    bool choices(int& pos, QVariant& ast, ParseStatusPtr &ps);
+    bool choice(int& pos, QVariant& ast, ParseStatusPtr &ps);
+    bool hostExpr(int& pos, QVariant& ast, ParseStatusPtr &ps);
+    bool term(int &pos, QVariant& ast, ParseStatusPtr &ps);
+    bool term1(int &pos, QVariant& ast, ParseStatusPtr &ps);
+    bool term2(int &pos, QVariant& ast, ParseStatusPtr &ps);
+    bool someToken(int &pos, QVariant& ast, ParseStatusPtr &ps);
 
 private:
     void initRuleMap();

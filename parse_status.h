@@ -13,18 +13,22 @@ class ParseStatus
 {
 public:
     static ParseStatusPtr success();
-    static ParseStatusPtr failure(QStringRef pos, QString msg);
-    static ParseStatusPtr failure(QStringRef pos, QString msg, ParseStatusPtr innerFailure);
+    static ParseStatusPtr failure(int pos, QString msg);
+    static ParseStatusPtr failure(int pos, QString msg, ParseStatusPtr innerFailure);
 
-    operator bool() const{
-        return m_status;
+    void chain(const ParseStatusPtr ps) {
+        if(m_innerFailure) {
+            m_innerFailure->chain(ps);
+        } else {
+            m_innerFailure = ps;
+        }
     }
 
     QString toString() const {
         return QString(QSL("ERROR %1")).arg(m_msg);
     }
 
-    ConstParseStatusPtr getInnerFailure() const{
+    ParseStatusPtr getInnerFailure() const{
         return m_innerFailure;
     }
 
@@ -32,13 +36,13 @@ public:
 
 private:
     explicit ParseStatus(bool status);
-    ParseStatus(bool status, QStringRef pos, QString msg);
-    ParseStatus(bool status, QStringRef pos, QString msg, ParseStatusPtr innerFailure);
+    ParseStatus(bool status, int pos, QString msg);
+    ParseStatus(bool status, int pos, QString msg, ParseStatusPtr innerFailure);
 
     bool            m_status;
     QString         m_msg;
     ParseStatusPtr  m_innerFailure;
-    QStringRef      m_pos;
+    int             m_pos;
 };
 
 

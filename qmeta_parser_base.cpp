@@ -1,6 +1,7 @@
 #include "qmeta_parser_base.h"
 #include <assert.h>
 #include <algorithm>
+#include <iostream>
 
 //////////////////// PUBLIC FUNCTIONS ///////////////////
 
@@ -9,180 +10,187 @@ QMetaParserBase::QMetaParserBase()
     initRuleMap();
 }
 
-ParseStatusPtr QMetaParserBase::parse(QString inp, QVariant& ast)
+bool QMetaParserBase::parse(QString str, QVariant& ast, ParseStatusPtr &ps)
 {
-    QStringRef  inpRef = inp.midRef(0);
-    return parse(inpRef, ast);
+    m_input = str;
+    return parse(0, ast, ps);
 }
 
 
 
 /////////////////////  TERMINALS  //////////////////////
 
-ParseStatusPtr QMetaParserBase::advance(QStringRef &inp, int count)
+bool QMetaParserBase::advance(int &pos, int count, ParseStatusPtr &ps)
 {
-    EXPECT_B(inp.length() >= count);
+    EXPECT_B(pos + count < m_input.length());
 
-    inp = inp.mid(count);
+    pos += count;
 
-    return ParseStatus::success();
+    RETURN_SUCCESS(ps);
 }
 
-ParseStatusPtr QMetaParserBase::digit(QStringRef &inp, int& digit)
+bool QMetaParserBase::digit(int &pos, int& digit, ParseStatusPtr &ps)
 {
-    EXPECT_B(!inp.isEmpty());
+    EXPECT_B(pos < m_input.length());
 
-    QChar c = inp.at(0);
+    QChar c = m_input.at(pos);
 
     EXPECT_B(c.isDigit());
 
     digit = c.digitValue();
 
-    return advance(inp, 1);
+    return advance(pos, 1, ps);
 }
 
 
-ParseStatusPtr QMetaParserBase::someChar(QStringRef &inp, QChar& c)
+bool QMetaParserBase::someChar(int &pos, QChar& c, ParseStatusPtr &ps)
 {
-    EXPECT_B(!inp.isEmpty());
+    EXPECT_B(pos < m_input.length());
 
-    c = inp.at(0);
+    c = m_input.at(pos);
 
-    return advance(inp, 1);
+    return advance(pos, 1, ps);
 }
 
 
-ParseStatusPtr QMetaParserBase::someCharOf(QStringRef &inp, bool (QChar::*is_x)() const)
+bool QMetaParserBase::someCharOf(int &pos, bool (QChar::*is_x)() const, ParseStatusPtr &ps)
 {
-    EXPECT_B(!inp.isEmpty());
+    EXPECT_B(pos < m_input.length());
 
-    QChar ch = inp.at(0);
+    QChar ch = m_input.at(pos);
 
     EXPECT_B((ch.*is_x)());
 
-    return advance(inp, 1);
+    return advance(pos, 1, ps);
 }
 
-ParseStatusPtr QMetaParserBase::someCharOf(QStringRef &inp, QChar &c, bool (QChar::*is_x)() const)
+bool QMetaParserBase::someCharOf(int &pos, QChar &c, bool (QChar::*is_x)() const, ParseStatusPtr &ps)
 {
-    EXPECT_B(!inp.isEmpty());
+    EXPECT_B(pos < m_input.length());
 
-    QChar ch = inp.at(0);
+    QChar ch = m_input.at(pos);
 
     EXPECT_B((ch.*is_x)());
 
     c = ch;
 
-    return advance(inp, 1);
+    return advance(pos, 1, ps);
 }
 
-ParseStatusPtr QMetaParserBase::oneOf(QStringRef& inp, QChar &opOut, QString chars)
+bool QMetaParserBase::oneOf(int& pos, QChar &opOut, QString chars, ParseStatusPtr &ps)
 {
-    EXPECT_B(!inp.isEmpty());
+    EXPECT_B(pos < m_input.length());
 
-    QChar c = inp.at(0);
+    QChar c = m_input.at(pos);
 
     EXPECT_B(chars.contains(c));
 
     opOut = c;
 
-    return advance(inp, 1);
+    return advance(pos, 1, ps);
 }
 
 
-ParseStatusPtr QMetaParserBase::thisChar(QStringRef &inp, QChar c)
+bool QMetaParserBase::thisChar(int &pos, QChar c, ParseStatusPtr &ps)
 {
-    EXPECT_B(!inp.isEmpty());
+    EXPECT_B(pos < m_input.length());
 
-    EXPECT_B(inp.at(0) == c);
+    EXPECT_B(m_input.at(pos) == c);
 
-    return advance(inp, 1);
+    return advance(pos, 1, ps);
 }
 
-ParseStatusPtr QMetaParserBase::thisStr(QStringRef &inp, QString str)
+bool QMetaParserBase::thisStr(int &pos, QString str, ParseStatusPtr &ps)
 {
-    EXPECT_B(inp.startsWith(str));
+    EXPECT_B(m_input.midRef(pos).startsWith(str));
 
-    return advance(inp, str.length());;
+    return advance(pos, str.length(), ps);;
 }
 
-ParseStatusPtr QMetaParserBase::strOf(QStringRef &inp, bool (QChar::*is_x)() const)
+bool QMetaParserBase::strOf(int &pos, bool (QChar::*is_x)() const, ParseStatusPtr &ps)
 {
-    EXPECT_B(!inp.isEmpty());
+    EXPECT_B(pos < m_input.length());
 
-    int count = 0;
+    int i = pos;
 
-    for (; count < inp.length() && (inp.at(count).*is_x)(); count++) {
+    for (; i < m_input.length() && (m_input.at(i).*is_x)(); i++) {
     }
 
-    EXPECT_B(count);
+    EXPECT_B(i - pos);
 
-    return advance(inp, count);
+    return advance(pos, i - pos, ps);
 }
 
 /////////////////////  NONTERMINALS  //////////////////////
 
-ParseStatusPtr QMetaParserBase::strOf(QStringRef &inp, QVariant &str, bool (QChar::*is_x)() const)
+bool QMetaParserBase::strOf(int &pos, QVariant &str, bool (QChar::*is_x)() const, ParseStatusPtr &ps)
 {
-    CHECK_POINT(cp0, inp);
+    ENTER();
+    CHECK_POINT(cp0, pos);
 
-    EXPECT(strOf(inp, is_x));
+    EXPECT(strOf(pos, is_x, ps));
 
-    QString _str = mid(cp0, inp).toString();
+    QString _str = mid(cp0, pos);
     str = _str;
-    return ParseStatus::success();
+
+    RETURN_SUCCESS(ps);
 }
 
-ParseStatusPtr QMetaParserBase::spaces(QStringRef &inp)
+bool QMetaParserBase::spaces(int &pos, ParseStatusPtr &ps)
 {
-    return strOf(inp, &QChar::isSpace);
+    ENTER();
+    return strOf(pos, &QChar::isSpace, ps);
 }
 
-ParseStatusPtr QMetaParserBase::spaces(QStringRef &inp, QVariant &space)
+bool QMetaParserBase::spaces(int &pos, QVariant &space, ParseStatusPtr &ps)
 {
-    return strOf(inp, space, &QChar::isSpace);
+    ENTER();
+    return strOf(pos, space, &QChar::isSpace, ps);
 }
 
-ParseStatusPtr QMetaParserBase::identifier(QStringRef &inp, QVariant& ident)
+bool QMetaParserBase::identifier(int &pos, QVariant& ident, ParseStatusPtr &ps)
 {
-    CHECK_POINT(cp0, inp);
+    ENTER();
+    CHECK_POINT(cp0, pos);
 
-    if(!thisChar(inp, QChar('_'))) {
-        inp = cp0;
-        EXPECT(someCharOf(inp, &QChar::isLetter));
+    if(!thisChar(pos, QChar('_'), ps)) {
+        pos = cp0;
+        EXPECT(someCharOf(pos, &QChar::isLetter, ps));
     }
 
-    strOf(inp, &QChar::isLetterOrNumber);
+    strOf(pos, &QChar::isLetterOrNumber, ps);
 
-    QString id =  mid(cp0, inp).toString();
+    QString id =  mid(cp0, pos);
     ident = id;
-    return ParseStatus::success();
+    RETURN_SUCCESS(ps);
 }
 
-ParseStatusPtr QMetaParserBase::integer(QStringRef &inp, QVariant& result)
+bool QMetaParserBase::integer(int &pos, QVariant& result, ParseStatusPtr &ps)
 {
+    ENTER();
     int sign = 1;
 
-    if (thisChar(inp, QChar('-'))) {
+    if (thisChar(pos, QChar('-'), ps)) {
         sign = -1;
     }
 
     QVariant variant;
-    EXPECT(strOf(inp, variant, &QChar::isDigit));
+    EXPECT(strOf(pos, variant, &QChar::isDigit, ps));
 
     int r = int(variant.value<QString>().toInt()) * sign;
 
     result = r;
 
-    return ParseStatus::success();
+    RETURN_SUCCESS(ps);
 }
 
-ParseStatusPtr QMetaParserBase::thisToken(QStringRef &inp, QString str)
+bool QMetaParserBase::thisToken(int &pos, QString str, ParseStatusPtr &ps)
 {
-    spaces(inp);
-    EXPECT(thisStr(inp, str));
-    spaces(inp);
-    return ParseStatus::success();
+    ENTER();
+    spaces(pos, ps);
+    EXPECT(thisStr(pos, str, ps));
+    spaces(pos, ps);
+    RETURN_SUCCESS(ps);
 }
 
 QChar QMetaParserBase::unescape(QChar c)
@@ -213,35 +221,36 @@ QChar QMetaParserBase::unescape(QChar c)
     return QChar(-1);
 }
 
-ParseStatusPtr QMetaParserBase::applyRule(int ruleId, QStringRef &inp, QVariant &result)
+bool QMetaParserBase::applyRule(int ruleId, int &pos, QVariant &result, ParseStatusPtr &ps)
 {
     if (!m_rule.contains(ruleId)) {
         assert(false);
-        return ParseStatus::failure(inp, "Invalid ruleId given to apply_rule.");
+        RETURN_FAILURE(ps, pos, "Invalid ruleId given to apply_rule.");
     }
 
-    MemoKey key = {ruleId, inp.position()};
+    MemoKey key = {ruleId, pos};
 
     if (m_memo.contains(key)) {
         MemoEntry me = m_memo.value(key);
         if (me.nextPos < 0) {
-            return ParseStatus::failure(inp, "Left recursion detected.");
+            RETURN_FAILURE(ps, pos, "Left recursion detected.");
         }
         result = me.result;
-        inp = inp.string()->midRef(me.nextPos);
-        return ParseStatus::success();
+        pos = me.nextPos;
+        RETURN_SUCCESS(ps);
     }
 
+
     QVariant res;
-    ParseStatusPtr pstatus;
+    //ParseStatusPtr rps;
     RuleFuncPtr ruleFunc = m_rule[ruleId];
     m_memo.insert(key, {FAIL, res});
-    pstatus = ruleFunc(this, inp, res);
-    if (*pstatus) {
-        m_memo.insert(key, {inp.position(), res});
+    bool ok = ruleFunc(this, pos, res, ps);
+    if (ok) {
+        m_memo.insert(key, {pos, res});
         result = res;
     }
-    return pstatus;
+    return ok;
 }
 
 void QMetaParserBase::initRuleMap()
@@ -255,7 +264,14 @@ void QMetaParserBase::initRuleMap()
 }
 
 
+QString QMetaParserBase::mid(int pos0, int pos1)
+{
+    return m_input.mid(pos0, pos1 - pos0);
+}
+
 inline uint qHash(const QMetaParserBase::MemoKey &key, uint seed)
 {
     return qHash(key.ruleId, seed) ^ qHash(key.position, seed);
 }
+
+

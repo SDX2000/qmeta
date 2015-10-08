@@ -5,67 +5,70 @@
 #include "utils.h"
 #include "parse_status.h"
 
+#define RETURN_SUCCESS(PS) \
+    PS = ParseStatus::success(); \
+    return true;
+
+#define RETURN_FAILURE(PS, ...) \
+    if(PS) { \
+        PS->chain(ParseStatus::failure(__VA_ARGS__));\
+    } else { \
+        PS = ParseStatus::failure(__VA_ARGS__); \
+    } \
+    return false;
+
 
 //Note: There is no need to checkpoint EXPECT
 //since all back tracking happens at TRY_CHOICE
 //and TRY_CHOICE saves a check point.
 #define EXPECT(X) \
-    do \
-    { \
-        ParseStatusPtr __ps = (X);\
-        if (!*__ps) { \
-            return ParseStatus::failure(inp, "Expected: " #X, __ps); \
-        } \
-    } while(0); \
+    if (!(X)) { \
+        return false; \
+    } \
+
 
 #define EXPECT_B(X) \
     if (!(X)) { \
-        return ParseStatus::failure(inp, #X); \
+        return false; \
     }
 
 
 #define TRY_CHOICE(X) \
     do \
     { \
-        QStringRef _checkPoint = inp; \
-        if (*(X)) { \
-            return ParseStatus::success(); \
+        int _checkPoint = pos; \
+        if (X) { \
+            return true; \
         } \
-        inp = _checkPoint; \
+        pos = _checkPoint; \
     } \
     while(0);
 
 #define TRY(X, NEXT) \
-    if (!*(X)) { \
+    if (!(X)) { \
         goto NEXT; \
     } \
 
 #define TRY_INV(X, NEXT) \
-    if (*(X)) { \
+    if (X) { \
         goto NEXT; \
     } \
 
-#define CHECK_POINT(CP, INP) \
-    QStringRef CP = INP;
+#define CHECK_POINT(CP, pos) \
+    int CP = pos;
+
+
 
 
 class QMetaParserBase
 {
 public:
     QMetaParserBase();
-    virtual ParseStatusPtr parse(QString inp, QVariant& ast);
-    virtual ParseStatusPtr parse(QStringRef inp, QVariant &ast) = 0;
+    virtual bool parse(QString inp, QVariant& ast, ParseStatusPtr &ps);
+    virtual bool parse(int pos, QVariant& ast, ParseStatusPtr &ps) = 0;
     virtual ~QMetaParserBase() {}
 
     const int FAIL = -1;
-private:
-    ParseStatusPtr advance(QStringRef &inp, int length);
-
-    //Accessible only through applyRule
-    ParseStatusPtr spaces(QStringRef &inp, QVariant& spaces);
-    ParseStatusPtr identifier(QStringRef &inp, QVariant &ident);
-    ParseStatusPtr integer(QStringRef &inp, QVariant &result);
-    void initRuleMap();
 
 public:
     enum RuleEnum {
@@ -105,30 +108,42 @@ public:
 
 protected:
     //TERMINALS//
-    ParseStatusPtr thisStr(QStringRef &inp, QString thisStr);
-    ParseStatusPtr digit(QStringRef &inp, int& digit);
-    ParseStatusPtr strOf(QStringRef &inp, bool (QChar::*is_x)() const);
-    ParseStatusPtr strOf(QStringRef &inp, QVariant &str, bool (QChar::*is_x)() const);
-    ParseStatusPtr someChar(QStringRef& inp, QChar& c);
-    ParseStatusPtr someCharOf(QStringRef &inp, bool (QChar::*is_x)() const);
-    ParseStatusPtr someCharOf(QStringRef &inp, QChar &c, bool (QChar::*is_x)() const);
-    ParseStatusPtr thisChar(QStringRef &inp, QChar c);
-    ParseStatusPtr oneOf(QStringRef& inp, QChar &opOut, QString operators);
+    bool thisStr(int &pos, QString thisStr, ParseStatusPtr& ps);
+    bool digit(int &pos, int& digit, ParseStatusPtr &ps);
+    bool strOf(int &pos, bool (QChar::*is_x)() const, ParseStatusPtr &ps);
+    bool strOf(int &pos, QVariant &str, bool (QChar::*is_x)() const, ParseStatusPtr &ps);
+    bool someChar(int& pos, QChar& c, ParseStatusPtr &ps);
+    bool someCharOf(int &pos, bool (QChar::*is_x)() const, ParseStatusPtr &ps);
+    bool someCharOf(int &pos, QChar &c, bool (QChar::*is_x)() const, ParseStatusPtr &ps);
+    bool thisChar(int &pos, QChar c, ParseStatusPtr &ps);
+    bool oneOf(int& pos, QChar &opOut, QString operators, ParseStatusPtr &ps);
 
     //NONTERMINALS//
-    virtual ParseStatusPtr spaces(QStringRef &inp);
-    virtual ParseStatusPtr thisToken(QStringRef &inp, QString str);
+    virtual bool spaces(int &pos, ParseStatusPtr &ps);
+    virtual bool thisToken(int &pos, QString str, ParseStatusPtr &ps);
 
     //HELPER FUNCTIONS//
     virtual QChar unescape(QChar c);
-    virtual ParseStatusPtr applyRule(int ruleId, QStringRef &inp, QVariant& result);
-
+    virtual bool applyRule(int ruleId, int &pos, QVariant& result, ParseStatusPtr &ps);
+    QString mid(int pos0, int pos1);
 
 protected:
-    typedef ParseStatusPtr (QMetaParserBase::*RuleMemberFuncPtr)(QStringRef &inp, QVariant &result);
-    typedef ParseStatusPtr (*RuleFuncPtr)(QMetaParserBase* self, QStringRef &inp, QVariant &result);
+    typedef bool (QMetaParserBase::*RuleMemberFuncPtr)(int &pos, QVariant &result, ParseStatusPtr& ps);
+    typedef bool (*RuleFuncPtr)(QMetaParserBase* self, int &pos, QVariant &result, ParseStatusPtr& ps);
     QHash<MemoKey, MemoEntry> m_memo;
     QHash<int, RuleFuncPtr> m_rule;
+
+private:
+    bool advance(int &pos, int length, ParseStatusPtr &ps);
+
+    //Accessible only through applyRule
+    bool spaces(int &pos, QVariant& spaces, ParseStatusPtr &ps);
+    bool identifier(int &pos, QVariant &ident, ParseStatusPtr &ps);
+    bool integer(int &pos, QVariant &result, ParseStatusPtr &ps);
+    void initRuleMap();
+
+private:
+    QString m_input;
 };
 
 

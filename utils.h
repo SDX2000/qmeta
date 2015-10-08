@@ -6,7 +6,6 @@
 
 #define QSL(str) QStringLiteral(str)
 
-QStringRef mid(QStringRef lhs, QStringRef rhs);
 //QTextStream qStdOut();
 
 template <typename T>

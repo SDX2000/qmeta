@@ -28,10 +28,12 @@ void doREPL()
         }
 
         QVariant result;
-        const ParseStatus * ps = interp.parse(inp, result);
-        if (ps) {
+        ParseStatusPtr ps;
+        bool ok = interp.parse(inp, result, ps);
+        if (ok) {
             cout<<result.toString().toStdString().c_str()<<endl;
         } else {
+            cout<<"PARSE FAILED ";
             do {
                 cout<<ps->toString().toStdString().c_str()<<" ";
             } while((ps = ps->getInnerFailure()));
@@ -44,10 +46,12 @@ void execute(QString prog)
 {
     QMetaParser interp;
     QVariant result;
-    const ParseStatus * ps = interp.parse(prog, result);
-    if (ps) {
+    ParseStatusPtr ps;
+    bool ok = interp.parse(prog, result, ps);
+    if (ok) {
         cout<<result.toString().toStdString().c_str()<<endl;
     } else {
+        cout<<"PARSE FAILED ";
         do {
             cout<<ps->toString().toStdString().c_str()<<" ";
         }while((ps = ps->getInnerFailure()));
