@@ -63,7 +63,7 @@ QTextStream& operator << (QTextStream& lhs, const QVariant& val) {
         }
         lhs << "]";
     } else if (val.isNull()) {
-        lhs << "(null)";
+        lhs << "\"(null)\"";
     } else {
         if(val.type() == QVariant::String) {
             lhs << '"' << val.toString() << '"';

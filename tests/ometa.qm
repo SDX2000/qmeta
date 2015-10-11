@@ -24,7 +24,7 @@ qmeta QMetaParser {
                     | identifier
                     | '.'
                     | "(" choice ")";
-  someToken         = spaces? '"' (~'"'  escapedChar)* '"' spaces?
+  someToken         = spaces? '"' (~'"'  escapedChar)* '"' spaces?;
   escapedChar       = '\\' char
                     | char;
 }

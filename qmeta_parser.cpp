@@ -134,6 +134,7 @@ bool QMetaParser::choices(int &pos, QVariant &ast, ParseStatusPtr& ps)
 
         TRY(thisToken(pos, QSL("|"), ps), choice1);
         TRY(applyRule(CHOICES, pos, _ast, ps), choice1);
+        l.append(_ast);
 
         ast = l;
         RETURN_SUCCESS();
