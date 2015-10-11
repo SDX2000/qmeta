@@ -6,15 +6,16 @@ qmeta QMetaParser {
                     | choice;
   choice            = term* ( "->" hostExpr)?;
   hostExpr          = "{" .* "}";
-  term              = term1 ":" identifier
+  term              = term1 "?" hostExpr
                     | term1;
-  term1             = "~"  term2
-                    | "?" hostExpr
-                    | term2 "*"
-                    | term2 "+"
-                    | term2 "?"
+  term1             = term2 ":" identifier
                     | term2;
-  term2             = '\''  (~'\'' escapedChar) '\''
+  term2             = "~"  term3
+                    | term3 "*"
+                    | term3 "+"
+                    | term3 "?"
+                    | term3;
+  term4             = '\''  (~'\'' escapedChar) '\''
                     | someToken
                     | identifier
                     | "(" choice ")";

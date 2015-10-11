@@ -163,17 +163,21 @@ bool QMetaParser::hostExpr(int &pos, QVariant &ast, ParseStatusPtr &ps)
     int count = 0;
     QChar c;
     QString hostexpr;
+
     while(someChar(pos, c, ps)) {
         if (c == QChar('{')) {
             count++;
+            if(count == 1) {
+                continue;
+            }
         }
         if (c == QChar('}')) {
             count--;
+            if(count == 0) {
+                break;
+            }
         }
         hostexpr += c;
-        if(count == 0) {
-            break;
-        }
     }
 
     if(count) {
