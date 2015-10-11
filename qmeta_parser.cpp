@@ -351,11 +351,11 @@ bool QMetaParser::term2(int &pos, QVariant &ast, ParseStatusPtr &ps)
         TRY(thisChar(pos, QChar('\''), ps), choice1);
 
         CHECK_POINT(cp1, pos);
-        TRY(thisChar(pos, QChar('\''), ps), choice1);
+        TRY_INV(thisChar(pos, QChar('\''), ps), choice1);
         pos = cp1;
 
         QChar c;
-        TRY_INV(escapedChar(pos, c, ps), choice1);
+        TRY(escapedChar(pos, c, ps), choice1);
         l.append(c);
 
         TRY(thisChar(pos, QChar('\''), ps), choice1);
