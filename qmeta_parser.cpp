@@ -13,12 +13,12 @@ QMetaParser::QMetaParser()
 
 bool QMetaParser::parse(int ruleId, int pos, QVariant &ast, ParseStatusPtr& ps)
 {
-    bool ok = false;
+    bool ok = true;
     QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
     g_indentLevel++;
-    ok = applyRule(ruleId, pos, ast, ps);
+    EXPECT(applyRule(ruleId, pos, ast, ps));
 
-//_exit:
+_exit:
     g_indentLevel--;
     QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = " << ast << ", " << ok << endl;
     return ok;
@@ -26,7 +26,7 @@ bool QMetaParser::parse(int ruleId, int pos, QVariant &ast, ParseStatusPtr& ps)
 
 bool QMetaParser::rules(int& pos, QVariant &ast, ParseStatusPtr& ps)
 {
-    bool ok = false;
+    bool ok = true;
     QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
     g_indentLevel++;
     QList<QVariant> l;
@@ -48,7 +48,7 @@ _exit:
 
 bool QMetaParser::grammar(int &pos, QVariant &ast, ParseStatusPtr &ps)
 {
-    bool ok = false;
+    bool ok = true;
     QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
     g_indentLevel++;
 
@@ -84,7 +84,7 @@ _exit:
 
 bool QMetaParser::rule(int &pos, QVariant &ast, ParseStatusPtr& ps)
 {
-    bool ok = false;
+    bool ok = true;
     QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
     g_indentLevel++;
 
@@ -118,7 +118,7 @@ _exit:
 
 bool QMetaParser::choices(int &pos, QVariant &ast, ParseStatusPtr& ps)
 {
-    bool ok = false;
+    bool ok = true;
     QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
     g_indentLevel++;
 
@@ -157,7 +157,7 @@ _exit:
 
 bool QMetaParser::choice(int &pos, QVariant &ast, ParseStatusPtr& ps)
 {
-    bool ok = false;
+    bool ok = true;
     QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
     g_indentLevel++;
 
@@ -192,7 +192,7 @@ _exit:
 
 bool QMetaParser::hostExpr(int &pos, QVariant &ast, ParseStatusPtr &ps)
 {
-    bool ok = false;
+    bool ok = true;
     QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
     g_indentLevel++;
 
@@ -235,7 +235,7 @@ _exit:
 
 bool QMetaParser::term(int &pos, QVariant &ast, ParseStatusPtr &ps)
 {
-    bool ok = false;
+    bool ok = true;
     QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
     g_indentLevel++;
 
@@ -277,7 +277,7 @@ _exit:
 
 bool QMetaParser::term1(int &pos, QVariant &ast, ParseStatusPtr &ps)
 {
-    bool ok = false;
+    bool ok = true;
     QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
     g_indentLevel++;
 
@@ -363,7 +363,7 @@ _exit:
 
 bool QMetaParser::term2(int &pos, QVariant &ast, ParseStatusPtr &ps)
 {
-    bool ok = false;
+    bool ok = true;
     QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
     g_indentLevel++;
 
@@ -448,7 +448,7 @@ _exit:
 
 bool QMetaParser::someToken(int &pos, QVariant& ast, ParseStatusPtr &ps)
 {
-    bool ok = false;
+    bool ok = true;
     QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
     g_indentLevel++;
 
@@ -491,7 +491,7 @@ _exit:
 
 bool QMetaParser::escapedChar(int &pos, QChar &c, ParseStatusPtr &ps)
 {
-    bool ok = false;
+    bool ok = true;
     QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
     g_indentLevel++;
 
