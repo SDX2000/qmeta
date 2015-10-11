@@ -426,6 +426,7 @@ bool QMetaParser::someToken(int &pos, QVariant& ast, ParseStatusPtr &ps)
         while (true) {
             CHECK_POINT(cp0, pos);
             if(thisChar(pos, QChar('"'), ps)) {
+                pos = cp0;
                 break;
             }
             pos = cp0;
