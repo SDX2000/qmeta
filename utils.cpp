@@ -20,6 +20,33 @@ void printIndent(int indentation) {
     }
 }
 
+QString escape(QChar c) {
+    if ('\'' == c)
+        return QSL("\\'");
+    if ('"' == c)
+        return QSL("\\\"");
+    if ('?' == c)
+        return QSL("\\?");
+    if ('\\' == c)
+        return QSL("\\\\");
+    if ('\a' == c)
+        return QSL("\\a");
+    if ('\b' == c)
+        return QSL("\\b");
+    if ('\f' == c)
+        return QSL("\\f");
+    if ('\n' == c)
+        return QSL("\\n");
+    if ('\r' == c)
+        return QSL("\\r");
+    if ('\t' == c)
+        return QSL("\\t");
+    if ('\v' == c)
+        return QSL("\\v");
+
+    return QSL("");
+}
+
 QTextStream& operator << (QTextStream& lhs, const QVariant& val) {
     if(val.type() == QVariant::List) {
         lhs << "[";
@@ -39,14 +66,21 @@ QTextStream& operator << (QTextStream& lhs, const QVariant& val) {
         if(val.type() == QVariant::String) {
             lhs << '"' << val.toString() << '"';
         } else if (val.type() == QVariant::Char) {
-            lhs << "'" << val.toString() << "'";
+            QChar c = val.toChar();
+            QString escaped = escape(c);
+            if(!escaped.isEmpty()) {
+                lhs << "'" << escaped << "'";
+            } else if (c.isPrint()) {
+                lhs << "'" << c << "'";
+            } else {
+                lhs << "'" << "\\x" << hex << c.unicode() << "'";
+            }
         } else {
             lhs << val.toString() << " : " << val.typeName();
         }
     }
     return lhs;
 }
-
 
 QTextStream& operator << (QTextStream& lhs, bool val) {
     if (val) {
