@@ -1,6 +1,8 @@
 #include "qmeta_parser.h"
 #include <iostream>
 
+using namespace std;
+
 bool QMetaParser::parse(QString pos, QVariant& ast, ParseStatusPtr& ps)
 {
     return QMetaParserBase::parse(pos, ast, ps);
@@ -13,13 +15,13 @@ QMetaParser::QMetaParser()
 
 bool QMetaParser::parse(int pos, QVariant &ast, ParseStatusPtr& ps)
 {
-    ENTER();
+    LOG();
     return applyRule(GRAMMAR, pos, ast, ps);
 }
 
 bool QMetaParser::grammar(int& pos, QVariant &ast, ParseStatusPtr& ps)
 {
-    ENTER();
+    LOG();
     QList<QVariant> l;
 
     QVariant _ast;
@@ -35,7 +37,7 @@ bool QMetaParser::grammar(int& pos, QVariant &ast, ParseStatusPtr& ps)
 
 bool QMetaParser::rule(int &pos, QVariant &ast, ParseStatusPtr& ps)
 {
-    ENTER();
+    LOG();
     QList<QVariant> l;
     l.append(QString(QSL("RULE")));
     QVariant id;
@@ -55,7 +57,7 @@ bool QMetaParser::rule(int &pos, QVariant &ast, ParseStatusPtr& ps)
 
 bool QMetaParser::choices(int &pos, QVariant &ast, ParseStatusPtr& ps)
 {
-    ENTER();
+    LOG();
     CHECK_POINT(cp0, pos);
     {
         pos = cp0;
@@ -86,18 +88,23 @@ choice1:
 
 bool QMetaParser::choice(int &pos, QVariant &ast, ParseStatusPtr& ps)
 {
-    ENTER();
+    LOG();
     QList<QVariant> l;
 
     QVariant _ast;
     while (applyRule(TERM, pos, _ast, ps)) {
         l.append(_ast);
-        if (thisToken(pos, QSL("->"), ps)) {
-            l.append(QString(QSL("HOSTEXPR")));
-            QVariant _hostExpr;
-            EXPECT(applyRule(HOST_EXPR, pos, _hostExpr, ps));
-            l.append(_hostExpr);
-        }
+    }
+
+    if(l.length() <= 0) {
+        RETURN_FAILURE(ps, pos, "choice failed");
+    }
+
+    if (thisToken(pos, QSL("->"), ps)) {
+        l.append(QString(QSL("HOSTEXPR")));
+        QVariant _hostExpr;
+        EXPECT(applyRule(HOST_EXPR, pos, _hostExpr, ps));
+        l.append(_hostExpr);
     }
 
     ast = l;
@@ -107,7 +114,7 @@ bool QMetaParser::choice(int &pos, QVariant &ast, ParseStatusPtr& ps)
 
 bool QMetaParser::hostExpr(int &pos, QVariant &ast, ParseStatusPtr &ps)
 {
-    ENTER();
+    LOG();
     spaces(pos, ps);
     int count = 0;
     QChar c;
@@ -138,7 +145,7 @@ bool QMetaParser::hostExpr(int &pos, QVariant &ast, ParseStatusPtr &ps)
 
 bool QMetaParser::term(int &pos, QVariant &ast, ParseStatusPtr &ps)
 {
-    ENTER();
+    LOG();
     CHECK_POINT(cp0, pos);
     {
         pos = cp0;
@@ -172,7 +179,7 @@ choice1:
 
 bool QMetaParser::term1(int &pos, QVariant &ast, ParseStatusPtr &ps)
 {
-    ENTER();
+    LOG();
     CHECK_POINT(cp0, pos);
     {
         pos = cp0;
@@ -266,7 +273,7 @@ choice5:
 
 bool QMetaParser::term2(int &pos, QVariant &ast, ParseStatusPtr &ps)
 {
-    ENTER();
+    LOG();
     CHECK_POINT(cp0, pos);
     {
         pos = cp0;
@@ -330,7 +337,7 @@ choice3:
 
 bool QMetaParser::someToken(int &pos, QVariant& ast, ParseStatusPtr &ps)
 {
-    ENTER();
+    LOG();
     spaces(pos, ps);
 
     EXPECT(thisChar(pos, QChar('"'), ps));
@@ -365,7 +372,7 @@ bool QMetaParser::someToken(int &pos, QVariant& ast, ParseStatusPtr &ps)
 
 bool QMetaParser::escapedChar(int &pos, QChar &c, ParseStatusPtr &ps)
 {
-    ENTER();
+    LOG();
     CHECK_POINT(cp0, pos);
     {
         pos = cp0;

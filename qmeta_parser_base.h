@@ -7,6 +7,8 @@
 
 #define RETURN_SUCCESS(PS) \
     PS = ParseStatus::success(); \
+    printIndent(); \
+    cout<<"return true"<<endl; \
     return true;
 
 #define RETURN_FAILURE(PS, ...) \
@@ -15,6 +17,8 @@
     } else { \
         PS = ParseStatus::failure(__VA_ARGS__); \
     } \
+    printIndent(); \
+    cout<<"return false"<<endl; \
     return false;
 
 
@@ -23,12 +27,16 @@
 //and TRY_CHOICE saves a check point.
 #define EXPECT(X) \
     if (!(X)) { \
+        printIndent(); \
+        cout<<"return false"<<endl; \
         return false; \
     } \
 
 
 #define EXPECT_B(X) \
     if (!(X)) { \
+        printIndent(); \
+        cout<<"return false"<<endl; \
         return false; \
     }
 
@@ -38,6 +46,8 @@
     { \
         int _checkPoint = pos; \
         if (X) { \
+            printIndent(); \
+            cout<<"return true"<<endl; \
             return true; \
         } \
         pos = _checkPoint; \
@@ -56,8 +66,6 @@
 
 #define CHECK_POINT(CP, pos) \
     int CP = pos;
-
-
 
 
 class QMetaParserBase
@@ -83,7 +91,7 @@ public:
 
         //NONTERMINALS
         SPACES,
-        IDENTIFIER,
+        IDENTIFIER,     //8
         INTEGER,
         THIS_TOKEN,     //Cannot memoize rule with arguments yet
 

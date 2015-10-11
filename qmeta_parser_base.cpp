@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <iostream>
 
+using namespace std;
+
 //////////////////// PUBLIC FUNCTIONS ///////////////////
 
 QMetaParserBase::QMetaParserBase()
@@ -15,7 +17,6 @@ bool QMetaParserBase::parse(QString str, QVariant& ast, ParseStatusPtr &ps)
     m_input = str;
     return parse(0, ast, ps);
 }
-
 
 
 /////////////////////  TERMINALS  //////////////////////
@@ -125,7 +126,7 @@ bool QMetaParserBase::strOf(int &pos, bool (QChar::*is_x)() const, ParseStatusPt
 
 bool QMetaParserBase::strOf(int &pos, QVariant &str, bool (QChar::*is_x)() const, ParseStatusPtr &ps)
 {
-    ENTER();
+    LOG();
     CHECK_POINT(cp0, pos);
 
     EXPECT(strOf(pos, is_x, ps));
@@ -138,19 +139,19 @@ bool QMetaParserBase::strOf(int &pos, QVariant &str, bool (QChar::*is_x)() const
 
 bool QMetaParserBase::spaces(int &pos, ParseStatusPtr &ps)
 {
-    ENTER();
+    LOG();
     return strOf(pos, &QChar::isSpace, ps);
 }
 
 bool QMetaParserBase::spaces(int &pos, QVariant &space, ParseStatusPtr &ps)
 {
-    ENTER();
+    LOG();
     return strOf(pos, space, &QChar::isSpace, ps);
 }
 
 bool QMetaParserBase::identifier(int &pos, QVariant& ident, ParseStatusPtr &ps)
 {
-    ENTER();
+    LOG();
     CHECK_POINT(cp0, pos);
 
     if(!thisChar(pos, QChar('_'), ps)) {
@@ -167,7 +168,7 @@ bool QMetaParserBase::identifier(int &pos, QVariant& ident, ParseStatusPtr &ps)
 
 bool QMetaParserBase::integer(int &pos, QVariant& result, ParseStatusPtr &ps)
 {
-    ENTER();
+    LOG();
     int sign = 1;
 
     if (thisChar(pos, QChar('-'), ps)) {
@@ -186,7 +187,9 @@ bool QMetaParserBase::integer(int &pos, QVariant& result, ParseStatusPtr &ps)
 
 bool QMetaParserBase::thisToken(int &pos, QString str, ParseStatusPtr &ps)
 {
-    ENTER();
+    LOG();
+    printIndent();
+    cout<<"Token: "<<str.toStdString().c_str()<<endl;
     spaces(pos, ps);
     EXPECT(thisStr(pos, str, ps));
     spaces(pos, ps);
@@ -240,13 +243,15 @@ bool QMetaParserBase::applyRule(int ruleId, int &pos, QVariant &result, ParseSta
         RETURN_SUCCESS(ps);
     }
 
-
     QVariant res;
     //ParseStatusPtr rps;
     RuleFuncPtr ruleFunc = m_rule[ruleId];
     m_memo.insert(key, {FAIL, res});
     bool ok = ruleFunc(this, pos, res, ps);
     if (ok) {
+        printIndent(g_indentLevel);
+        cout<<"***Rule "<<ruleId<<" succeeded @"<<key.position<<". Result..."<<endl;
+        print(res);
         m_memo.insert(key, {pos, res});
         result = res;
     }
