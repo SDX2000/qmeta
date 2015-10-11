@@ -10,12 +10,12 @@ QMetaParserBase::QMetaParserBase()
     initRuleMap();
 }
 
-bool QMetaParserBase::parse(QString str, QVariant& ast, ParseStatusPtr &ps)
+bool QMetaParserBase::parse(int ruleId, QString str, QVariant& ast, ParseStatusPtr &ps)
 {
     m_input = str;
     m_memo.clear();
     ps = nullptr;
-    return parse(0, ast, ps);
+    return parse(ruleId, 0, ast, ps);
 }
 
 
@@ -191,8 +191,8 @@ _exit:
 bool QMetaParserBase::strOf(int &pos, bool (QChar::*is_x)() const, ParseStatusPtr &ps)
 {
     bool ok = false;
-    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
-    g_indentLevel++;
+    //QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
+    //g_indentLevel++;
 
     EXPECT(pos < m_input.length());
 
@@ -208,8 +208,8 @@ bool QMetaParserBase::strOf(int &pos, bool (QChar::*is_x)() const, ParseStatusPt
     }
 
 _exit:
-    g_indentLevel--;
-    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = " << ok << endl;
+    //g_indentLevel--;
+    //QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = " << ok << endl;
     return ok;
 }
 

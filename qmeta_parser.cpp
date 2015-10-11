@@ -1,9 +1,9 @@
 #include "qmeta_parser.h"
 
 
-bool QMetaParser::parse(QString pos, QVariant& ast, ParseStatusPtr& ps)
+bool QMetaParser::parse(int ruleId, QString inp, QVariant& ast, ParseStatusPtr& ps)
 {
-    return QMetaParserBase::parse(pos, ast, ps);
+    return QMetaParserBase::parse(ruleId, inp, ast, ps);
 }
 
 QMetaParser::QMetaParser()
@@ -11,12 +11,12 @@ QMetaParser::QMetaParser()
     initRuleMap();
 }
 
-bool QMetaParser::parse(int pos, QVariant &ast, ParseStatusPtr& ps)
+bool QMetaParser::parse(int ruleId, int pos, QVariant &ast, ParseStatusPtr& ps)
 {
     bool ok = false;
     QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
     g_indentLevel++;
-    ok = applyRule(GRAMMAR, pos, ast, ps);
+    ok = applyRule(ruleId, pos, ast, ps);
 
 //_exit:
     g_indentLevel--;
@@ -24,7 +24,7 @@ bool QMetaParser::parse(int pos, QVariant &ast, ParseStatusPtr& ps)
     return ok;
 }
 
-bool QMetaParser::grammar(int& pos, QVariant &ast, ParseStatusPtr& ps)
+bool QMetaParser::rules(int& pos, QVariant &ast, ParseStatusPtr& ps)
 {
     bool ok = false;
     QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
@@ -36,6 +36,41 @@ bool QMetaParser::grammar(int& pos, QVariant &ast, ParseStatusPtr& ps)
         EXPECT(thisToken(pos, QSL(";"), ps));
         l.append(_ast);
     }
+
+    ast = l;
+
+    RETURN_SUCCESS();
+_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = " << ast << ", " << ok << endl;
+    return ok;
+}
+
+bool QMetaParser::grammar(int &pos, QVariant &ast, ParseStatusPtr &ps)
+{
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
+    g_indentLevel++;
+
+    QList<QVariant> l;
+
+    EXPECT(thisToken(pos, "qmeta", ps));
+
+    {
+        QVariant id;
+        EXPECT(applyRule(IDENTIFIER, pos, id, ps));
+        l.append(id);
+    }
+
+    EXPECT(thisToken(pos, "{", ps));
+
+    {
+        QVariant _ast;
+        EXPECT(applyRule(RULES, pos, _ast, ps));
+        l.append(_ast);
+    }
+
+    EXPECT(thisToken(pos, "}", ps));
 
     ast = l;
 
@@ -477,6 +512,7 @@ void QMetaParser::initRuleMap()
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpmf-conversions"
     m_rule[GRAMMAR] = reinterpret_cast<RuleFuncPtr>(&QMetaParser::grammar);
+    m_rule[RULES] = reinterpret_cast<RuleFuncPtr>(&QMetaParser::rules);
     m_rule[RULE] = reinterpret_cast<RuleFuncPtr>(&QMetaParser::rule);
     m_rule[CHOICES] = reinterpret_cast<RuleFuncPtr>(&QMetaParser::choices);
     m_rule[CHOICE] = reinterpret_cast<RuleFuncPtr>(&QMetaParser::choice);

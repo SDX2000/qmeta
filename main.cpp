@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QCommandLineParser>
 #include <QFile>
+#include <QDebug>
 
 #include "qmeta_parser.h"
 #include "utils.h"
@@ -25,7 +26,7 @@ void doREPL()
 
         QVariant result;
         ParseStatusPtr ps;
-        bool ok = interp.parse(inp, result, ps);
+        bool ok = interp.parse(QMetaParser::RULES, inp, result, ps);
         if (ok) {
             QSTDOUT() << result << endl;
         } else {
@@ -43,9 +44,9 @@ void execute(QString prog)
     QMetaParser interp;
     QVariant result;
     ParseStatusPtr ps;
-    bool ok = interp.parse(prog, result, ps);
+    bool ok = interp.parse(QMetaParser::GRAMMAR, prog, result, ps);
     if (ok) {
-        QSTDOUT() << result;
+        QSTDOUT() << result << endl;
     } else {
         QSTDOUT() << "PARSE FAILED ";
         do {
@@ -60,6 +61,12 @@ int main(int argc, char *argv[])
     QCoreApplication app(argc, argv);
     QCoreApplication::setApplicationName("qmeta");
     QCoreApplication::setApplicationVersion("0.0.0");
+
+    qStdOut() << "Arguments..." <<endl;
+
+    for (int i = 0; i < argc; i++) {
+        qStdOut() << i + 1 << ") " << argv[i] << endl;
+    }
 
     QCommandLineParser parser;
     parser.setApplicationDescription("An ometa parser/interpreter in Qt.");
@@ -80,8 +87,10 @@ int main(int argc, char *argv[])
 
     foreach(QString fileName, args) {
         QFile file(fileName);
-        if (!file.open(QFile::ReadOnly | QFile::Text))
+        if (!file.open(QFile::ReadOnly | QFile::Text)) {
+            qWarning() << "Could not open file: " << fileName << endl;
             continue;
+        }
         QTextStream in(&file);
         execute(in.readAll());
     }

@@ -1,6 +1,7 @@
 //Every QMeta parser implicitly derives from QMetaParserBase
 qmeta QMetaParser {
-  grammar           = (rule ";")*;
+  grammar           = "qmeta" identifier "{" rules "}";
+  rules             = (rule ";")*;
   rule              = identifier "=" choices;
   choices           = choice "|" choices
                     | choice;
@@ -9,6 +10,7 @@ qmeta QMetaParser {
   term              = term1 ":" identifier
                     | term1;
   term1             = "~"  term2
+                    | "?"  term2
                     | term2 "*"
                     | term2 "+"
                     | term2 "?"

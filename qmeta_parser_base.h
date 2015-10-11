@@ -58,8 +58,8 @@ class QMetaParserBase
 {
 public:
     QMetaParserBase();
-    virtual bool parse(QString inp, QVariant& ast, ParseStatusPtr &ps);
-    virtual bool parse(int pos, QVariant& ast, ParseStatusPtr &ps) = 0;
+    virtual bool parse(int ruleId, QString inp, QVariant& ast, ParseStatusPtr &ps);
+    virtual bool parse(int ruleId, int pos, QVariant& ast, ParseStatusPtr &ps) = 0;
     virtual ~QMetaParserBase() {}
 
     const int FAIL = -1;
