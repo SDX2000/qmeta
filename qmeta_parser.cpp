@@ -264,13 +264,13 @@ choice1:
     {
         pos = cp0;
         QList<QVariant> l;
-        l.append(QString(QSL("PRED")));
-
-        TRY(thisToken(pos, QSL("?"), ps), choice2);
+        l.append(QString(QSL("MANY")));
 
         QVariant _ast;
-        TRY(applyRule(HOST_EXPR, pos, _ast, ps), choice2);
+        TRY(applyRule(TERM2, pos, _ast, ps), choice2);
         l.append(_ast);
+
+        TRY(thisToken(pos, QSL("*"), ps), choice2);
 
         ast = l;
         RETURN_SUCCESS();
@@ -280,13 +280,13 @@ choice2:
     {
         pos = cp0;
         QList<QVariant> l;
-        l.append(QString(QSL("MANY")));
+        l.append(QString(QSL("MANY1")));
 
         QVariant _ast;
         TRY(applyRule(TERM2, pos, _ast, ps), choice3);
         l.append(_ast);
 
-        TRY(thisToken(pos, QSL("*"), ps), choice3);
+        TRY(thisToken(pos, QSL("+"), ps), choice3);
 
         ast = l;
         RETURN_SUCCESS();
@@ -296,35 +296,19 @@ choice3:
     {
         pos = cp0;
         QList<QVariant> l;
-        l.append(QString(QSL("MANY1")));
+        l.append(QString(QSL("OPTIONAL")));
 
         QVariant _ast;
         TRY(applyRule(TERM2, pos, _ast, ps), choice4);
         l.append(_ast);
 
-        TRY(thisToken(pos, QSL("+"), ps), choice4);
+        TRY(thisToken(pos, QSL("?"), ps), choice4);
 
         ast = l;
         RETURN_SUCCESS();
     }
 
 choice4:
-    {
-        pos = cp0;
-        QList<QVariant> l;
-        l.append(QString(QSL("OPTIONAL")));
-
-        QVariant _ast;
-        TRY(applyRule(TERM2, pos, _ast, ps), choice5);
-        l.append(_ast);
-
-        TRY(thisToken(pos, QSL("?"), ps), choice5);
-
-        ast = l;
-        RETURN_SUCCESS();
-    }
-
-choice5:
     {
         pos = cp0;
         QVariant _ast;
