@@ -20,24 +20,6 @@ void printIndent(int indentation) {
     }
 }
 
-//void printInternal(QVariant &val, int indentation) {
-//    if(val.type() == QVariant::List) {
-//        auto list = val.value<QVariantList>();
-//        printIndent(indentation);
-//        QSTDOUT() << "List with " << list.length() << " elements" <<endl;
-//        foreach(QVariant elem, list) {
-//            printInternal(elem, indentation + 1);
-//        }
-//    } else {
-//        printIndent(indentation);
-//        QSTDOUT() << val.typeName() << " = " << val << endl;
-//    }
-//}
-
-//void print(QVariant &val) {
-//    printInternal(val, g_indentLevel);
-//}
-
 QTextStream& operator << (QTextStream& lhs, const QVariant& val) {
     if(val.type() == QVariant::List) {
         lhs << "[";

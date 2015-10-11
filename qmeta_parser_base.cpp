@@ -13,6 +13,8 @@ QMetaParserBase::QMetaParserBase()
 bool QMetaParserBase::parse(QString str, QVariant& ast, ParseStatusPtr &ps)
 {
     m_input = str;
+    m_memo.clear();
+    ps = nullptr;
     return parse(0, ast, ps);
 }
 
@@ -25,7 +27,7 @@ bool QMetaParserBase::advance(int &pos, int count, ParseStatusPtr &ps)
     //QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << ")" << endl;
     g_indentLevel++;
 
-    EXPECT(pos + count < m_input.length());
+    EXPECT(pos + count <= m_input.length());
 
     pos += count;
 

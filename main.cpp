@@ -27,7 +27,7 @@ void doREPL()
         ParseStatusPtr ps;
         bool ok = interp.parse(inp, result, ps);
         if (ok) {
-            QSTDOUT() << result;
+            QSTDOUT() << result << endl;
         } else {
             QSTDOUT() <<"PARSE FAILED ";
             do {
