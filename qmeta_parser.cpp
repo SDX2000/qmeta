@@ -486,7 +486,6 @@ bool QMetaParser::escapedChar(int &pos, QChar &c, ParseStatusPtr &ps)
     {
         pos = cp0;
         TRY(thisChar(pos, QChar('\\'), ps), choice1);
-        TRY(thisChar(pos, QChar('\\'), ps), choice1);
         TRY(someChar(pos, _c, ps), choice1);
         c = unescape(_c);
         RETURN_SUCCESS();

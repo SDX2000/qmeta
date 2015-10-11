@@ -10,7 +10,6 @@ qmeta QMetaParser {
   term              = term1 ":" identifier
                     | term1;
   term1             = "~"  term2
-                    | "?"  term2
                     | term2 "*"
                     | term2 "+"
                     | term2 "?"
