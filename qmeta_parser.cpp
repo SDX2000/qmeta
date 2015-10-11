@@ -301,7 +301,7 @@ choice1:
     {
         pos = cp0;
         QList<QVariant> l;
-        l.append(QString(QSL("MANY")));
+        l.append(QString(QSL("REPEAT{0,}")));
 
         QVariant _ast;
         TRY(applyRule(TERM2, pos, _ast, ps), choice2);
@@ -317,7 +317,7 @@ choice2:
     {
         pos = cp0;
         QList<QVariant> l;
-        l.append(QString(QSL("MANY1")));
+        l.append(QString(QSL("REPEAT{1,}")));
 
         QVariant _ast;
         TRY(applyRule(TERM2, pos, _ast, ps), choice3);
