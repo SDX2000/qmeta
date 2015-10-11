@@ -1,9 +1,7 @@
 #include "qmeta_parser_base.h"
 #include <assert.h>
 #include <algorithm>
-#include <iostream>
 
-using namespace std;
 
 //////////////////// PUBLIC FUNCTIONS ///////////////////
 
@@ -23,135 +21,255 @@ bool QMetaParserBase::parse(QString str, QVariant& ast, ParseStatusPtr &ps)
 
 bool QMetaParserBase::advance(int &pos, int count, ParseStatusPtr &ps)
 {
-    EXPECT_B(pos + count < m_input.length());
+    bool ok = false;
+    //QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << ")" << endl;
+    g_indentLevel++;
+
+    EXPECT(pos + count < m_input.length());
 
     pos += count;
 
-    RETURN_SUCCESS(ps);
+    RETURN_SUCCESS();
+
+_exit:
+    g_indentLevel--;
+    //QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = " << ok << endl;
+    return ok;
 }
 
 bool QMetaParserBase::digit(int &pos, int& digit, ParseStatusPtr &ps)
 {
-    EXPECT_B(pos < m_input.length());
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
+    g_indentLevel++;
 
-    QChar c = m_input.at(pos);
+    EXPECT(pos < m_input.length());
 
-    EXPECT_B(c.isDigit());
+    {
+        QChar c = m_input.at(pos);
 
-    digit = c.digitValue();
+        EXPECT(c.isDigit());
 
-    return advance(pos, 1, ps);
+        digit = c.digitValue();
+
+        ok = advance(pos, 1, ps);
+    }
+
+_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = " << digit << ", " << ok << endl;
+    return ok;
 }
 
 
 bool QMetaParserBase::someChar(int &pos, QChar& c, ParseStatusPtr &ps)
 {
-    EXPECT_B(pos < m_input.length());
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
+    g_indentLevel++;
+
+    EXPECT(pos < m_input.length());
 
     c = m_input.at(pos);
 
-    return advance(pos, 1, ps);
+    ok = advance(pos, 1, ps);
+
+_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = '" << c << "', " << ok << endl;
+    return ok;
 }
 
 
 bool QMetaParserBase::someCharOf(int &pos, bool (QChar::*is_x)() const, ParseStatusPtr &ps)
 {
-    EXPECT_B(pos < m_input.length());
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
+    g_indentLevel++;
 
-    QChar ch = m_input.at(pos);
+    EXPECT(pos < m_input.length());
 
-    EXPECT_B((ch.*is_x)());
+    {
+        QChar ch = m_input.at(pos);
 
-    return advance(pos, 1, ps);
+        EXPECT((ch.*is_x)());
+
+        ok = advance(pos, 1, ps);
+    }
+
+_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = " << ok << endl;
+    return ok;
 }
 
 bool QMetaParserBase::someCharOf(int &pos, QChar &c, bool (QChar::*is_x)() const, ParseStatusPtr &ps)
 {
-    EXPECT_B(pos < m_input.length());
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
+    g_indentLevel++;
 
-    QChar ch = m_input.at(pos);
+    EXPECT(pos < m_input.length());
 
-    EXPECT_B((ch.*is_x)());
+    {
+        QChar ch = m_input.at(pos);
 
-    c = ch;
+        EXPECT((ch.*is_x)());
 
-    return advance(pos, 1, ps);
+        c = ch;
+
+        ok = advance(pos, 1, ps);
+    }
+
+_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = '" << c << "', " << ok << endl;
+    return ok;
 }
 
-bool QMetaParserBase::oneOf(int& pos, QChar &opOut, QString chars, ParseStatusPtr &ps)
+bool QMetaParserBase::oneOf(int& pos, QChar &outCh, QString chars, ParseStatusPtr &ps)
 {
-    EXPECT_B(pos < m_input.length());
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos <<", \"" << chars << "\")" << endl;
+    g_indentLevel++;
 
-    QChar c = m_input.at(pos);
+    EXPECT(pos < m_input.length());
 
-    EXPECT_B(chars.contains(c));
+    {
+        QChar c = m_input.at(pos);
 
-    opOut = c;
+        EXPECT(chars.contains(c));
 
-    return advance(pos, 1, ps);
+        outCh = c;
+
+        ok = advance(pos, 1, ps);
+    }
+
+_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = '" << outCh << "'', " << ok << endl;
+    return ok;
 }
 
 
 bool QMetaParserBase::thisChar(int &pos, QChar c, ParseStatusPtr &ps)
 {
-    EXPECT_B(pos < m_input.length());
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ", '" << c << "')" << endl;
+    g_indentLevel++;
 
-    EXPECT_B(m_input.at(pos) == c);
+    EXPECT(pos < m_input.length());
 
-    return advance(pos, 1, ps);
+    EXPECT(m_input.at(pos) == c);
+
+    ok = advance(pos, 1, ps);
+
+_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = " << ok << endl;
+    return ok;
 }
 
 bool QMetaParserBase::thisStr(int &pos, QString str, ParseStatusPtr &ps)
 {
-    EXPECT_B(m_input.midRef(pos).startsWith(str));
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ", \"" << str << "\")" << endl;
+    g_indentLevel++;
 
-    return advance(pos, str.length(), ps);;
+    EXPECT(m_input.midRef(pos).startsWith(str));
+
+    ok = advance(pos, str.length(), ps);;
+
+_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = " << ok << endl;
+    return ok;
 }
 
 bool QMetaParserBase::strOf(int &pos, bool (QChar::*is_x)() const, ParseStatusPtr &ps)
 {
-    EXPECT_B(pos < m_input.length());
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
+    g_indentLevel++;
 
-    int i = pos;
+    EXPECT(pos < m_input.length());
 
-    for (; i < m_input.length() && (m_input.at(i).*is_x)(); i++) {
+    {
+        int i = pos;
+
+        for (; i < m_input.length() && (m_input.at(i).*is_x)(); i++) {
+        }
+
+        EXPECT(i - pos);
+
+        ok = advance(pos, i - pos, ps);
     }
 
-    EXPECT_B(i - pos);
-
-    return advance(pos, i - pos, ps);
+_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = " << ok << endl;
+    return ok;
 }
 
 /////////////////////  NONTERMINALS  //////////////////////
 
 bool QMetaParserBase::strOf(int &pos, QVariant &str, bool (QChar::*is_x)() const, ParseStatusPtr &ps)
 {
-    LOG();
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
+    g_indentLevel++;
+
     CHECK_POINT(cp0, pos);
 
     EXPECT(strOf(pos, is_x, ps));
 
-    QString _str = mid(cp0, pos);
-    str = _str;
+    {
+        QString _str = mid(cp0, pos);
+        str = _str;
+    }
 
-    RETURN_SUCCESS(ps);
+    RETURN_SUCCESS();
+
+_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = \"" << str << "\", " << ok << endl;
+    return ok;
 }
 
 bool QMetaParserBase::spaces(int &pos, ParseStatusPtr &ps)
 {
-    LOG();
-    return strOf(pos, &QChar::isSpace, ps);
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
+    g_indentLevel++;
+
+    ok = strOf(pos, &QChar::isSpace, ps);
+
+//_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = " << ok << endl;
+    return ok;
 }
 
 bool QMetaParserBase::spaces(int &pos, QVariant &space, ParseStatusPtr &ps)
 {
-    LOG();
-    return strOf(pos, space, &QChar::isSpace, ps);
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
+    g_indentLevel++;
+
+    ok = strOf(pos, space, &QChar::isSpace, ps);
+
+//_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = \"" << space << "\", " << ok << endl;
+    return ok;
 }
 
 bool QMetaParserBase::identifier(int &pos, QVariant& ident, ParseStatusPtr &ps)
 {
-    LOG();
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
+    g_indentLevel++;
+
     CHECK_POINT(cp0, pos);
 
     if(!thisChar(pos, QChar('_'), ps)) {
@@ -159,16 +277,27 @@ bool QMetaParserBase::identifier(int &pos, QVariant& ident, ParseStatusPtr &ps)
         EXPECT(someCharOf(pos, &QChar::isLetter, ps));
     }
 
+    //Optional
     strOf(pos, &QChar::isLetterOrNumber, ps);
 
-    QString id =  mid(cp0, pos);
-    ident = id;
-    RETURN_SUCCESS(ps);
+    {
+        QString id =  mid(cp0, pos);
+        ident = id;
+    }
+
+    RETURN_SUCCESS();
+
+_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = " << ident << ", " << ok << endl;
+    return ok;
 }
 
 bool QMetaParserBase::integer(int &pos, QVariant& result, ParseStatusPtr &ps)
 {
-    LOG();
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
+    g_indentLevel++;
     int sign = 1;
 
     if (thisChar(pos, QChar('-'), ps)) {
@@ -178,22 +307,34 @@ bool QMetaParserBase::integer(int &pos, QVariant& result, ParseStatusPtr &ps)
     QVariant variant;
     EXPECT(strOf(pos, variant, &QChar::isDigit, ps));
 
-    int r = int(variant.value<QString>().toInt()) * sign;
+    {
+        int r = int(variant.value<QString>().toInt()) * sign;
+        result = r;
+    }
 
-    result = r;
+    RETURN_SUCCESS();
 
-    RETURN_SUCCESS(ps);
+_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = "<< result << ", " << ok << endl;
+    return ok;
 }
 
 bool QMetaParserBase::thisToken(int &pos, QString str, ParseStatusPtr &ps)
 {
-    LOG();
-    printIndent();
-    cout<<"Token: "<<str.toStdString().c_str()<<endl;
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ", \"" << str << "\")" << endl;
+    g_indentLevel++;
+
     spaces(pos, ps);
     EXPECT(thisStr(pos, str, ps));
     spaces(pos, ps);
-    RETURN_SUCCESS(ps);
+    RETURN_SUCCESS();
+
+_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = " << ok << endl;
+    return ok;
 }
 
 QChar QMetaParserBase::unescape(QChar c)
@@ -226,35 +367,45 @@ QChar QMetaParserBase::unescape(QChar c)
 
 bool QMetaParserBase::applyRule(int ruleId, int &pos, QVariant &result, ParseStatusPtr &ps)
 {
-    if (!m_rule.contains(ruleId)) {
-        assert(false);
-        RETURN_FAILURE(ps, pos, "Invalid ruleId given to apply_rule.");
-    }
+    bool ok = false;
+    //QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
+    //g_indentLevel++;
 
-    MemoKey key = {ruleId, pos};
+    EXPECT(m_rule.contains(ruleId));
 
-    if (m_memo.contains(key)) {
-        MemoEntry me = m_memo.value(key);
-        if (me.nextPos < 0) {
-            RETURN_FAILURE(ps, pos, "Left recursion detected.");
+    {
+        MemoKey key = {ruleId, pos};
+
+        if (m_memo.contains(key)) {
+            MemoEntry me = m_memo.value(key);
+            if (me.nextPos < 0) {
+                RETURN_FAILURE(pos, "Left recursion detected.");
+            }
+            result = me.result;
+            pos = me.nextPos;
+            RETURN_SUCCESS();
         }
-        result = me.result;
-        pos = me.nextPos;
-        RETURN_SUCCESS(ps);
-    }
 
-    QVariant res;
-    //ParseStatusPtr rps;
-    RuleFuncPtr ruleFunc = m_rule[ruleId];
-    m_memo.insert(key, {FAIL, res});
-    bool ok = ruleFunc(this, pos, res, ps);
-    if (ok) {
-        printIndent(g_indentLevel);
-        cout<<"***Rule "<<ruleId<<" succeeded @"<<key.position<<". Result..."<<endl;
-        print(res);
+
+        QVariant res;
+        //ParseStatusPtr rps;
+        RuleFuncPtr ruleFunc = m_rule[ruleId];
+        m_memo.insert(key, {FAIL, res});
+
+        EXPECT(ruleFunc(this, pos, res, ps));
+
+    //    printIndent(g_indentLevel);
+    //    QSTDOUT() << "***Rule " << ruleId << " succeeded @"
+    //              << key.position << ". Result: " << res <<endl;
         m_memo.insert(key, {pos, res});
         result = res;
     }
+
+    RETURN_SUCCESS();
+
+_exit:
+    //g_indentLevel--;
+    //QSTDOUT() << "Leaving: " << __FUNCTION__ << " = " << ok << endl;
     return ok;
 }
 

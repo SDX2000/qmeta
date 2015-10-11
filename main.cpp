@@ -6,21 +6,17 @@
 #include <QFile>
 
 #include "qmeta_parser.h"
-
-#include <iostream>
-
-using namespace std;
+#include "utils.h"
 
 void doREPL()
 {
     QTextStream cin(stdin);
-    QTextStream cout(stdout);
     QMetaParser interp;
 
     while(true)
     {
-        cout << QSL("> ");
-        cout.flush();
+        QSTDOUT() << QSL("> ");
+        QSTDOUT() .flush();
         QString inp = cin.readLine();
 
         if (inp.toLower() == QSL("q")) {
@@ -31,13 +27,13 @@ void doREPL()
         ParseStatusPtr ps;
         bool ok = interp.parse(inp, result, ps);
         if (ok) {
-            print(result);
+            QSTDOUT() << result;
         } else {
-            cout<<"PARSE FAILED ";
+            QSTDOUT() <<"PARSE FAILED ";
             do {
-                cout<<ps->toString().toStdString().c_str()<<" ";
+                QSTDOUT() <<ps->toString()<<" ";
             } while((ps = ps->getInnerFailure()));
-            cout<<endl;
+            QSTDOUT() <<endl;
         }
     }
 }
@@ -49,13 +45,13 @@ void execute(QString prog)
     ParseStatusPtr ps;
     bool ok = interp.parse(prog, result, ps);
     if (ok) {
-        print(result);
+        QSTDOUT() << result;
     } else {
-        cout<<"PARSE FAILED ";
+        QSTDOUT() << "PARSE FAILED ";
         do {
-            cout<<ps->toString().toStdString().c_str()<<" ";
+            QSTDOUT() << ps->toString() << " ";
         }while((ps = ps->getInnerFailure()));
-        cout<<endl;
+        QSTDOUT() << endl;
     }
 }
 
@@ -71,7 +67,7 @@ int main(int argc, char *argv[])
     parser.addVersionOption();
 
     if (!parser.parse(QCoreApplication::arguments())) {
-        cout << "ERROR: Invalid command line options." <<endl;
+        QSTDOUT() << "ERROR: Invalid command line options." << endl;
         return 1;
     }
 

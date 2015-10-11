@@ -1,7 +1,5 @@
 #include "qmeta_parser.h"
-#include <iostream>
 
-using namespace std;
 
 bool QMetaParser::parse(QString pos, QVariant& ast, ParseStatusPtr& ps)
 {
@@ -15,13 +13,22 @@ QMetaParser::QMetaParser()
 
 bool QMetaParser::parse(int pos, QVariant &ast, ParseStatusPtr& ps)
 {
-    LOG();
-    return applyRule(GRAMMAR, pos, ast, ps);
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
+    g_indentLevel++;
+    ok = applyRule(GRAMMAR, pos, ast, ps);
+
+//_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = " << ast << ", " << ok << endl;
+    return ok;
 }
 
 bool QMetaParser::grammar(int& pos, QVariant &ast, ParseStatusPtr& ps)
 {
-    LOG();
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
+    g_indentLevel++;
     QList<QVariant> l;
 
     QVariant _ast;
@@ -32,32 +39,53 @@ bool QMetaParser::grammar(int& pos, QVariant &ast, ParseStatusPtr& ps)
 
     ast = l;
 
-    RETURN_SUCCESS(ps);
+    RETURN_SUCCESS();
+_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = " << ast << ", " << ok << endl;
+    return ok;
 }
 
 bool QMetaParser::rule(int &pos, QVariant &ast, ParseStatusPtr& ps)
 {
-    LOG();
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
+    g_indentLevel++;
+
     QList<QVariant> l;
     l.append(QString(QSL("RULE")));
-    QVariant id;
-    EXPECT(applyRule(IDENTIFIER, pos, id, ps));
-    l.append(id);
 
-    EXPECT(thisToken(pos, QSL("="), ps));
+    {
+        QVariant id;
+        EXPECT(applyRule(IDENTIFIER, pos, id, ps));
+        l.append(id);
+    }
 
-    QVariant _ast;
-    EXPECT(applyRule(CHOICES, pos, _ast, ps));
-    l.append(_ast);
+    {
+        EXPECT(thisToken(pos, QSL("="), ps));
+    }
+
+    {
+        QVariant _ast;
+        EXPECT(applyRule(CHOICES, pos, _ast, ps));
+        l.append(_ast);
+    }
 
     ast = l;
 
-    RETURN_SUCCESS(ps);
+    RETURN_SUCCESS();
+_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = " << ast << ", " << ok << endl;
+    return ok;
 }
 
 bool QMetaParser::choices(int &pos, QVariant &ast, ParseStatusPtr& ps)
 {
-    LOG();
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
+    g_indentLevel++;
+
     CHECK_POINT(cp0, pos);
     {
         pos = cp0;
@@ -72,7 +100,7 @@ bool QMetaParser::choices(int &pos, QVariant &ast, ParseStatusPtr& ps)
         TRY(applyRule(CHOICES, pos, _ast, ps), choice1);
 
         ast = l;
-        RETURN_SUCCESS(ps);
+        RETURN_SUCCESS();
     }
 
 choice1:
@@ -83,12 +111,20 @@ choice1:
         ast = _ast;
     }
 
-    RETURN_SUCCESS(ps);
+    RETURN_SUCCESS();
+
+_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = " << ast << ", " << ok << endl;
+    return ok;
 }
 
 bool QMetaParser::choice(int &pos, QVariant &ast, ParseStatusPtr& ps)
 {
-    LOG();
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
+    g_indentLevel++;
+
     QList<QVariant> l;
 
     QVariant _ast;
@@ -97,7 +133,7 @@ bool QMetaParser::choice(int &pos, QVariant &ast, ParseStatusPtr& ps)
     }
 
     if(l.length() <= 0) {
-        RETURN_FAILURE(ps, pos, "choice failed");
+        RETURN_FAILURE(pos, "choice failed");
     }
 
     if (thisToken(pos, QSL("->"), ps)) {
@@ -109,12 +145,20 @@ bool QMetaParser::choice(int &pos, QVariant &ast, ParseStatusPtr& ps)
 
     ast = l;
 
-    RETURN_SUCCESS(ps);
+    RETURN_SUCCESS();
+
+_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = " << ast << ", " << ok << endl;
+    return ok;
 }
 
 bool QMetaParser::hostExpr(int &pos, QVariant &ast, ParseStatusPtr &ps)
 {
-    LOG();
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
+    g_indentLevel++;
+
     spaces(pos, ps);
     int count = 0;
     QChar c;
@@ -133,19 +177,27 @@ bool QMetaParser::hostExpr(int &pos, QVariant &ast, ParseStatusPtr &ps)
     }
 
     if(count) {
-        RETURN_FAILURE(ps, pos, QSL("Invalid host expression (unbalanced braces)."));
+        RETURN_FAILURE(pos, QSL("Invalid host expression (unbalanced braces)."));
     }
 
     spaces(pos, ps);
 
     ast = hostexpr;
 
-    RETURN_SUCCESS(ps);
+    RETURN_SUCCESS();
+
+_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = " << ast << ", " << ok << endl;
+    return ok;
 }
 
 bool QMetaParser::term(int &pos, QVariant &ast, ParseStatusPtr &ps)
 {
-    LOG();
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
+    g_indentLevel++;
+
     CHECK_POINT(cp0, pos);
     {
         pos = cp0;
@@ -163,7 +215,7 @@ bool QMetaParser::term(int &pos, QVariant &ast, ParseStatusPtr &ps)
         l.append(id);
 
         ast = l;
-        RETURN_SUCCESS(ps);
+        RETURN_SUCCESS();
     }
 
 choice1:
@@ -174,12 +226,20 @@ choice1:
         ast = _ast;
     }
 
-    RETURN_SUCCESS(ps);
+    RETURN_SUCCESS();
+
+_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = " << ast << ", " << ok << endl;
+    return ok;
 }
 
 bool QMetaParser::term1(int &pos, QVariant &ast, ParseStatusPtr &ps)
 {
-    LOG();
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
+    g_indentLevel++;
+
     CHECK_POINT(cp0, pos);
     {
         pos = cp0;
@@ -193,7 +253,7 @@ bool QMetaParser::term1(int &pos, QVariant &ast, ParseStatusPtr &ps)
         l.append(_ast);
 
         ast = l;
-        RETURN_SUCCESS(ps);
+        RETURN_SUCCESS();
     }
 
 choice1:
@@ -209,7 +269,7 @@ choice1:
         l.append(_ast);
 
         ast = l;
-        RETURN_SUCCESS(ps);
+        RETURN_SUCCESS();
     }
 
 choice2:
@@ -225,7 +285,7 @@ choice2:
         TRY(thisToken(pos, QSL("*"), ps), choice3);
 
         ast = l;
-        RETURN_SUCCESS(ps);
+        RETURN_SUCCESS();
     }
 
 choice3:
@@ -241,7 +301,7 @@ choice3:
         TRY(thisToken(pos, QSL("+"), ps), choice4);
 
         ast = l;
-        RETURN_SUCCESS(ps);
+        RETURN_SUCCESS();
     }
 
 choice4:
@@ -257,7 +317,7 @@ choice4:
         TRY(thisToken(pos, QSL("?"), ps), choice5);
 
         ast = l;
-        RETURN_SUCCESS(ps);
+        RETURN_SUCCESS();
     }
 
 choice5:
@@ -268,12 +328,20 @@ choice5:
         ast = _ast;
     }
 
-    RETURN_SUCCESS(ps);
+    RETURN_SUCCESS();
+
+_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = " << ast << ", " << ok << endl;
+    return ok;
 }
 
 bool QMetaParser::term2(int &pos, QVariant &ast, ParseStatusPtr &ps)
 {
-    LOG();
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
+    g_indentLevel++;
+
     CHECK_POINT(cp0, pos);
     {
         pos = cp0;
@@ -293,7 +361,7 @@ bool QMetaParser::term2(int &pos, QVariant &ast, ParseStatusPtr &ps)
         TRY(thisChar(pos, QChar('\''), ps), choice1);
 
         ast = l;
-        RETURN_SUCCESS(ps);
+        RETURN_SUCCESS();
     }
 
 choice1:
@@ -302,7 +370,7 @@ choice1:
         QVariant _ast;
         TRY(applyRule(SOME_TOKEN, pos, _ast, ps), choice2);
         ast = _ast;
-        RETURN_SUCCESS(ps);
+        RETURN_SUCCESS();
     }
 
 choice2:
@@ -316,7 +384,7 @@ choice2:
         l.append(ruleName);
 
         ast = l;
-        RETURN_SUCCESS(ps);
+        RETURN_SUCCESS();
     }
 
 choice3:
@@ -332,56 +400,72 @@ choice3:
         ast = _ast;
     }
 
-    RETURN_SUCCESS(ps);
+    RETURN_SUCCESS();
+_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = " << ast << ", " << ok << endl;
+    return ok;
 }
 
 bool QMetaParser::someToken(int &pos, QVariant& ast, ParseStatusPtr &ps)
 {
-    LOG();
-    spaces(pos, ps);
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
+    g_indentLevel++;
 
-    EXPECT(thisChar(pos, QChar('"'), ps));
+    spaces(pos, ps);
 
     QList<QVariant> l;
     l.append(QString(QSL("TOKEN")));
 
-
-    QString token;
-
-    while (true) {
-        CHECK_POINT(cp0, pos);
-        if(thisChar(pos, QChar('"'), ps)) {
-            break;
-        }
-        pos = cp0;
-        QChar c;
-        EXPECT(someChar(pos, c, ps));
-        token += c;
-    }
-
     EXPECT(thisChar(pos, QChar('"'), ps));
+
+    {
+        QString token;
+
+        while (true) {
+            CHECK_POINT(cp0, pos);
+            if(thisChar(pos, QChar('"'), ps)) {
+                break;
+            }
+            pos = cp0;
+            QChar c;
+            EXPECT(someChar(pos, c, ps));
+            token += c;
+        }
+
+        EXPECT(thisChar(pos, QChar('"'), ps));
+        l.append(token);
+    }
 
     spaces(pos, ps);
 
-    l.append(token);
-
     ast = l;
 
-    RETURN_SUCCESS(ps);
+    RETURN_SUCCESS();
+_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = " << ast << ", " << ok << endl;
+    return ok;
 }
 
 bool QMetaParser::escapedChar(int &pos, QChar &c, ParseStatusPtr &ps)
 {
-    LOG();
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
+    g_indentLevel++;
+
     CHECK_POINT(cp0, pos);
+
+    QChar _c;
+
     {
         pos = cp0;
         TRY(thisChar(pos, QChar('\\'), ps), choice1);
         TRY(thisChar(pos, QChar('\\'), ps), choice1);
-        QChar _c;
         TRY(someChar(pos, _c, ps), choice1);
         c = unescape(_c);
-        RETURN_SUCCESS(ps);
+        RETURN_SUCCESS();
     }
 
 choice1:
@@ -391,7 +475,12 @@ choice1:
         EXPECT(someChar(pos, _c, ps));
         c = _c;
     }
-    RETURN_SUCCESS(ps);
+    RETURN_SUCCESS();
+
+_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = \\'" << _c << "', " << ok << endl;
+    return ok;
 }
 
 void QMetaParser::initRuleMap()

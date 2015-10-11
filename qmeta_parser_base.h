@@ -5,50 +5,36 @@
 #include "utils.h"
 #include "parse_status.h"
 
-#define RETURN_SUCCESS(PS) \
-    PS = ParseStatus::success(); \
-    printIndent(); \
-    cout<<"return true"<<endl; \
-    return true;
+#define RETURN_SUCCESS() \
+    ok = true; \
+    ps = ParseStatus::success(); \
+    goto _exit;
 
-#define RETURN_FAILURE(PS, ...) \
-    if(PS) { \
-        PS->chain(ParseStatus::failure(__VA_ARGS__));\
+#define RETURN_FAILURE(...) \
+    ok = false; \
+    if(ps) { \
+        ps->chain(ParseStatus::failure(__VA_ARGS__));\
     } else { \
-        PS = ParseStatus::failure(__VA_ARGS__); \
+        ps = ParseStatus::failure(__VA_ARGS__); \
     } \
-    printIndent(); \
-    cout<<"return false"<<endl; \
-    return false;
-
+    goto _exit;
 
 //Note: There is no need to checkpoint EXPECT
 //since all back tracking happens at TRY_CHOICE
 //and TRY_CHOICE saves a check point.
 #define EXPECT(X) \
     if (!(X)) { \
-        printIndent(); \
-        cout<<"return false"<<endl; \
-        return false; \
+        ok = false; \
+        goto _exit; \
     } \
-
-
-#define EXPECT_B(X) \
-    if (!(X)) { \
-        printIndent(); \
-        cout<<"return false"<<endl; \
-        return false; \
-    }
-
 
 #define TRY_CHOICE(X) \
     do \
     { \
         int _checkPoint = pos; \
         if (X) { \
-            printIndent(); \
-            cout<<"return true"<<endl; \
-            return true; \
+            ok = true; \
+            goto _exit; \
         } \
         pos = _checkPoint; \
     } \
