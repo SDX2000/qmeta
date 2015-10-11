@@ -53,6 +53,7 @@ bool QMetaParser::grammar(int &pos, QVariant &ast, ParseStatusPtr &ps)
     g_indentLevel++;
 
     QList<QVariant> l;
+    l.append(QString(QSL("GRAMMAR")));
 
     EXPECT(thisToken(pos, "qmeta", ps));
 
@@ -164,6 +165,7 @@ bool QMetaParser::choice(int &pos, QVariant &ast, ParseStatusPtr& ps)
 
     QVariant _ast;
     while (applyRule(TERM, pos, _ast, ps)) {
+        spaces(pos, ps);
         l.append(_ast);
     }
 
@@ -411,6 +413,20 @@ choice2:
     }
 
 choice3:
+    {
+        pos = cp0;
+        QList<QVariant> l;
+        l.append(QString(QSL("ANYTHING")));
+
+        QVariant val;
+        TRY(thisChar(pos, QChar('.'), ps), choice4);
+        l.append(val);
+
+        ast = l;
+        RETURN_SUCCESS();
+    }
+
+choice4:
     {
         pos = cp0;
         EXPECT(thisToken(pos, QSL("("), ps));

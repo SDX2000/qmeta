@@ -74,6 +74,7 @@ public:
         SOME_CHAR_OF,   //Cannot memoize rule with arguments yet
         THIS_CHAR,      //Cannot memoize rule with arguments yet
         ONE_OF,         //Cannot memoize rule with arguments yet
+        ANYTHING,       //Cannot memoize rule with arguments yet
 
         //NONTERMINALS
         SPACES,
@@ -106,6 +107,8 @@ protected:
     bool digit(int &pos, int& digit, ParseStatusPtr &ps);
     bool strOf(int &pos, bool (QChar::*is_x)() const, ParseStatusPtr &ps);
     bool strOf(int &pos, QVariant &str, bool (QChar::*is_x)() const, ParseStatusPtr &ps);
+    bool anything(int& pos, QVariant &val, ParseStatusPtr &ps);
+    bool anyChar(int &pos, ParseStatusPtr &ps);
     bool someChar(int& pos, QChar& c, ParseStatusPtr &ps);
     bool someCharOf(int &pos, bool (QChar::*is_x)() const, ParseStatusPtr &ps);
     bool someCharOf(int &pos, QChar &c, bool (QChar::*is_x)() const, ParseStatusPtr &ps);

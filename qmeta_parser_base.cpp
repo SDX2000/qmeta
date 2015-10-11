@@ -82,6 +82,22 @@ _exit:
     return ok;
 }
 
+bool QMetaParserBase::anyChar(int &pos, ParseStatusPtr &ps)
+{
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
+    g_indentLevel++;
+
+    EXPECT(pos < m_input.length());
+
+    ok = advance(pos, 1, ps);
+
+_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = " << ok << endl;
+    return ok;
+}
+
 
 bool QMetaParserBase::someCharOf(int &pos, bool (QChar::*is_x)() const, ParseStatusPtr &ps)
 {
@@ -237,6 +253,25 @@ _exit:
     QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = \"" << str << "\", " << ok << endl;
     return ok;
 }
+
+/// For the time being anything is implemented interms of someChar
+/// untill QMetaParserBase can operate on non-char streams.
+bool QMetaParserBase::anything(int &pos, QVariant& val, ParseStatusPtr &ps)
+{
+    bool ok = false;
+    QSTDOUT() << "Entering: " << __FUNCTION__ << "(" << pos << ")" << endl;
+    g_indentLevel++;
+
+    QChar c;
+    EXPECT(someChar(pos, c, ps));
+    val = c;
+
+_exit:
+    g_indentLevel--;
+    QSTDOUT() << "Leaving: " << __FUNCTION__ << "() = \"" << val << "\", " << ok << endl;
+    return ok;
+}
+
 
 bool QMetaParserBase::spaces(int &pos, ParseStatusPtr &ps)
 {
@@ -417,6 +452,7 @@ void QMetaParserBase::initRuleMap()
 #pragma GCC diagnostic ignored "-Wpmf-conversions"
     m_rule[SPACES] = reinterpret_cast<RuleFuncPtr>(static_cast<RuleMemberFuncPtr>(&QMetaParserBase::spaces));
     m_rule[IDENTIFIER] = reinterpret_cast<RuleFuncPtr>(&QMetaParserBase::identifier);
+    m_rule[ANYTHING] = reinterpret_cast<RuleFuncPtr>(&QMetaParserBase::anything);
     m_rule[INTEGER] = reinterpret_cast<RuleFuncPtr>(&QMetaParserBase::integer);
 #pragma GCC diagnostic pop
 }
