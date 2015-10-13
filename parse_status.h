@@ -4,47 +4,31 @@
 #include <QString>
 #include "utils.h"
 
-class ParseStatus;
-
-typedef ParseStatus* ParseStatusPtr;
-typedef const ParseStatus* ConstParseStatusPtr;
-
-class ParseStatus
+class ParseError
 {
 public:
-    static ParseStatusPtr success();
-    static ParseStatusPtr failure(int pos, QString msg);
-    static ParseStatusPtr failure(int pos, QString msg, ParseStatusPtr innerFailure);
+    ParseError(int pos, QString ruleName, QString msg);
 
-    void chain(const ParseStatusPtr ps) {
-        if(m_innerFailure) {
-            m_innerFailure->chain(ps);
-        } else {
-            m_innerFailure = ps;
-        }
-    }
+    int getPos() const;
 
-    QString toString() const {
-        return QString(QSL("ERROR %1")).arg(m_msg);
-    }
-
-    ParseStatusPtr getInnerFailure() const{
-        return m_innerFailure;
-    }
-
-    ~ParseStatus();
+    QString toString() const;
+    ~ParseError();
 
 private:
-    explicit ParseStatus(bool status);
-    ParseStatus(bool status, int pos, QString msg);
-    ParseStatus(bool status, int pos, QString msg, ParseStatusPtr innerFailure);
-
-    bool            m_status;
-    QString         m_msg;
-    ParseStatusPtr  m_innerFailure;
     int             m_pos;
+    QString         m_ruleName;
+    QString         m_msg;
 };
 
-
+class ParseErrorTrail
+{
+public:
+    void add(ParseError ps);
+    void clear();
+    QString toString() const;
+    bool isEmpty() const;
+private:
+    QMultiHash<int, ParseError> m_childNodes;
+};
 
 #endif // PARSESTATUS_H

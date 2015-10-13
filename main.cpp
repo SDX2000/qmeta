@@ -25,16 +25,13 @@ void doREPL()
         }
 
         QVariant result;
-        ParseStatusPtr ps;
+        ParseErrorTrail ps;
         bool ok = interp.parse(QMetaParser::RULES, inp, result, ps);
         if (ok) {
             QSTDOUT() << result << endl;
-        } else {
-            QSTDOUT() <<"PARSE FAILED ";
-            do {
-                QSTDOUT() <<ps->toString()<<" ";
-            } while((ps = ps->getInnerFailure()));
-            QSTDOUT() <<endl;
+        }
+        if (!ps.isEmpty()){
+            QSTDOUT() << "Generated errors: " << ps.toString() << endl;
         }
     }
 }
@@ -43,16 +40,13 @@ void execute(QString prog)
 {
     QMetaParser interp;
     QVariant result;
-    ParseStatusPtr ps;
+    ParseErrorTrail ps;
     bool ok = interp.parse(QMetaParser::GRAMMAR, prog, result, ps);
     if (ok) {
         QSTDOUT() << result << endl;
-    } else {
-        QSTDOUT() << "PARSE FAILED ";
-        do {
-            QSTDOUT() << ps->toString() << " ";
-        }while((ps = ps->getInnerFailure()));
-        QSTDOUT() << endl;
+    }
+    if (!ps.isEmpty()){
+        QSTDOUT() << "Generated errors: " << ps.toString() << endl;
     }
 }
 

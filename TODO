@@ -1,0 +1,4 @@
+- Let CHECK_POINT take only one parameter
+- Write helpful failure messages using RETURN_* macros.
+- Clear errors when a rule succeeds?
+- Optimize AST generation

@@ -1,45 +1,56 @@
 #include "parse_status.h"
 #include "utils.h"
 
-ParseStatusPtr ParseStatus::success()
-{
-    static ParseStatus ps(true);
-    return &ps;
+int ParseError::getPos() const {
+    return m_pos;
 }
 
-ParseStatusPtr ParseStatus::failure(int pos, QString msg)
-{
-    return new ParseStatus(false, pos, msg);
+QString ParseError::toString() const {
+    return QString(QSL("ERROR:%1 in %2() at %3"))
+                   .arg(m_msg).arg(m_ruleName).arg(m_pos);
 }
 
-ParseStatusPtr ParseStatus::failure(int pos, QString msg, ParseStatusPtr innerFailure)
-{
-    return new ParseStatus(false, pos, msg, innerFailure);
-}
-
-ParseStatus::~ParseStatus()
-{
-    safeDelete(m_innerFailure);
-}
-
-ParseStatus::ParseStatus(bool status)
-    : m_status(status)
-    , m_innerFailure(nullptr)
+ParseError::~ParseError()
 {
 }
 
-ParseStatus::ParseStatus(bool status, int pos, QString msg)
-    : m_status(status)
+ParseError::ParseError(int pos, QString ruleName, QString msg)
+    : m_pos(pos)
+    , m_ruleName(ruleName)
     , m_msg(msg)
-    , m_innerFailure(nullptr)
-    , m_pos(pos)
 {
 }
 
-ParseStatus::ParseStatus(bool status, int pos, QString msg, ParseStatusPtr innerFailure)
-    : m_status(status)
-    , m_msg(msg)
-    , m_innerFailure(innerFailure)
-    , m_pos(pos)
+void ParseErrorTrail::add(ParseError ps)
 {
+    m_childNodes.insert(ps.getPos(), ps);
+}
+
+void ParseErrorTrail::clear()
+{
+    m_childNodes.clear();
+}
+
+QString ParseErrorTrail::toString() const
+{
+    QString str;
+    auto values = m_childNodes.values();
+
+    int i = values.length();
+
+    foreach(ParseError ps, values) {
+        str += ps.toString();
+        i--;
+
+        if(i) {
+            str += ", ";
+        }
+    }
+
+    return str;
+}
+
+bool ParseErrorTrail::isEmpty() const
+{
+    return m_childNodes.isEmpty();
 }

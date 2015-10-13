@@ -1,7 +1,7 @@
 #include "qmeta_parser.h"
 
 
-bool QMetaParser::parse(int ruleId, QString inp, QVariant& ast, ParseStatusPtr& ps)
+bool QMetaParser::parse(int ruleId, QString inp, QVariant& ast, ParseErrorTrail& ps)
 {
     return QMetaParserBase::parse(ruleId, inp, ast, ps);
 }
@@ -11,24 +11,19 @@ QMetaParser::QMetaParser()
     initRuleMap();
 }
 
-bool QMetaParser::parse(int ruleId, int pos, QVariant &ast, ParseStatusPtr& ps)
+bool QMetaParser::parse(int ruleId, int pos, QVariant &ast, ParseErrorTrail& ps)
 {
-    bool ok = true;
-    QSTDOUT()<< __FUNCTION__ << "(" << pos << ")" << endl;
-    g_indentLevel++;
+    ENTRYV(pos);
+
     EXPECT(applyRule(ruleId, pos, ast, ps));
 
-_exit:
-    QSTDOUT()<< "return " << __FUNCTION__ << "() = " << ast << ", " << ok << endl;
-    g_indentLevel--;
-    return ok;
+    EXITV(ast);
 }
 
-bool QMetaParser::rules(int& pos, QVariant &ast, ParseStatusPtr& ps)
+bool QMetaParser::rules(int& pos, QVariant &ast, ParseErrorTrail& ps)
 {
-    bool ok = true;
-    QSTDOUT()<< __FUNCTION__ << "(" << pos << ")" << endl;
-    g_indentLevel++;
+    ENTRYV(pos);
+
     QList<QVariant> l;
 
     QVariant _ast;
@@ -40,17 +35,13 @@ bool QMetaParser::rules(int& pos, QVariant &ast, ParseStatusPtr& ps)
     ast = l;
 
     RETURN_SUCCESS();
-_exit:
-    QSTDOUT()<< "return " << __FUNCTION__ << "() = " << ast << ", " << ok << endl;
-    g_indentLevel--;
-    return ok;
+
+    EXITV(ast);
 }
 
-bool QMetaParser::grammar(int &pos, QVariant &ast, ParseStatusPtr &ps)
+bool QMetaParser::grammar(int &pos, QVariant &ast, ParseErrorTrail &ps)
 {
-    bool ok = true;
-    QSTDOUT()<< __FUNCTION__ << "(" << pos << ")" << endl;
-    g_indentLevel++;
+    ENTRYV(pos);
 
     QList<QVariant> l;
     l.append(QString(QSL("GRAMMAR")));
@@ -76,17 +67,13 @@ bool QMetaParser::grammar(int &pos, QVariant &ast, ParseStatusPtr &ps)
     ast = l;
 
     RETURN_SUCCESS();
-_exit:
-    QSTDOUT()<< "return " << __FUNCTION__ << "() = " << ast << ", " << ok << endl;
-    g_indentLevel--;
-    return ok;
+
+    EXITV(ast);
 }
 
-bool QMetaParser::rule(int &pos, QVariant &ast, ParseStatusPtr& ps)
+bool QMetaParser::rule(int &pos, QVariant &ast, ParseErrorTrail& ps)
 {
-    bool ok = true;
-    QSTDOUT()<< __FUNCTION__ << "(" << pos << ")" << endl;
-    g_indentLevel++;
+    ENTRYV(pos);
 
     QList<QVariant> l;
     l.append(QString(QSL("RULE")));
@@ -110,17 +97,13 @@ bool QMetaParser::rule(int &pos, QVariant &ast, ParseStatusPtr& ps)
     ast = l;
 
     RETURN_SUCCESS();
-_exit:
-    QSTDOUT()<< "return " << __FUNCTION__ << "() = " << ast << ", " << ok << endl;
-    g_indentLevel--;
-    return ok;
+
+    EXITV(ast);
 }
 
-bool QMetaParser::choices(int &pos, QVariant &ast, ParseStatusPtr& ps)
+bool QMetaParser::choices(int &pos, QVariant &ast, ParseErrorTrail& ps)
 {
-    bool ok = true;
-    QSTDOUT()<< __FUNCTION__ << "(" << pos << ")" << endl;
-    g_indentLevel++;
+    ENTRYV(pos);
 
     CHECK_POINT(cp0, pos);
     {
@@ -150,17 +133,12 @@ choice1:
 
     RETURN_SUCCESS();
 
-_exit:
-    QSTDOUT()<< "return " << __FUNCTION__ << "() = " << ast << ", " << ok << endl;
-    g_indentLevel--;
-    return ok;
+    EXITV(ast);
 }
 
-bool QMetaParser::choice(int &pos, QVariant &ast, ParseStatusPtr& ps)
+bool QMetaParser::choice(int &pos, QVariant &ast, ParseErrorTrail& ps)
 {
-    bool ok = true;
-    QSTDOUT()<< __FUNCTION__ << "(" << pos << ")" << endl;
-    g_indentLevel++;
+    ENTRYV(pos);
 
     QList<QVariant> l;
 
@@ -171,7 +149,7 @@ bool QMetaParser::choice(int &pos, QVariant &ast, ParseStatusPtr& ps)
     }
 
     if(l.length() <= 0) {
-        RETURN_FAILURE(pos, "choice failed");
+        RETURN_FAILURE("choice failed");
     }
 
     if (thisToken(pos, QSL("->"), ps)) {
@@ -185,17 +163,12 @@ bool QMetaParser::choice(int &pos, QVariant &ast, ParseStatusPtr& ps)
 
     RETURN_SUCCESS();
 
-_exit:
-    QSTDOUT()<< "return " << __FUNCTION__ << "() = " << ast << ", " << ok << endl;
-    g_indentLevel--;
-    return ok;
+    EXITV(ast);
 }
 
-bool QMetaParser::hostExpr(int &pos, QVariant &ast, ParseStatusPtr &ps)
+bool QMetaParser::hostExpr(int &pos, QVariant &ast, ParseErrorTrail &ps)
 {
-    bool ok = true;
-    QSTDOUT()<< __FUNCTION__ << "(" << pos << ")" << endl;
-    g_indentLevel++;
+    ENTRYV(pos);
 
     spaces(pos, ps);
     int count = 0;
@@ -219,7 +192,7 @@ bool QMetaParser::hostExpr(int &pos, QVariant &ast, ParseStatusPtr &ps)
     }
 
     if(count) {
-        RETURN_FAILURE(pos, QSL("Invalid host expression (unbalanced braces)."));
+        RETURN_FAILURE(QSL("Invalid host expression (unbalanced braces)."));
     }
 
     spaces(pos, ps);
@@ -228,17 +201,12 @@ bool QMetaParser::hostExpr(int &pos, QVariant &ast, ParseStatusPtr &ps)
 
     RETURN_SUCCESS();
 
-_exit:
-    QSTDOUT()<< "return " << __FUNCTION__ << "() = " << ast << ", " << ok << endl;
-    g_indentLevel--;
-    return ok;
+    EXITV(ast);
 }
 
-bool QMetaParser::term(int &pos, QVariant &ast, ParseStatusPtr &ps)
+bool QMetaParser::term(int &pos, QVariant &ast, ParseErrorTrail &ps)
 {
-    bool ok = true;
-    QSTDOUT()<< __FUNCTION__ << "(" << pos << ")" << endl;
-    g_indentLevel++;
+    ENTRYV(pos);
 
     CHECK_POINT(cp0, pos);
     {
@@ -270,17 +238,12 @@ choice1:
 
     RETURN_SUCCESS();
 
-_exit:
-    QSTDOUT()<< "return " << __FUNCTION__ << "() = " << ast << ", " << ok << endl;
-    g_indentLevel--;
-    return ok;
+    EXITV(ast);
 }
 
-bool QMetaParser::term1(int &pos, QVariant &ast, ParseStatusPtr &ps)
+bool QMetaParser::term1(int &pos, QVariant &ast, ParseErrorTrail &ps)
 {
-    bool ok = true;
-    QSTDOUT()<< __FUNCTION__ << "(" << pos << ")" << endl;
-    g_indentLevel++;
+    ENTRYV(pos);
 
     CHECK_POINT(cp0, pos);
     {
@@ -356,17 +319,12 @@ choice4:
 
     RETURN_SUCCESS();
 
-_exit:
-    QSTDOUT()<< "return " << __FUNCTION__ << "() = " << ast << ", " << ok << endl;
-    g_indentLevel--;
-    return ok;
+    EXITV(ast);
 }
 
-bool QMetaParser::term2(int &pos, QVariant &ast, ParseStatusPtr &ps)
+bool QMetaParser::term2(int &pos, QVariant &ast, ParseErrorTrail &ps)
 {
-    bool ok = true;
-    QSTDOUT()<< __FUNCTION__ << "(" << pos << ")" << endl;
-    g_indentLevel++;
+    ENTRYV(pos);
 
     CHECK_POINT(cp0, pos);
     {
@@ -441,17 +399,13 @@ choice4:
     }
 
     RETURN_SUCCESS();
-_exit:
-    QSTDOUT()<< "return " << __FUNCTION__ << "() = " << ast << ", " << ok << endl;
-    g_indentLevel--;
-    return ok;
+
+    EXITV(ast);
 }
 
-bool QMetaParser::someToken(int &pos, QVariant& ast, ParseStatusPtr &ps)
+bool QMetaParser::someToken(int &pos, QVariant& ast, ParseErrorTrail &ps)
 {
-    bool ok = true;
-    QSTDOUT()<< __FUNCTION__ << "(" << pos << ")" << endl;
-    g_indentLevel++;
+    ENTRYV(pos);
 
     spaces(pos, ps);
 
@@ -484,17 +438,13 @@ bool QMetaParser::someToken(int &pos, QVariant& ast, ParseStatusPtr &ps)
     ast = l;
 
     RETURN_SUCCESS();
-_exit:
-    QSTDOUT()<< "return " << __FUNCTION__ << "() = " << ast << ", " << ok << endl;
-    g_indentLevel--;
-    return ok;
+
+    EXITV(ast);
 }
 
-bool QMetaParser::escapedChar(int &pos, QChar &c, ParseStatusPtr &ps)
+bool QMetaParser::escapedChar(int &pos, QChar &c, ParseErrorTrail &ps)
 {
-    bool ok = true;
-    QSTDOUT()<< __FUNCTION__ << "(" << pos << ")" << endl;
-    g_indentLevel++;
+    ENTRYV(pos);
 
     CHECK_POINT(cp0, pos);
 
@@ -517,10 +467,7 @@ choice1:
     }
     RETURN_SUCCESS();
 
-_exit:
-    QSTDOUT()<< "return " << __FUNCTION__ << "() = \\'" << _c << "', " << ok << endl;
-    g_indentLevel--;
-    return ok;
+    EXITV(c);
 }
 
 void QMetaParser::initRuleMap()

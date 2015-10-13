@@ -92,3 +92,4 @@ QTextStream& operator << (QTextStream& lhs, bool val) {
     }
     return lhs;
 }
+

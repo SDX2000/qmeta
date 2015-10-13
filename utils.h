@@ -8,6 +8,21 @@
 
 #define QSTDOUT() printIndent(); qStdOut()
 
+#define TRACE_LAST(X) qStdOut() << #X << " = " << X;
+#define TRACE(X) qStdOut() << #X << " = " << X << ", ";
+
+#define TRACE1(X)       TRACE_LAST(X)
+#define TRACE2(X, ...)  TRACE(X)TRACE1(__VA_ARGS__)
+#define TRACE3(X, ...)  TRACE(X)TRACE2(__VA_ARGS__)
+#define TRACE4(X, ...)  TRACE(X)TRACE3(__VA_ARGS__)
+#define TRACE5(X, ...)  TRACE(X)TRACE4(__VA_ARGS__)
+#define TRACE6(X, ...)  TRACE(X)TRACE5(__VA_ARGS__)
+
+
+#define GET_TRACER(_1,_2,_3,_4,_5,_6,TRACEER,...) TRACEER
+#define TRACEV(...) \
+  GET_TRACER(__VA_ARGS__,TRACE6, TRACE5, TRACE4, TRACE3, TRACE2, TRACE1)(__VA_ARGS__)
+
 QTextStream& qStdOut();
 
 QTextStream& operator << (QTextStream& lhs, const QVariant& val);
@@ -30,32 +45,8 @@ void safeDeleteArray(T* &p) {
 
 void printIndent();
 void printIndent(int indentation);
-//void print(QVariant &val);
 
 extern int g_indentLevel;
 
-//class EntryExitLogger
-//{
-//    const char * m_funcName;
-
-//public:
-//    EntryExitLogger(const char *funcName)
-//        : m_funcName(funcName)
-//    {
-//        printIndent();
-//        qStdOut()<<"Entering: "<<m_funcName<<endl;
-//        g_indentLevel++;
-//    }
-
-//    ~EntryExitLogger()
-//    {
-//        g_indentLevel--;
-//        printIndent();
-//        qStdOut()<<"Leaving: "<<m_funcName<<endl;
-
-//    }
-//};
-
-//#define LOG() EntryExitLogger __entryExitLogger(__FUNCTION__);
 
 #endif // UTILS_H
