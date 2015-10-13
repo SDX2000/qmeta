@@ -6,7 +6,6 @@
 
 #define QSL(str) QStringLiteral(str)
 
-#define QSTDOUT() printIndent(); qStdOut()
 
 #define TRACE_LAST(X) qStdOut() << #X << " = " << X;
 #define TRACE(X) qStdOut() << #X << " = " << X << ", ";
@@ -43,10 +42,8 @@ void safeDeleteArray(T* &p) {
 
 #define TAB_SPACES 4
 
-void printIndent();
 void printIndent(int indentation);
-
-extern int g_indentLevel;
+QTextStream& printIndent(QTextStream& s, int indentation);
 
 
 #endif // UTILS_H

@@ -1,6 +1,6 @@
 qmeta QMetaParser {
   grammar           = "qmeta" identifier "{" rules "}";
-  rules             = (rule ";")*;
+  rules             = (rule ";")+;
   rule              = identifier "=" choices;
   choices           = choice "|" choices
                     | choice;

@@ -5,36 +5,33 @@
 #include "utils.h"
 #include "parse_status.h"
 
+#define QSTDOUT() printIndent(m_indentLevel); qStdOut()
 
 #define ENTRYV(...) \
-    CHECK_POINT(pos0, pos) \
+    CHECK_POINT(_pos0, pos); \
     QString msg;\
     bool ok = true; \
     QSTDOUT() << __FUNCTION__ << "("; \
     TRACEV(__VA_ARGS__); \
     qStdOut() << ")" << endl; \
-    g_indentLevel++;
+    m_indentLevel++;
 
 #define EXIT() \
     _exit: \
-        if (!ok) { \
-            ps.add(ParseError(pos0, __FUNCTION__, msg));\
-        } \
+        exitRule(_pos0, __FUNCTION__, ok, msg); \
         QSTDOUT() << "return " << __FUNCTION__ << "() "; \
         TRACEV(ok); \
         qStdOut() <<endl; \
-        g_indentLevel--; \
+        m_indentLevel--; \
         return ok;
 
 #define EXITV(...) \
     _exit: \
-        if (!ok) { \
-            ps.add(ParseError(pos0, __FUNCTION__, msg));\
-        } \
+        exitRule(_pos0, __FUNCTION__, ok, msg); \
         QSTDOUT() << "return " << __FUNCTION__ << "() "; \
         TRACEV(ok, __VA_ARGS__); \
         qStdOut() <<endl; \
-        g_indentLevel--; \
+        m_indentLevel--; \
         return ok;
 
 #define RETURN_SUCCESS() \
@@ -43,6 +40,7 @@
 
 #define RETURN_FAILURE(MSG) \
     ok = false; \
+    msg = MSG; \
     goto _exit;
 
 //Note: There is no need to checkpoint EXPECT
@@ -84,9 +82,10 @@ class QMetaParserBase
 {
 public:
     QMetaParserBase();
-    virtual bool parse(int ruleId, QString inp, QVariant& ast, ParseErrorTrail &ps);
-    virtual bool parse(int ruleId, int pos, QVariant& ast, ParseErrorTrail &ps) = 0;
+    virtual bool parse(int ruleId, QString inp, QVariant& ast);
+    virtual bool parse(int ruleId, int pos, QVariant& ast) = 0;
     virtual ~QMetaParserBase() {}
+    const ParseError* getError() const;
 
     const int FAIL = -1;
 
@@ -129,40 +128,45 @@ public:
 
 protected:
     //TERMINALS//
-    bool thisStr(int &pos, QString thisStr, ParseErrorTrail& ps);
-    bool digit(int &pos, int& digit, ParseErrorTrail &ps);
-    bool strOf(int &pos, bool (QChar::*is_x)() const, ParseErrorTrail &ps);
-    bool strOf(int &pos, QVariant &str, bool (QChar::*is_x)() const, ParseErrorTrail &ps);
-    bool anything(int& pos, QVariant &val, ParseErrorTrail &ps);
-    bool anyChar(int &pos, ParseErrorTrail &ps);
-    bool someChar(int& pos, QChar& c, ParseErrorTrail &ps);
-    bool someCharOf(int &pos, bool (QChar::*is_x)() const, ParseErrorTrail &ps);
-    bool someCharOf(int &pos, QChar &c, bool (QChar::*is_x)() const, ParseErrorTrail &ps);
-    bool thisChar(int &pos, QChar c, ParseErrorTrail &ps);
-    bool oneOf(int& pos, QString operators, QChar &opOut, ParseErrorTrail &ps);
+    bool thisStr(int &pos, QString thisStr);
+    bool digit(int &pos, int& digit);
+    bool strOf(int &pos, bool (QChar::*is_x)() const);
+    bool strOf(int &pos, QVariant &str, bool (QChar::*is_x)() const);
+    bool anything(int& pos, QVariant &val);
+    bool anyChar(int &pos);
+    bool someChar(int& pos, QChar& c);
+    bool someCharOf(int &pos, bool (QChar::*is_x)() const);
+    bool someCharOf(int &pos, QChar &c, bool (QChar::*is_x)() const);
+    bool thisChar(int &pos, QChar c);
+    bool oneOf(int& pos, QString operators, QChar &opOut);
 
     //NONTERMINALS//
-    virtual bool spaces(int &pos, ParseErrorTrail &ps);
-    virtual bool thisToken(int &pos, QString str, ParseErrorTrail &ps);
+    virtual bool spaces(int &pos);
+    virtual bool thisToken(int &pos, QString str);
 
     //HELPER FUNCTIONS//
     virtual QChar unescape(QChar c);
-    virtual bool applyRule(int ruleId, int &pos, QVariant& result, ParseErrorTrail &ps);
+    virtual bool applyRule(int ruleId, int &pos, QVariant& result);
     QString mid(int pos0, int pos1);
 
+    void exitRule(int pos, QString ruleName, bool ok, QString msg);
+
 protected:
-    typedef bool (QMetaParserBase::*RuleMemberFuncPtr)(int &pos, QVariant &result, ParseErrorTrail& ps);
-    typedef bool (*RuleFuncPtr)(QMetaParserBase* self, int &pos, QVariant &result, ParseErrorTrail& ps);
-    QHash<MemoKey, MemoEntry> m_memo;
+    typedef bool (QMetaParserBase::*RuleMemberFuncPtr)(int &pos, QVariant &result);
+    typedef bool (*RuleFuncPtr)(QMetaParserBase* self, int &pos, QVariant &result);
     QHash<int, RuleFuncPtr> m_rule;
 
+    QHash<MemoKey, MemoEntry>   m_memo;
+    QList<ParseError*>          m_errors;
+    int                         m_indentLevel;
+
 private:
-    bool advance(int &pos, int length, ParseErrorTrail &ps);
+    bool advance(int &pos, int length);
 
     //Accessible only through applyRule
-    bool spaces(int &pos, QVariant& spaces, ParseErrorTrail &ps);
-    bool identifier(int &pos, QVariant &ident, ParseErrorTrail &ps);
-    bool integer(int &pos, QVariant &result, ParseErrorTrail &ps);
+    bool spaces(int &pos, QVariant& spaces);
+    bool identifier(int &pos, QVariant &ident);
+    bool integer(int &pos, QVariant &result);
     void initRuleMap();
 
 private:

@@ -1,9 +1,9 @@
 #include "qmeta_parser.h"
 
 
-bool QMetaParser::parse(int ruleId, QString inp, QVariant& ast, ParseErrorTrail& ps)
+bool QMetaParser::parse(int ruleId, QString inp, QVariant& ast)
 {
-    return QMetaParserBase::parse(ruleId, inp, ast, ps);
+    return QMetaParserBase::parse(ruleId, inp, ast);
 }
 
 QMetaParser::QMetaParser()
@@ -11,26 +11,29 @@ QMetaParser::QMetaParser()
     initRuleMap();
 }
 
-bool QMetaParser::parse(int ruleId, int pos, QVariant &ast, ParseErrorTrail& ps)
+bool QMetaParser::parse(int ruleId, int pos, QVariant &ast)
 {
     ENTRYV(pos);
 
-    EXPECT(applyRule(ruleId, pos, ast, ps));
+    EXPECT(applyRule(ruleId, pos, ast));
 
     EXITV(ast);
 }
 
-bool QMetaParser::rules(int& pos, QVariant &ast, ParseErrorTrail& ps)
+bool QMetaParser::rules(int& pos, QVariant &ast)
 {
     ENTRYV(pos);
 
     QList<QVariant> l;
 
     QVariant _ast;
-    while (applyRule(RULE, pos, _ast, ps)) {
-        EXPECT(thisToken(pos, QSL(";"), ps));
+
+    EXPECT(applyRule(RULE, pos, _ast));
+
+    do {
+        EXPECT(thisToken(pos, QSL(";")));
         l.append(_ast);
-    }
+    } while (applyRule(RULE, pos, _ast));
 
     ast = l;
 
@@ -39,30 +42,30 @@ bool QMetaParser::rules(int& pos, QVariant &ast, ParseErrorTrail& ps)
     EXITV(ast);
 }
 
-bool QMetaParser::grammar(int &pos, QVariant &ast, ParseErrorTrail &ps)
+bool QMetaParser::grammar(int &pos, QVariant &ast)
 {
     ENTRYV(pos);
 
     QList<QVariant> l;
     l.append(QString(QSL("GRAMMAR")));
 
-    EXPECT(thisToken(pos, "qmeta", ps));
+    EXPECT(thisToken(pos, "qmeta"));
 
     {
         QVariant id;
-        EXPECT(applyRule(IDENTIFIER, pos, id, ps));
+        EXPECT(applyRule(IDENTIFIER, pos, id));
         l.append(id);
     }
 
-    EXPECT(thisToken(pos, "{", ps));
+    EXPECT(thisToken(pos, "{"));
 
     {
         QVariant _ast;
-        EXPECT(applyRule(RULES, pos, _ast, ps));
+        EXPECT(applyRule(RULES, pos, _ast));
         l.append(_ast);
     }
 
-    EXPECT(thisToken(pos, "}", ps));
+    EXPECT(thisToken(pos, "}"));
 
     ast = l;
 
@@ -71,7 +74,7 @@ bool QMetaParser::grammar(int &pos, QVariant &ast, ParseErrorTrail &ps)
     EXITV(ast);
 }
 
-bool QMetaParser::rule(int &pos, QVariant &ast, ParseErrorTrail& ps)
+bool QMetaParser::rule(int &pos, QVariant &ast)
 {
     ENTRYV(pos);
 
@@ -80,17 +83,17 @@ bool QMetaParser::rule(int &pos, QVariant &ast, ParseErrorTrail& ps)
 
     {
         QVariant id;
-        EXPECT(applyRule(IDENTIFIER, pos, id, ps));
+        EXPECT(applyRule(IDENTIFIER, pos, id));
         l.append(id);
     }
 
     {
-        EXPECT(thisToken(pos, QSL("="), ps));
+        EXPECT(thisToken(pos, QSL("=")));
     }
 
     {
         QVariant _ast;
-        EXPECT(applyRule(CHOICES, pos, _ast, ps));
+        EXPECT(applyRule(CHOICES, pos, _ast));
         l.append(_ast);
     }
 
@@ -101,7 +104,7 @@ bool QMetaParser::rule(int &pos, QVariant &ast, ParseErrorTrail& ps)
     EXITV(ast);
 }
 
-bool QMetaParser::choices(int &pos, QVariant &ast, ParseErrorTrail& ps)
+bool QMetaParser::choices(int &pos, QVariant &ast)
 {
     ENTRYV(pos);
 
@@ -112,11 +115,11 @@ bool QMetaParser::choices(int &pos, QVariant &ast, ParseErrorTrail& ps)
         l.append(QString(QSL("OR")));
 
         QVariant _ast;
-        TRY(applyRule(CHOICE, pos, _ast, ps), choice1);
+        TRY(applyRule(CHOICE, pos, _ast), choice1);
         l.append(_ast);
 
-        TRY(thisToken(pos, QSL("|"), ps), choice1);
-        TRY(applyRule(CHOICES, pos, _ast, ps), choice1);
+        TRY(thisToken(pos, QSL("|")), choice1);
+        TRY(applyRule(CHOICES, pos, _ast), choice1);
         l.append(_ast);
 
         ast = l;
@@ -127,7 +130,7 @@ choice1:
     {
         pos = cp0;
         QVariant _ast;
-        EXPECT(applyRule(CHOICE, pos, _ast, ps));
+        EXPECT(applyRule(CHOICE, pos, _ast));
         ast = _ast;
     }
 
@@ -136,15 +139,15 @@ choice1:
     EXITV(ast);
 }
 
-bool QMetaParser::choice(int &pos, QVariant &ast, ParseErrorTrail& ps)
+bool QMetaParser::choice(int &pos, QVariant &ast)
 {
     ENTRYV(pos);
 
     QList<QVariant> l;
 
     QVariant _ast;
-    while (applyRule(TERM, pos, _ast, ps)) {
-        spaces(pos, ps);
+    while (applyRule(TERM, pos, _ast)) {
+        spaces(pos);
         l.append(_ast);
     }
 
@@ -152,10 +155,10 @@ bool QMetaParser::choice(int &pos, QVariant &ast, ParseErrorTrail& ps)
         RETURN_FAILURE("choice failed");
     }
 
-    if (thisToken(pos, QSL("->"), ps)) {
+    if (thisToken(pos, QSL("->"))) {
         l.append(QString(QSL("HOSTEXPR")));
         QVariant _hostExpr;
-        EXPECT(applyRule(HOST_EXPR, pos, _hostExpr, ps));
+        EXPECT(applyRule(HOST_EXPR, pos, _hostExpr));
         l.append(_hostExpr);
     }
 
@@ -166,16 +169,16 @@ bool QMetaParser::choice(int &pos, QVariant &ast, ParseErrorTrail& ps)
     EXITV(ast);
 }
 
-bool QMetaParser::hostExpr(int &pos, QVariant &ast, ParseErrorTrail &ps)
+bool QMetaParser::hostExpr(int &pos, QVariant &ast)
 {
     ENTRYV(pos);
 
-    spaces(pos, ps);
+    spaces(pos);
     int count = 0;
     QChar c;
     QString hostexpr;
 
-    while(someChar(pos, c, ps)) {
+    while(someChar(pos, c)) {
         if (c == QChar('{')) {
             count++;
             if(count == 1) {
@@ -195,7 +198,7 @@ bool QMetaParser::hostExpr(int &pos, QVariant &ast, ParseErrorTrail &ps)
         RETURN_FAILURE(QSL("Invalid host expression (unbalanced braces)."));
     }
 
-    spaces(pos, ps);
+    spaces(pos);
 
     ast = hostexpr;
 
@@ -204,7 +207,7 @@ bool QMetaParser::hostExpr(int &pos, QVariant &ast, ParseErrorTrail &ps)
     EXITV(ast);
 }
 
-bool QMetaParser::term(int &pos, QVariant &ast, ParseErrorTrail &ps)
+bool QMetaParser::term(int &pos, QVariant &ast)
 {
     ENTRYV(pos);
 
@@ -215,13 +218,13 @@ bool QMetaParser::term(int &pos, QVariant &ast, ParseErrorTrail &ps)
         l.append(QString(QSL("term")));
 
         QVariant _ast;
-        TRY(applyRule(TERM1, pos, _ast, ps), choice1);
+        TRY(applyRule(TERM1, pos, _ast), choice1);
         l.append(_ast);
 
-        TRY(thisToken(pos, QSL(":"), ps), choice1);
+        TRY(thisToken(pos, QSL(":")), choice1);
 
         QVariant id;
-        TRY(applyRule(IDENTIFIER, pos, id, ps), choice1);
+        TRY(applyRule(IDENTIFIER, pos, id), choice1);
         l.append(id);
 
         ast = l;
@@ -232,7 +235,7 @@ choice1:
     {
         pos = cp0;
         QVariant _ast;
-        EXPECT(applyRule(TERM1, pos, _ast, ps));
+        EXPECT(applyRule(TERM1, pos, _ast));
         ast = _ast;
     }
 
@@ -241,7 +244,7 @@ choice1:
     EXITV(ast);
 }
 
-bool QMetaParser::term1(int &pos, QVariant &ast, ParseErrorTrail &ps)
+bool QMetaParser::term1(int &pos, QVariant &ast)
 {
     ENTRYV(pos);
 
@@ -251,10 +254,10 @@ bool QMetaParser::term1(int &pos, QVariant &ast, ParseErrorTrail &ps)
         QList<QVariant> l;
         l.append(QString(QSL("NOT")));
 
-        TRY(thisToken(pos, QSL("~"), ps), choice1);
+        TRY(thisToken(pos, QSL("~")), choice1);
 
         QVariant _ast;
-        TRY(applyRule(TERM2, pos, _ast, ps), choice1);
+        TRY(applyRule(TERM2, pos, _ast), choice1);
         l.append(_ast);
 
         ast = l;
@@ -268,10 +271,10 @@ choice1:
         l.append(QString(QSL("REPEAT{0,}")));
 
         QVariant _ast;
-        TRY(applyRule(TERM2, pos, _ast, ps), choice2);
+        TRY(applyRule(TERM2, pos, _ast), choice2);
         l.append(_ast);
 
-        TRY(thisToken(pos, QSL("*"), ps), choice2);
+        TRY(thisToken(pos, QSL("*")), choice2);
 
         ast = l;
         RETURN_SUCCESS();
@@ -284,10 +287,10 @@ choice2:
         l.append(QString(QSL("REPEAT{1,}")));
 
         QVariant _ast;
-        TRY(applyRule(TERM2, pos, _ast, ps), choice3);
+        TRY(applyRule(TERM2, pos, _ast), choice3);
         l.append(_ast);
 
-        TRY(thisToken(pos, QSL("+"), ps), choice3);
+        TRY(thisToken(pos, QSL("+")), choice3);
 
         ast = l;
         RETURN_SUCCESS();
@@ -300,10 +303,10 @@ choice3:
         l.append(QString(QSL("OPTIONAL")));
 
         QVariant _ast;
-        TRY(applyRule(TERM2, pos, _ast, ps), choice4);
+        TRY(applyRule(TERM2, pos, _ast), choice4);
         l.append(_ast);
 
-        TRY(thisToken(pos, QSL("?"), ps), choice4);
+        TRY(thisToken(pos, QSL("?")), choice4);
 
         ast = l;
         RETURN_SUCCESS();
@@ -313,7 +316,7 @@ choice4:
     {
         pos = cp0;
         QVariant _ast;
-        EXPECT(applyRule(TERM2, pos, _ast, ps));
+        EXPECT(applyRule(TERM2, pos, _ast));
         ast = _ast;
     }
 
@@ -322,7 +325,7 @@ choice4:
     EXITV(ast);
 }
 
-bool QMetaParser::term2(int &pos, QVariant &ast, ParseErrorTrail &ps)
+bool QMetaParser::term2(int &pos, QVariant &ast)
 {
     ENTRYV(pos);
 
@@ -332,17 +335,17 @@ bool QMetaParser::term2(int &pos, QVariant &ast, ParseErrorTrail &ps)
         QList<QVariant> l;
         l.append(QString(QSL("CHAR")));
 
-        TRY(thisChar(pos, QChar('\''), ps), choice1);
+        TRY(thisChar(pos, QChar('\'')), choice1);
 
         CHECK_POINT(cp1, pos);
-        TRY_INV(thisChar(pos, QChar('\''), ps), choice1);
+        TRY_INV(thisChar(pos, QChar('\'')), choice1);
         pos = cp1;
 
         QChar c;
-        TRY(escapedChar(pos, c, ps), choice1);
+        TRY(escapedChar(pos, c), choice1);
         l.append(c);
 
-        TRY(thisChar(pos, QChar('\''), ps), choice1);
+        TRY(thisChar(pos, QChar('\'')), choice1);
 
         ast = l;
         RETURN_SUCCESS();
@@ -352,7 +355,7 @@ choice1:
     {
         pos = cp0;
         QVariant _ast;
-        TRY(applyRule(SOME_TOKEN, pos, _ast, ps), choice2);
+        TRY(applyRule(SOME_TOKEN, pos, _ast), choice2);
         ast = _ast;
         RETURN_SUCCESS();
     }
@@ -364,7 +367,7 @@ choice2:
         l.append(QString(QSL("APPLY")));
 
         QVariant ruleName;
-        TRY(applyRule(IDENTIFIER, pos, ruleName, ps), choice3);
+        TRY(applyRule(IDENTIFIER, pos, ruleName), choice3);
         l.append(ruleName);
 
         ast = l;
@@ -378,7 +381,7 @@ choice3:
         l.append(QString(QSL("ANYTHING")));
 
         QVariant val;
-        TRY(thisChar(pos, QChar('.'), ps), choice4);
+        TRY(thisChar(pos, QChar('.')), choice4);
         l.append(val);
 
         ast = l;
@@ -388,12 +391,12 @@ choice3:
 choice4:
     {
         pos = cp0;
-        EXPECT(thisToken(pos, QSL("("), ps));
+        EXPECT(thisToken(pos, QSL("(")));
 
         QVariant _ast;
-        EXPECT(applyRule(CHOICE, pos, _ast, ps));
+        EXPECT(applyRule(CHOICE, pos, _ast));
 
-        EXPECT(thisToken(pos, QSL(")"), ps));
+        EXPECT(thisToken(pos, QSL(")")));
 
         ast = _ast;
     }
@@ -403,37 +406,37 @@ choice4:
     EXITV(ast);
 }
 
-bool QMetaParser::someToken(int &pos, QVariant& ast, ParseErrorTrail &ps)
+bool QMetaParser::someToken(int &pos, QVariant& ast)
 {
     ENTRYV(pos);
 
-    spaces(pos, ps);
+    spaces(pos);
 
     QList<QVariant> l;
     l.append(QString(QSL("TOKEN")));
 
-    EXPECT(thisChar(pos, QChar('"'), ps));
+    EXPECT(thisChar(pos, QChar('"')));
 
     {
         QString token;
 
         while (true) {
             CHECK_POINT(cp0, pos);
-            if(thisChar(pos, QChar('"'), ps)) {
+            if(thisChar(pos, QChar('"'))) {
                 pos = cp0;
                 break;
             }
             pos = cp0;
             QChar c;
-            EXPECT(someChar(pos, c, ps));
+            EXPECT(someChar(pos, c));
             token += c;
         }
 
-        EXPECT(thisChar(pos, QChar('"'), ps));
+        EXPECT(thisChar(pos, QChar('"')));
         l.append(token);
     }
 
-    spaces(pos, ps);
+    spaces(pos);
 
     ast = l;
 
@@ -442,7 +445,7 @@ bool QMetaParser::someToken(int &pos, QVariant& ast, ParseErrorTrail &ps)
     EXITV(ast);
 }
 
-bool QMetaParser::escapedChar(int &pos, QChar &c, ParseErrorTrail &ps)
+bool QMetaParser::escapedChar(int &pos, QChar &c)
 {
     ENTRYV(pos);
 
@@ -452,8 +455,8 @@ bool QMetaParser::escapedChar(int &pos, QChar &c, ParseErrorTrail &ps)
 
     {
         pos = cp0;
-        TRY(thisChar(pos, QChar('\\'), ps), choice1);
-        TRY(someChar(pos, _c, ps), choice1);
+        TRY(thisChar(pos, QChar('\\')), choice1);
+        TRY(someChar(pos, _c), choice1);
         c = unescape(_c);
         RETURN_SUCCESS();
     }
@@ -462,7 +465,7 @@ choice1:
     {
         pos = cp0;
         QChar _c;
-        EXPECT(someChar(pos, _c, ps));
+        EXPECT(someChar(pos, _c));
         c = _c;
     }
     RETURN_SUCCESS();

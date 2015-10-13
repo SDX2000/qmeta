@@ -6,22 +6,29 @@
 //////////////////// PUBLIC FUNCTIONS ///////////////////
 
 QMetaParserBase::QMetaParserBase()
+    :m_indentLevel(0)
 {
     initRuleMap();
 }
 
-bool QMetaParserBase::parse(int ruleId, QString str, QVariant& ast, ParseErrorTrail &ps)
+bool QMetaParserBase::parse(int ruleId, QString str, QVariant& ast)
 {
     m_input = str;
     m_memo.clear();
-    ps.clear();
-    return parse(ruleId, 0, ast, ps);
+    m_errors.clear();
+    m_indentLevel = 0;
+    return parse(ruleId, 0, ast);
+}
+
+const ParseError *QMetaParserBase::getError() const
+{
+    return m_errors[0];
 }
 
 
 /////////////////////  TERMINALS  //////////////////////
 
-bool QMetaParserBase::advance(int &pos, int count, ParseErrorTrail &ps)
+bool QMetaParserBase::advance(int &pos, int count)
 {
     ENTRYV(pos, count);
 
@@ -34,7 +41,7 @@ bool QMetaParserBase::advance(int &pos, int count, ParseErrorTrail &ps)
     EXIT();
 }
 
-bool QMetaParserBase::digit(int &pos, int& digit, ParseErrorTrail &ps)
+bool QMetaParserBase::digit(int &pos, int& digit)
 {
     ENTRYV(pos);
 
@@ -47,14 +54,14 @@ bool QMetaParserBase::digit(int &pos, int& digit, ParseErrorTrail &ps)
 
         digit = c.digitValue();
 
-        EXPECT(advance(pos, 1, ps));
+        EXPECT(advance(pos, 1));
     }
 
     EXITV(digit);
 }
 
 
-bool QMetaParserBase::someChar(int &pos, QChar& c, ParseErrorTrail &ps)
+bool QMetaParserBase::someChar(int &pos, QChar& c)
 {
     ENTRYV(pos);
 
@@ -62,24 +69,24 @@ bool QMetaParserBase::someChar(int &pos, QChar& c, ParseErrorTrail &ps)
 
     c = m_input.at(pos);
 
-    EXPECT(advance(pos, 1, ps));
+    EXPECT(advance(pos, 1));
 
     EXITV(c);
 }
 
-bool QMetaParserBase::anyChar(int &pos, ParseErrorTrail &ps)
+bool QMetaParserBase::anyChar(int &pos)
 {
     ENTRYV(pos);
 
     EXPECT(pos < m_input.length());
 
-    EXPECT(advance(pos, 1, ps));
+    EXPECT(advance(pos, 1));
 
     EXIT();
 }
 
 
-bool QMetaParserBase::someCharOf(int &pos, bool (QChar::*is_x)() const, ParseErrorTrail &ps)
+bool QMetaParserBase::someCharOf(int &pos, bool (QChar::*is_x)() const)
 {
     ENTRYV(pos);
 
@@ -90,13 +97,13 @@ bool QMetaParserBase::someCharOf(int &pos, bool (QChar::*is_x)() const, ParseErr
 
         EXPECT((ch.*is_x)());
 
-        EXPECT(advance(pos, 1, ps));
+        EXPECT(advance(pos, 1));
     }
 
     EXIT();
 }
 
-bool QMetaParserBase::someCharOf(int &pos, QChar &c, bool (QChar::*is_x)() const, ParseErrorTrail &ps)
+bool QMetaParserBase::someCharOf(int &pos, QChar &c, bool (QChar::*is_x)() const)
 {
     ENTRYV(pos);
 
@@ -109,13 +116,13 @@ bool QMetaParserBase::someCharOf(int &pos, QChar &c, bool (QChar::*is_x)() const
 
         c = ch;
 
-        EXPECT(advance(pos, 1, ps));
+        EXPECT(advance(pos, 1));
     }
 
     EXITV(c);
 }
 
-bool QMetaParserBase::oneOf(int& pos, QString chars, QChar &outCh, ParseErrorTrail &ps)
+bool QMetaParserBase::oneOf(int& pos, QString chars, QChar &outCh)
 {
     ENTRYV(pos, chars);
 
@@ -128,14 +135,14 @@ bool QMetaParserBase::oneOf(int& pos, QString chars, QChar &outCh, ParseErrorTra
 
         outCh = c;
 
-        EXPECT(advance(pos, 1, ps));
+        EXPECT(advance(pos, 1));
     }
 
     EXITV(outCh);
 }
 
 
-bool QMetaParserBase::thisChar(int &pos, QChar c, ParseErrorTrail &ps)
+bool QMetaParserBase::thisChar(int &pos, QChar c)
 {
     ENTRYV(pos, c);
 
@@ -143,23 +150,23 @@ bool QMetaParserBase::thisChar(int &pos, QChar c, ParseErrorTrail &ps)
 
     EXPECT(m_input.at(pos) == c);
 
-    EXPECT(advance(pos, 1, ps));
+    EXPECT(advance(pos, 1));
 
     EXIT();
 }
 
-bool QMetaParserBase::thisStr(int &pos, QString str, ParseErrorTrail &ps)
+bool QMetaParserBase::thisStr(int &pos, QString str)
 {
     ENTRYV(pos, str);
 
     EXPECT(m_input.midRef(pos).startsWith(str));
 
-    EXPECT(advance(pos, str.length(), ps));
+    EXPECT(advance(pos, str.length()));
 
     EXIT();
 }
 
-bool QMetaParserBase::strOf(int &pos, bool (QChar::*is_x)() const, ParseErrorTrail &ps)
+bool QMetaParserBase::strOf(int &pos, bool (QChar::*is_x)() const)
 {
     ENTRYV(pos);
 
@@ -173,7 +180,7 @@ bool QMetaParserBase::strOf(int &pos, bool (QChar::*is_x)() const, ParseErrorTra
 
         EXPECT(i - pos);
 
-        EXPECT(advance(pos, i - pos, ps));
+        EXPECT(advance(pos, i - pos));
     }
 
     EXIT();
@@ -181,13 +188,13 @@ bool QMetaParserBase::strOf(int &pos, bool (QChar::*is_x)() const, ParseErrorTra
 
 /////////////////////  NONTERMINALS  //////////////////////
 
-bool QMetaParserBase::strOf(int &pos, QVariant &str, bool (QChar::*is_x)() const, ParseErrorTrail &ps)
+bool QMetaParserBase::strOf(int &pos, QVariant &str, bool (QChar::*is_x)() const)
 {
     ENTRYV(pos);
 
     CHECK_POINT(cp0, pos);
 
-    EXPECT(strOf(pos, is_x, ps));
+    EXPECT(strOf(pos, is_x));
 
     {
         QString _str = mid(cp0, pos);
@@ -201,49 +208,49 @@ bool QMetaParserBase::strOf(int &pos, QVariant &str, bool (QChar::*is_x)() const
 
 /// For the time being anything is implemented interms of someChar
 /// untill QMetaParserBase can operate on non-char streams.
-bool QMetaParserBase::anything(int &pos, QVariant& val, ParseErrorTrail &ps)
+bool QMetaParserBase::anything(int &pos, QVariant& val)
 {
     ENTRYV(pos);
 
     QChar c;
-    EXPECT(someChar(pos, c, ps));
+    EXPECT(someChar(pos, c));
     val = c;
 
     EXITV(val);
 }
 
 
-bool QMetaParserBase::spaces(int &pos, ParseErrorTrail &ps)
+bool QMetaParserBase::spaces(int &pos)
 {
     ENTRYV(pos);
 
-    EXPECT(strOf(pos, &QChar::isSpace, ps));
+    EXPECT(strOf(pos, &QChar::isSpace));
 
     EXIT();
 }
 
-bool QMetaParserBase::spaces(int &pos, QVariant &space, ParseErrorTrail &ps)
+bool QMetaParserBase::spaces(int &pos, QVariant &space)
 {
     ENTRYV(pos);
 
-    EXPECT(strOf(pos, space, &QChar::isSpace, ps));
+    EXPECT(strOf(pos, space, &QChar::isSpace));
 
     EXITV(space);
 }
 
-bool QMetaParserBase::identifier(int &pos, QVariant& ident, ParseErrorTrail &ps)
+bool QMetaParserBase::identifier(int &pos, QVariant& ident)
 {
     ENTRYV(pos);
 
     CHECK_POINT(cp0, pos);
 
-    if(!thisChar(pos, QChar('_'), ps)) {
+    if(!thisChar(pos, QChar('_'))) {
         pos = cp0;
-        EXPECT(someCharOf(pos, &QChar::isLetter, ps));
+        EXPECT(someCharOf(pos, &QChar::isLetter));
     }
 
     //Optional
-    strOf(pos, &QChar::isLetterOrNumber, ps);
+    strOf(pos, &QChar::isLetterOrNumber);
 
     {
         QString id =  mid(cp0, pos);
@@ -255,18 +262,18 @@ bool QMetaParserBase::identifier(int &pos, QVariant& ident, ParseErrorTrail &ps)
     EXITV(ident);
 }
 
-bool QMetaParserBase::integer(int &pos, QVariant& result, ParseErrorTrail &ps)
+bool QMetaParserBase::integer(int &pos, QVariant& result)
 {
     ENTRYV(pos);
 
     int sign = 1;
 
-    if (thisChar(pos, QChar('-'), ps)) {
+    if (thisChar(pos, QChar('-'))) {
         sign = -1;
     }
 
     QVariant variant;
-    EXPECT(strOf(pos, variant, &QChar::isDigit, ps));
+    EXPECT(strOf(pos, variant, &QChar::isDigit));
 
     {
         int r = int(variant.value<QString>().toInt()) * sign;
@@ -278,13 +285,13 @@ bool QMetaParserBase::integer(int &pos, QVariant& result, ParseErrorTrail &ps)
     EXITV(result);
 }
 
-bool QMetaParserBase::thisToken(int &pos, QString str, ParseErrorTrail &ps)
+bool QMetaParserBase::thisToken(int &pos, QString str)
 {
     ENTRYV(pos, str);
 
-    spaces(pos, ps);
-    EXPECT(thisStr(pos, str, ps));
-    spaces(pos, ps);
+    spaces(pos);
+    EXPECT(thisStr(pos, str));
+    spaces(pos);
     RETURN_SUCCESS();
 
     EXIT();
@@ -318,7 +325,7 @@ QChar QMetaParserBase::unescape(QChar c)
     return QChar(-1);
 }
 
-bool QMetaParserBase::applyRule(int ruleId, int &pos, QVariant &result, ParseErrorTrail &ps)
+bool QMetaParserBase::applyRule(int ruleId, int &pos, QVariant &result)
 {
     ENTRYV(ruleId, pos);
 
@@ -342,7 +349,7 @@ bool QMetaParserBase::applyRule(int ruleId, int &pos, QVariant &result, ParseErr
         RuleFuncPtr ruleFunc = m_rule[ruleId];
         m_memo.insert(key, {FAIL, res});
 
-        EXPECT(ruleFunc(this, pos, res, ps));
+        EXPECT(ruleFunc(this, pos, res));
 
         m_memo.insert(key, {pos, res});
         result = res;
@@ -368,6 +375,31 @@ void QMetaParserBase::initRuleMap()
 QString QMetaParserBase::mid(int pos0, int pos1)
 {
     return m_input.mid(pos0, pos1 - pos0);
+}
+
+void QMetaParserBase::exitRule(int pos, QString ruleName, bool ok, QString msg)
+{
+    //TODO: Evaluate if this is the right thing to do
+    if (ok) {
+        m_errors.clear();
+        return;
+    }
+
+    auto pe = new ParseError(pos, ruleName, msg);
+
+    if(!m_errors.isEmpty()) {
+        //The errors collected so far are from child nodes in the parse tree.
+        //Clear the stack and create a new ParseError object on the stack with
+        //the previos nodes as its children.
+
+        foreach(ParseError* cpe, m_errors) {
+            pe->addChild(cpe);
+        }
+
+        m_errors.clear();
+    }
+
+    m_errors.append(pe);
 }
 
 inline uint qHash(const QMetaParserBase::MemoKey &key, uint seed)

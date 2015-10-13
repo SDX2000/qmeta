@@ -16,8 +16,8 @@ void doREPL()
 
     while(true)
     {
-        QSTDOUT() << QSL("> ");
-        QSTDOUT() .flush();
+        qStdOut() << QSL("> ");
+        qStdOut() .flush();
         QString inp = cin.readLine();
 
         if (inp.toLower() == QSL("q")) {
@@ -25,13 +25,12 @@ void doREPL()
         }
 
         QVariant result;
-        ParseErrorTrail ps;
-        bool ok = interp.parse(QMetaParser::RULES, inp, result, ps);
+        bool ok = interp.parse(QMetaParser::RULES, inp, result);
         if (ok) {
-            QSTDOUT() << result << endl;
-        }
-        if (!ps.isEmpty()){
-            QSTDOUT() << "Generated errors: " << ps.toString() << endl;
+            qStdOut() << endl << result << endl;
+        } else {
+            qStdOut() << "Generated errors... " <<endl;
+            interp.getError()->print(qStdOut());
         }
     }
 }
@@ -40,13 +39,14 @@ void execute(QString prog)
 {
     QMetaParser interp;
     QVariant result;
-    ParseErrorTrail ps;
-    bool ok = interp.parse(QMetaParser::GRAMMAR, prog, result, ps);
+
+    bool ok = interp.parse(QMetaParser::GRAMMAR, prog, result);
+
     if (ok) {
-        QSTDOUT() << result << endl;
-    }
-    if (!ps.isEmpty()){
-        QSTDOUT() << "Generated errors: " << ps.toString() << endl;
+        qStdOut() << endl << result << endl;
+    } else {
+        qStdOut() << "Generated errors... " <<endl;
+        interp.getError()->print(qStdOut());
     }
 }
 
@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
     parser.addVersionOption();
 
     if (!parser.parse(QCoreApplication::arguments())) {
-        QSTDOUT() << "ERROR: Invalid command line options." << endl;
+        qStdOut() << "ERROR: Invalid command line options." << endl;
         return 1;
     }
 

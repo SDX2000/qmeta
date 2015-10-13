@@ -1,6 +1,7 @@
 #ifndef PARSESTATUS_H
 #define PARSESTATUS_H
 
+#include <QList>
 #include <QString>
 #include "utils.h"
 
@@ -9,26 +10,19 @@ class ParseError
 public:
     ParseError(int pos, QString ruleName, QString msg);
 
+    void addChild(ParseError * pe);
+
     int getPos() const;
 
-    QString toString() const;
-    ~ParseError();
+    virtual ~ParseError();
+
+    QTextStream& print(QTextStream& s, int indentLevel = 0) const;
 
 private:
-    int             m_pos;
-    QString         m_ruleName;
-    QString         m_msg;
-};
-
-class ParseErrorTrail
-{
-public:
-    void add(ParseError ps);
-    void clear();
-    QString toString() const;
-    bool isEmpty() const;
-private:
-    QMultiHash<int, ParseError> m_childNodes;
+    int                 m_pos;
+    QString             m_ruleName;
+    QString             m_msg;
+    QList<ParseError*>  m_children;
 };
 
 #endif // PARSESTATUS_H
