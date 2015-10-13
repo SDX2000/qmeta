@@ -115,8 +115,7 @@ bool QMetaParserBase::someCharOf(int &pos, QChar &c, bool (QChar::*is_x)() const
     EXITV(c);
 }
 
-//TODO: let chars be the second param (group all input params together)
-bool QMetaParserBase::oneOf(int& pos, QChar &outCh, QString chars, ParseErrorTrail &ps)
+bool QMetaParserBase::oneOf(int& pos, QString chars, QChar &outCh, ParseErrorTrail &ps)
 {
     ENTRYV(pos, chars);
 

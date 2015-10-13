@@ -139,7 +139,7 @@ protected:
     bool someCharOf(int &pos, bool (QChar::*is_x)() const, ParseErrorTrail &ps);
     bool someCharOf(int &pos, QChar &c, bool (QChar::*is_x)() const, ParseErrorTrail &ps);
     bool thisChar(int &pos, QChar c, ParseErrorTrail &ps);
-    bool oneOf(int& pos, QChar &opOut, QString operators, ParseErrorTrail &ps);
+    bool oneOf(int& pos, QString operators, QChar &opOut, ParseErrorTrail &ps);
 
     //NONTERMINALS//
     virtual bool spaces(int &pos, ParseErrorTrail &ps);
