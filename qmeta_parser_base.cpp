@@ -381,31 +381,6 @@ QString QMetaParserBase::mid(int pos0, int pos1)
     return m_input.mid(pos0, pos1 - pos0);
 }
 
-void QMetaParserBase::exitRule(int pos, QString ruleName, bool ok, QString msg)
-{
-    //TODO: Evaluate if this is the right thing to do
-    if (ok) {
-        m_errors.clear();
-        return;
-    }
-
-    auto pe = new ParseError(pos, ruleName, msg);
-
-    if(!m_errors.isEmpty()) {
-        //The errors collected so far are from child nodes in the parse tree.
-        //Clear the stack and create a new ParseError object on the stack with
-        //the previos nodes as its children.
-
-        foreach(ParseError* cpe, m_errors) {
-            pe->addChild(cpe);
-        }
-
-        m_errors.clear();
-    }
-
-    m_errors.append(pe);
-}
-
 inline uint qHash(const QMetaParserBase::MemoKey &key, uint seed)
 {
     return qHash(key.ruleId, seed) ^ qHash(key.position, seed);

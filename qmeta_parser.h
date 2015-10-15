@@ -5,6 +5,7 @@
 #include <QHash>
 #include "qmeta_parser_base.h"
 
+
 class QMetaParser : public QMetaParserBase
 {
 public:

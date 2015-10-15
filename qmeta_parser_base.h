@@ -158,8 +158,6 @@ protected:
     virtual bool applyRule(int ruleId, int &pos, QVariant& result, ParseErrorPtr& pe);
     QString mid(int pos0, int pos1);
 
-    void exitRule(int pos, QString ruleName, bool ok, QString msg);
-
 protected:
     typedef bool (QMetaParserBase::*RuleMemberFuncPtr)(int &pos, QVariant &result, ParseErrorPtr& pe);
     typedef bool (*RuleFuncPtr)(QMetaParserBase* self, int &pos, QVariant &result, ParseErrorPtr& pe);

@@ -10,11 +10,7 @@
 class ParseError
 {
 public:
-    //ParseError(int pos, QString ruleName);
     ParseError(int pos, QString ruleName, QString fileName, int lineNumber);
-    //ParseError(int pos, QString ruleName, int lineNumber);
-
-    void addChild(ParseError * pe);
 
     void addChild(ParseError * pe);
 
