@@ -19,7 +19,6 @@ SOURCES += main.cpp \
     QMetaParser.cpp \
     QMetaParserBase.cpp \
     utils.cpp \
-    QMetaAstTranslator.cpp \
     QMetaQStringParserBase.cpp \
     QMetaQVariantListParserBase.cpp
 
@@ -31,7 +30,6 @@ HEADERS += \
     QMetaParser.h \
     QMetaParserBase.h \
     utils.h \
-    QMetaAstTranslator.h \
     QMetaQStringParserBase.h \
     QMetaQVariantListParserBase.h
 
@@ -39,4 +37,6 @@ DISTFILES += \
     TODO \
     NOTES \
     tests/Calc.qm \
-    tests/QMetaParser.qm
+    tests/QMetaParser.qm \
+    tests/QMetaAstTranslator.qm \
+    AST/QMetaParser.ast

@@ -11,9 +11,9 @@ QMetaQStringParserBase::QMetaQStringParserBase()
     initRuleMap();
 }
 
-bool QMetaQStringParserBase::parse(int ruleId, const QString &str, QVariant& ast)
+bool QMetaQStringParserBase::parse(int ruleId, const QString &inp, QVariant& ast)
 {
-    m_input = str;
+    m_input = inp;
     m_memo.clear();
     m_indentLevel = 0;
     safeDelete(m_error);
