@@ -5,10 +5,16 @@
 #include <QString>
 #include "utils.h"
 
+
+
 class ParseError
 {
 public:
-    ParseError(int pos, QString ruleName, QString msg);
+    //ParseError(int pos, QString ruleName);
+    ParseError(int pos, QString ruleName, QString fileName, int lineNumber);
+    //ParseError(int pos, QString ruleName, int lineNumber);
+
+    void addChild(ParseError * pe);
 
     void addChild(ParseError * pe);
 
@@ -23,6 +29,9 @@ private:
     QString             m_ruleName;
     QString             m_msg;
     QList<ParseError*>  m_children;
+    int                 m_lineNumber;
 };
+
+typedef ParseError* ParseErrorPtr;
 
 #endif // PARSESTATUS_H

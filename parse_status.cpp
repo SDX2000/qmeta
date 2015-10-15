@@ -7,7 +7,8 @@ int ParseError::getPos() const {
 
 QTextStream& ParseError::print(QTextStream& s, int indentLevel) const {
     printIndent(s, indentLevel);
-    s << "ERROR: " << m_msg << " in " << m_ruleName << " at " << m_pos <<endl;
+    s << "FAIL: " << m_msg << ":" << m_lineNumber << ": "
+      << m_ruleName << " at pos " << m_pos << endl;
     foreach(ParseError* cpe, m_children) {
         cpe->print(s, indentLevel + 1);
     }
@@ -21,10 +22,11 @@ ParseError::~ParseError()
     }
 }
 
-ParseError::ParseError(int pos, QString ruleName, QString msg)
+ParseError::ParseError(int pos, QString ruleName, QString fileName, int lineNumber)
     : m_pos(pos)
     , m_ruleName(ruleName)
-    , m_msg(msg)
+    , m_msg(fileName)
+    , m_lineNumber(lineNumber)
 {
 }
 

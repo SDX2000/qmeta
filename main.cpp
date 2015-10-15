@@ -25,7 +25,8 @@ void doREPL()
         }
 
         QVariant result;
-        bool ok = interp.parse(QMetaParser::RULES, inp, result);
+
+        bool ok = interp.parse((int)QMetaParser::RULES, inp, result);
         if (ok) {
             qStdOut() << endl << result << endl;
         } else {
