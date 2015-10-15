@@ -1,4 +1,4 @@
-#include "QMetaQStringParserGenerator.h"
+#include "QMetaQVariantListParserBase.h"
 
 QMetaQVariantListParserBase::QMetaQVariantListParserBase()
 {
