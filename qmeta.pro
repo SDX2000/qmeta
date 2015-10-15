@@ -16,22 +16,22 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     ParseError.cpp \
-    QMetaParser.cpp \
     QMetaParserBase.cpp \
     utils.cpp \
     QMetaQStringParserBase.cpp \
-    QMetaQVariantListParserBase.cpp
+    QMetaQVariantListParserBase.cpp \
+    QMetaQStringParser.cpp
 
 DEFINES += QT_RESTRICTED_CAST_FROM_ASCII \
            QT_NO_CAST_TO_ASCII
 
 HEADERS += \
     ParseError.h \
-    QMetaParser.h \
     QMetaParserBase.h \
     utils.h \
     QMetaQStringParserBase.h \
-    QMetaQVariantListParserBase.h
+    QMetaQVariantListParserBase.h \
+    QMetaQStringParser.h
 
 DISTFILES += \
     TODO \

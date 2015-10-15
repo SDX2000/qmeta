@@ -6,7 +6,7 @@
 #include <QFile>
 #include <QDebug>
 
-#include "QMetaParser.h"
+#include "QMetaQStringParser.h"
 #include "utils.h"
 
 void doREPL()
