@@ -31,5 +31,6 @@ HEADERS += \
 
 DISTFILES += \
     tests/ometa.qm \
-    tests/simple.qm \
-    TODO
+    TODO \
+    NOTES \
+    tests/calc.qm

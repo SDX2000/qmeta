@@ -1,17 +1,11 @@
-//Every QMeta parser implicitly derives from QMetaParserBase
-
-//Rules inherited from QMetaParserBase ...
-//thisStr, digit, someChar, thisChar, oneOf, spaces, identifier,
-//integer, thisToken
-
 qmeta QMetaParser {
   grammar           = "qmeta" identifier "{" rules "}";
-  rules             = (rule ";")*;
+  rules             = (rule ";")+;
   rule              = identifier "=" choices;
   choices           = choice "|" choices
                     | choice;
   choice            = (term spaces)* ( "->" hostExpr)?;
-  hostExpr          = "{" (~('{'|'}') .)* "}";
+  hostExpr          = "{" .* "}";
   term              = term1 ":" identifier
                     | term1;
   term1             = "~"  term2

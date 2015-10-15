@@ -1,0 +1,6 @@
+* Design
+- Every QMeta parser implicitly derives from QMetaParserBase
+
+* Rules inherited from QMetaParserBase ...
+ - thisStr, digit, someChar, thisChar, oneOf, spaces, identifier,
+ integer, thisToken

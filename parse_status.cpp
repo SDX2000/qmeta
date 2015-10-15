@@ -5,52 +5,33 @@ int ParseError::getPos() const {
     return m_pos;
 }
 
-QString ParseError::toString() const {
-    return QString(QSL("ERROR:%1 in %2() at %3"))
-                   .arg(m_msg).arg(m_ruleName).arg(m_pos);
+QTextStream& ParseError::print(QTextStream& s, int indentLevel) const {
+    printIndent(s, indentLevel);
+    s << "FAIL: " << m_msg << ":" << m_lineNumber << ": "
+      << m_ruleName << " at pos " << m_pos << endl;
+    foreach(ParseError* cpe, m_children) {
+        cpe->print(s, indentLevel + 1);
+    }
+    return s;
 }
 
 ParseError::~ParseError()
 {
+    foreach(ParseError* cpe, m_children) {
+        safeDelete(cpe);
+    }
 }
 
-ParseError::ParseError(int pos, QString ruleName, QString msg)
+ParseError::ParseError(int pos, QString ruleName, QString fileName, int lineNumber)
     : m_pos(pos)
     , m_ruleName(ruleName)
-    , m_msg(msg)
+    , m_msg(fileName)
+    , m_lineNumber(lineNumber)
 {
 }
 
-void ParseErrorTrail::add(ParseError ps)
+void ParseError::addChild(ParseError *pe)
 {
-    m_childNodes.insert(ps.getPos(), ps);
+    m_children.append(pe);
 }
 
-void ParseErrorTrail::clear()
-{
-    m_childNodes.clear();
-}
-
-QString ParseErrorTrail::toString() const
-{
-    QString str;
-    auto values = m_childNodes.values();
-
-    int i = values.length();
-
-    foreach(ParseError ps, values) {
-        str += ps.toString();
-        i--;
-
-        if(i) {
-            str += ", ";
-        }
-    }
-
-    return str;
-}
-
-bool ParseErrorTrail::isEmpty() const
-{
-    return m_childNodes.isEmpty();
-}

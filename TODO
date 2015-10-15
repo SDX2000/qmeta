@@ -1,4 +1,4 @@
-- Let CHECK_POINT take only one parameter
-- Write helpful failure messages using RETURN_* macros.
-- Clear errors when a rule succeeds?
 - Optimize AST generation
+
+- Error reporting/handling
+    - Collect rule args and return values in the ParseError entries.

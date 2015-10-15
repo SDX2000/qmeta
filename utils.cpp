@@ -2,22 +2,24 @@
 
 using namespace std;
 
-int g_indentLevel = 0;
-
 QTextStream& qStdOut()
 {
     static QTextStream ts( stdout );
     return ts;
 }
 
-void printIndent() {
-    printIndent(g_indentLevel);
-}
-
 void printIndent(int indentation) {
     for(int i = 0; i < TAB_SPACES * indentation; i++) {
         qStdOut() << " ";
     }
+}
+
+QTextStream& printIndent(QTextStream& s, int indentation) {
+    for(int i = 0; i < TAB_SPACES * indentation; i++) {
+        s << " ";
+    }
+
+    return s;
 }
 
 QString escape(QChar c) {
