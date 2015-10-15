@@ -3,12 +3,12 @@
 
 #include <QString>
 #include <QHash>
-#include "QMetaParserBase.h"
+#include "QMetaQStringParserBase.h"
 
-class QMetaParser : public QMetaParserBase
+class QMetaQStringParser : public QMetaQStringParserBase
 {
 public:
-    QMetaParser();
+    QMetaQStringParser();
     bool parse(int ruleId, const QString &inp, QVariant& ast);
     bool parse(int ruleId, int pos, QVariant& ast, ParseErrorPtr &pe) override;
 

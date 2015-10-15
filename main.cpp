@@ -12,7 +12,7 @@
 void doREPL()
 {
     QTextStream cin(stdin);
-    QMetaParser interp;
+    QMetaQStringParser interp;
 
     while(true)
     {
@@ -26,7 +26,7 @@ void doREPL()
 
         QVariant result;
 
-        bool ok = interp.parse((int)QMetaParser::RULES, inp, result);
+        bool ok = interp.parse((int)QMetaQStringParser::RULES, inp, result);
         if (ok) {
             qStdOut() << endl << result << endl;
         } else {
@@ -38,10 +38,10 @@ void doREPL()
 
 void execute(QString prog)
 {
-    QMetaParser interp;
+    QMetaQStringParser interp;
     QVariant result;
 
-    bool ok = interp.parse(QMetaParser::GRAMMAR, prog, result);
+    bool ok = interp.parse(QMetaQStringParser::GRAMMAR, prog, result);
 
     if (ok) {
         qStdOut() << endl << result << endl;

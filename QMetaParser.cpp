@@ -1,16 +1,16 @@
 #include "QMetaParser.h"
 
-bool QMetaParser::parse(int ruleId, const QString& inp, QVariant& ast)
+bool QMetaQStringParser::parse(int ruleId, const QString& inp, QVariant& ast)
 {
-    return QMetaParserBase::parse(ruleId, inp, ast);
+    return QMetaQStringParserBase::parse(ruleId, inp, ast);
 }
 
-QMetaParser::QMetaParser()
+QMetaQStringParser::QMetaQStringParser()
 {
     initRuleMap();
 }
 
-bool QMetaParser::parse(int ruleId, int pos, QVariant &ast, ParseErrorPtr& pe)
+bool QMetaQStringParser::parse(int ruleId, int pos, QVariant &ast, ParseErrorPtr& pe)
 {
     ENTRYV(pos);
 
@@ -19,7 +19,7 @@ bool QMetaParser::parse(int ruleId, int pos, QVariant &ast, ParseErrorPtr& pe)
     EXITV(ast);
 }
 
-bool QMetaParser::rules(int& pos, QVariant &ast, ParseErrorPtr& pe)
+bool QMetaQStringParser::rules(int& pos, QVariant &ast, ParseErrorPtr& pe)
 {
     ENTRYV(pos);
 
@@ -45,7 +45,7 @@ bool QMetaParser::rules(int& pos, QVariant &ast, ParseErrorPtr& pe)
     EXITV(ast);
 }
 
-bool QMetaParser::grammar(int &pos, QVariant &ast, ParseErrorPtr& pe)
+bool QMetaQStringParser::grammar(int &pos, QVariant &ast, ParseErrorPtr& pe)
 {
     ENTRYV(pos);
 
@@ -77,7 +77,7 @@ bool QMetaParser::grammar(int &pos, QVariant &ast, ParseErrorPtr& pe)
     EXITV(ast);
 }
 
-bool QMetaParser::rule(int &pos, QVariant &ast, ParseErrorPtr& pe)
+bool QMetaQStringParser::rule(int &pos, QVariant &ast, ParseErrorPtr& pe)
 {
     ENTRYV(pos);
 
@@ -107,7 +107,7 @@ bool QMetaParser::rule(int &pos, QVariant &ast, ParseErrorPtr& pe)
     EXITV(ast);
 }
 
-bool QMetaParser::choices(int &pos, QVariant &ast, ParseErrorPtr& pe)
+bool QMetaQStringParser::choices(int &pos, QVariant &ast, ParseErrorPtr& pe)
 {
     ENTRYV(pos);
 
@@ -147,7 +147,7 @@ choice1:
     EXITV(ast);
 }
 
-bool QMetaParser::choice(int &pos, QVariant &ast, ParseErrorPtr& pe)
+bool QMetaQStringParser::choice(int &pos, QVariant &ast, ParseErrorPtr& pe)
 {
     ENTRYV(pos);
 
@@ -187,7 +187,7 @@ bool QMetaParser::choice(int &pos, QVariant &ast, ParseErrorPtr& pe)
     EXITV(ast);
 }
 
-bool QMetaParser::hostExpr(int &pos, QVariant &ast, ParseErrorPtr& pe)
+bool QMetaQStringParser::hostExpr(int &pos, QVariant &ast, ParseErrorPtr& pe)
 {
     ENTRYV(pos);
 
@@ -226,7 +226,7 @@ bool QMetaParser::hostExpr(int &pos, QVariant &ast, ParseErrorPtr& pe)
     EXITV(ast);
 }
 
-bool QMetaParser::term(int &pos, QVariant &ast, ParseErrorPtr& pe)
+bool QMetaQStringParser::term(int &pos, QVariant &ast, ParseErrorPtr& pe)
 {
     ENTRYV(pos);
 
@@ -266,7 +266,7 @@ choice1:
     EXITV(ast);
 }
 
-bool QMetaParser::term1(int &pos, QVariant &ast, ParseErrorPtr& pe)
+bool QMetaQStringParser::term1(int &pos, QVariant &ast, ParseErrorPtr& pe)
 {
     ENTRYV(pos);
 
@@ -351,7 +351,7 @@ choice4:
     EXITV(ast);
 }
 
-bool QMetaParser::term2(int &pos, QVariant &ast, ParseErrorPtr& pe)
+bool QMetaQStringParser::term2(int &pos, QVariant &ast, ParseErrorPtr& pe)
 {
     ENTRYV(pos);
 
@@ -435,7 +435,7 @@ choice4:
     EXITV(ast);
 }
 
-bool QMetaParser::someToken(int &pos, QVariant& ast, ParseErrorPtr& pe)
+bool QMetaQStringParser::someToken(int &pos, QVariant& ast, ParseErrorPtr& pe)
 {
     ENTRYV(pos);
 
@@ -474,7 +474,7 @@ bool QMetaParser::someToken(int &pos, QVariant& ast, ParseErrorPtr& pe)
     EXITV(ast);
 }
 
-bool QMetaParser::escapedChar(int &pos, QChar &c, ParseErrorPtr& pe)
+bool QMetaQStringParser::escapedChar(int &pos, QChar &c, ParseErrorPtr& pe)
 {
     ENTRYV(pos);
 
@@ -502,19 +502,19 @@ choice1:
     EXITV(c);
 }
 
-void QMetaParser::initRuleMap()
+void QMetaQStringParser::initRuleMap()
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpmf-conversions"
-    m_rule[GRAMMAR] = reinterpret_cast<RuleFuncPtr>(&QMetaParser::grammar);
-    m_rule[RULES] = reinterpret_cast<RuleFuncPtr>(&QMetaParser::rules);
-    m_rule[RULE] = reinterpret_cast<RuleFuncPtr>(&QMetaParser::rule);
-    m_rule[CHOICES] = reinterpret_cast<RuleFuncPtr>(&QMetaParser::choices);
-    m_rule[CHOICE] = reinterpret_cast<RuleFuncPtr>(&QMetaParser::choice);
-    m_rule[HOST_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaParser::hostExpr);
-    m_rule[TERM] = reinterpret_cast<RuleFuncPtr>(&QMetaParser::term);
-    m_rule[TERM1] = reinterpret_cast<RuleFuncPtr>(&QMetaParser::term1);
-    m_rule[TERM2] = reinterpret_cast<RuleFuncPtr>(&QMetaParser::term2);
-    m_rule[SOME_TOKEN] = reinterpret_cast<RuleFuncPtr>(&QMetaParser::someToken);
+    m_rule[GRAMMAR] = reinterpret_cast<RuleFuncPtr>(&QMetaQStringParser::grammar);
+    m_rule[RULES] = reinterpret_cast<RuleFuncPtr>(&QMetaQStringParser::rules);
+    m_rule[RULE] = reinterpret_cast<RuleFuncPtr>(&QMetaQStringParser::rule);
+    m_rule[CHOICES] = reinterpret_cast<RuleFuncPtr>(&QMetaQStringParser::choices);
+    m_rule[CHOICE] = reinterpret_cast<RuleFuncPtr>(&QMetaQStringParser::choice);
+    m_rule[HOST_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQStringParser::hostExpr);
+    m_rule[TERM] = reinterpret_cast<RuleFuncPtr>(&QMetaQStringParser::term);
+    m_rule[TERM1] = reinterpret_cast<RuleFuncPtr>(&QMetaQStringParser::term1);
+    m_rule[TERM2] = reinterpret_cast<RuleFuncPtr>(&QMetaQStringParser::term2);
+    m_rule[SOME_TOKEN] = reinterpret_cast<RuleFuncPtr>(&QMetaQStringParser::someToken);
 #pragma GCC diagnostic pop
 }

@@ -24,6 +24,8 @@
 
 QTextStream& qStdOut();
 
+#define QSTDOUT() printIndent(m_indentLevel); qStdOut()
+
 QTextStream& operator << (QTextStream& lhs, const QVariant& val);
 QTextStream& operator << (QTextStream& lhs, bool val);
 
