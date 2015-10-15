@@ -18,7 +18,8 @@ SOURCES += main.cpp \
     ParseError.cpp \
     QMetaParser.cpp \
     QMetaParserBase.cpp \
-    utils.cpp
+    utils.cpp \
+    QMetaAstTranslator.cpp
 
 DEFINES += QT_RESTRICTED_CAST_FROM_ASCII \
            QT_NO_CAST_TO_ASCII
@@ -27,10 +28,11 @@ HEADERS += \
     ParseError.h \
     QMetaParser.h \
     QMetaParserBase.h \
-    utils.h
+    utils.h \
+    QMetaAstTranslator.h
 
 DISTFILES += \
-    tests/ometa.qm \
     TODO \
     NOTES \
-    tests/calc.qm
+    tests/Calc.qm \
+    tests/QMetaParser.qm
