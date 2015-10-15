@@ -19,7 +19,9 @@ SOURCES += main.cpp \
     QMetaParser.cpp \
     QMetaParserBase.cpp \
     utils.cpp \
-    QMetaAstTranslator.cpp
+    QMetaAstTranslator.cpp \
+    QMetaQStringParserBase.cpp \
+    QMetaQVariantListParserBase.cpp
 
 DEFINES += QT_RESTRICTED_CAST_FROM_ASCII \
            QT_NO_CAST_TO_ASCII
@@ -29,7 +31,9 @@ HEADERS += \
     QMetaParser.h \
     QMetaParserBase.h \
     utils.h \
-    QMetaAstTranslator.h
+    QMetaAstTranslator.h \
+    QMetaQStringParserBase.h \
+    QMetaQVariantListParserBase.h
 
 DISTFILES += \
     TODO \
