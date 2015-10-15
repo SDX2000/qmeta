@@ -1,6 +1,5 @@
 #include "qmeta_parser.h"
 
-
 bool QMetaParser::parse(int ruleId, const QString& inp, QVariant& ast)
 {
     return QMetaParserBase::parse(ruleId, inp, ast);
@@ -35,7 +34,7 @@ bool QMetaParser::rules(int& pos, QVariant &ast, ParseErrorPtr& pe)
         l.append(_ast);
     } while (applyRule(RULE, pos, _ast, cpe));
 
-    ast = l;
+    UPDATE_AST(l);
 
     RETURN_SUCCESS();
 
@@ -67,7 +66,7 @@ bool QMetaParser::grammar(int &pos, QVariant &ast, ParseErrorPtr& pe)
 
     EXPECT(thisToken(pos, "}", cpe));
 
-    ast = l;
+    UPDATE_AST(l);
 
     RETURN_SUCCESS();
 
@@ -97,7 +96,7 @@ bool QMetaParser::rule(int &pos, QVariant &ast, ParseErrorPtr& pe)
         l.append(_ast);
     }
 
-    ast = l;
+    UPDATE_AST(l);
 
     RETURN_SUCCESS();
 
@@ -122,7 +121,7 @@ bool QMetaParser::choices(int &pos, QVariant &ast, ParseErrorPtr& pe)
         TRY(applyRule(CHOICES, pos, _ast, cpe), choice1);
         l.append(_ast);
 
-        ast = l;
+        UPDATE_AST(l);
         RETURN_SUCCESS();
     }
 
@@ -162,7 +161,7 @@ bool QMetaParser::choice(int &pos, QVariant &ast, ParseErrorPtr& pe)
         l.append(_hostExpr);
     }
 
-    ast = l;
+    UPDATE_AST(l);
 
     RETURN_SUCCESS();
 
@@ -228,7 +227,7 @@ bool QMetaParser::term(int &pos, QVariant &ast, ParseErrorPtr& pe)
         TRY(applyRule(IDENTIFIER, pos, id, cpe), choice1);
         l.append(id);
 
-        ast = l;
+        UPDATE_AST(l);
         RETURN_SUCCESS();
     }
 
@@ -261,7 +260,7 @@ bool QMetaParser::term1(int &pos, QVariant &ast, ParseErrorPtr& pe)
         TRY(applyRule(TERM2, pos, _ast, cpe), choice1);
         l.append(_ast);
 
-        ast = l;
+        UPDATE_AST(l);
         RETURN_SUCCESS();
     }
 
@@ -277,7 +276,7 @@ choice1:
 
         TRY(thisToken(pos, QSL("*"), cpe), choice2);
 
-        ast = l;
+        UPDATE_AST(l);
         RETURN_SUCCESS();
     }
 
@@ -293,7 +292,7 @@ choice2:
 
         TRY(thisToken(pos, QSL("+"), cpe), choice3);
 
-        ast = l;
+        UPDATE_AST(l);
         RETURN_SUCCESS();
     }
 
@@ -309,7 +308,7 @@ choice3:
 
         TRY(thisToken(pos, QSL("?"), cpe), choice4);
 
-        ast = l;
+        UPDATE_AST(l);
         RETURN_SUCCESS();
     }
 
@@ -348,7 +347,7 @@ bool QMetaParser::term2(int &pos, QVariant &ast, ParseErrorPtr& pe)
 
         TRY(thisChar(pos, QChar('\''), cpe), choice1);
 
-        ast = l;
+        UPDATE_AST(l);
         RETURN_SUCCESS();
     }
 
@@ -371,7 +370,7 @@ choice2:
         TRY(applyRule(IDENTIFIER, pos, ruleName, cpe), choice3);
         l.append(ruleName);
 
-        ast = l;
+        UPDATE_AST(l);
         RETURN_SUCCESS();
     }
 
@@ -385,7 +384,7 @@ choice3:
         TRY(thisChar(pos, QChar('.'), cpe), choice4);
         l.append(val);
 
-        ast = l;
+        UPDATE_AST(l);
         RETURN_SUCCESS();
     }
 
@@ -439,7 +438,7 @@ bool QMetaParser::someToken(int &pos, QVariant& ast, ParseErrorPtr& pe)
 
     spaces(pos, cpe);
 
-    ast = l;
+    UPDATE_AST(l);
 
     RETURN_SUCCESS();
 
