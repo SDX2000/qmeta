@@ -5,7 +5,7 @@
 #include <assert.h>
 #include <QString>
 #include "utils.h"
-#include "parse_status.h"
+#include "ParseError.h"
 
 #define QSTDOUT() printIndent(m_indentLevel); qStdOut()
 

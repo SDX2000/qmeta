@@ -1,4 +1,4 @@
-#include "qmeta_parser.h"
+#include "QMetaParser.h"
 
 bool QMetaParser::parse(int ruleId, const QString& inp, QVariant& ast)
 {

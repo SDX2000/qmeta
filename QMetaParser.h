@@ -3,7 +3,7 @@
 
 #include <QString>
 #include <QHash>
-#include "qmeta_parser_base.h"
+#include "QMetaParserBase.h"
 
 #define UPDATE_AST(L) \
     if((L).length() == 1) { \
