@@ -34,7 +34,11 @@ bool QMetaParser::rules(int& pos, QVariant &ast, ParseErrorPtr& pe)
         l.append(_ast);
     } while (applyRule(RULE, pos, _ast, cpe));
 
-    UPDATE_AST(l);
+    if(l.length() == 1) {
+        ast = l.at(0);
+    } else {
+        ast = l;
+    }
 
     RETURN_SUCCESS();
 
@@ -66,7 +70,7 @@ bool QMetaParser::grammar(int &pos, QVariant &ast, ParseErrorPtr& pe)
 
     EXPECT(thisToken(pos, "}", cpe));
 
-    UPDATE_AST(l);
+    ast = l;
 
     RETURN_SUCCESS();
 
@@ -96,7 +100,7 @@ bool QMetaParser::rule(int &pos, QVariant &ast, ParseErrorPtr& pe)
         l.append(_ast);
     }
 
-    UPDATE_AST(l);
+    ast = l;
 
     RETURN_SUCCESS();
 
@@ -121,7 +125,12 @@ bool QMetaParser::choices(int &pos, QVariant &ast, ParseErrorPtr& pe)
         TRY(applyRule(CHOICES, pos, _ast, cpe), choice1);
         l.append(_ast);
 
-        UPDATE_AST(l);
+        if(l.length() == 2) {
+            ast = l.at(1);
+        } else {
+            ast = l;
+        }
+
         RETURN_SUCCESS();
     }
 
@@ -142,7 +151,9 @@ bool QMetaParser::choice(int &pos, QVariant &ast, ParseErrorPtr& pe)
 {
     ENTRYV(pos);
 
+    QList<QVariant> l0;
     QList<QVariant> l;
+    l.append(QString(QSL("AND")));
 
     QVariant _ast;
     while (applyRule(TERM, pos, _ast, cpe)) {
@@ -154,14 +165,22 @@ bool QMetaParser::choice(int &pos, QVariant &ast, ParseErrorPtr& pe)
         RETURN_FAILURE();
     }
 
-    if (thisToken(pos, QSL("->"), cpe)) {
-        l.append(QString(QSL("HOSTEXPR")));
-        QVariant _hostExpr;
-        EXPECT(applyRule(HOST_EXPR, pos, _hostExpr, cpe));
-        l.append(_hostExpr);
+    if(l.length() == 2) {
+        _ast = l.at(1);
+    } else {
+        _ast = l;
     }
 
-    UPDATE_AST(l);
+    if (thisToken(pos, QSL("->"), cpe)) {
+        l0.append(QString(QSL("HOSTEXPR")));
+        QVariant _hostExpr;
+        EXPECT(applyRule(HOST_EXPR, pos, _hostExpr, cpe));
+        l0.append(_ast);
+        l0.append(_hostExpr);
+        ast = l0;
+    } else {
+        ast = _ast;
+    }
 
     RETURN_SUCCESS();
 
@@ -215,19 +234,22 @@ bool QMetaParser::term(int &pos, QVariant &ast, ParseErrorPtr& pe)
     {
         pos = cp0;
         QList<QVariant> l;
-        l.append(QString(QSL("term")));
+        l.append(QString(QSL("DEFINE")));
 
         QVariant _ast;
         TRY(applyRule(TERM1, pos, _ast, cpe), choice1);
-        l.append(_ast);
 
         TRY(thisToken(pos, QSL(":"), cpe), choice1);
 
         QVariant id;
         TRY(applyRule(IDENTIFIER, pos, id, cpe), choice1);
+
         l.append(id);
 
-        UPDATE_AST(l);
+        l.append(_ast);
+
+        ast = l;
+
         RETURN_SUCCESS();
     }
 
@@ -260,7 +282,8 @@ bool QMetaParser::term1(int &pos, QVariant &ast, ParseErrorPtr& pe)
         TRY(applyRule(TERM2, pos, _ast, cpe), choice1);
         l.append(_ast);
 
-        UPDATE_AST(l);
+        ast = l;
+
         RETURN_SUCCESS();
     }
 
@@ -276,7 +299,8 @@ choice1:
 
         TRY(thisToken(pos, QSL("*"), cpe), choice2);
 
-        UPDATE_AST(l);
+        ast = l;
+
         RETURN_SUCCESS();
     }
 
@@ -292,7 +316,8 @@ choice2:
 
         TRY(thisToken(pos, QSL("+"), cpe), choice3);
 
-        UPDATE_AST(l);
+        ast = l;
+
         RETURN_SUCCESS();
     }
 
@@ -308,7 +333,8 @@ choice3:
 
         TRY(thisToken(pos, QSL("?"), cpe), choice4);
 
-        UPDATE_AST(l);
+        ast = l;
+
         RETURN_SUCCESS();
     }
 
@@ -347,7 +373,8 @@ bool QMetaParser::term2(int &pos, QVariant &ast, ParseErrorPtr& pe)
 
         TRY(thisChar(pos, QChar('\''), cpe), choice1);
 
-        UPDATE_AST(l);
+        ast = l;
+
         RETURN_SUCCESS();
     }
 
@@ -370,7 +397,8 @@ choice2:
         TRY(applyRule(IDENTIFIER, pos, ruleName, cpe), choice3);
         l.append(ruleName);
 
-        UPDATE_AST(l);
+        ast = l;
+
         RETURN_SUCCESS();
     }
 
@@ -384,7 +412,8 @@ choice3:
         TRY(thisChar(pos, QChar('.'), cpe), choice4);
         l.append(val);
 
-        UPDATE_AST(l);
+        ast = l;
+
         RETURN_SUCCESS();
     }
 
@@ -438,7 +467,7 @@ bool QMetaParser::someToken(int &pos, QVariant& ast, ParseErrorPtr& pe)
 
     spaces(pos, cpe);
 
-    UPDATE_AST(l);
+    ast = l;
 
     RETURN_SUCCESS();
 

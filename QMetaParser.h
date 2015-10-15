@@ -5,13 +5,6 @@
 #include <QHash>
 #include "QMetaParserBase.h"
 
-#define UPDATE_AST(L) \
-    if((L).length() == 1) { \
-        ast = (L).at(0); \
-    } else { \
-        ast = l; \
-    }
-
 class QMetaParser : public QMetaParserBase
 {
 public:
