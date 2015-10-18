@@ -29,6 +29,7 @@ public:
 protected:
     bool escapedChar(int &pos, QChar& c, ParseErrorPtr& pe);
 
+    //Private rules.
 private:
     //Use applyRule() to access these functions
     bool grammar(int& pos, QVariant& ast, ParseErrorPtr& pe);
@@ -42,6 +43,7 @@ private:
     bool term2(int &pos, QVariant& ast, ParseErrorPtr& pe);
     bool someToken(int &pos, QVariant& ast, ParseErrorPtr& pe);
 
+    //Private helpers
 private:
     void initRuleMap();
 };

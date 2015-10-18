@@ -7,7 +7,9 @@
 //////////////////// PUBLIC FUNCTIONS ///////////////////
 
 QMetaQStringParserBase::QMetaQStringParserBase(int ruleId, const QString &inp)
-    : m_input(inp)
+    : m_error(nullptr)
+    , m_indentLevel(0)
+    , m_input(inp)
     , m_ruleId(ruleId)
 {
     initRuleMap();
@@ -21,6 +23,11 @@ QMetaQStringParserBase::~QMetaQStringParserBase()
 bool QMetaQStringParserBase::parse(QVariant& ast)
 {
     return parse(m_ruleId, 0, ast, m_error);
+}
+
+const ParseError *QMetaQStringParserBase::getError() const
+{
+    return m_error;
 }
 
 /////////////////////  TERMINALS  //////////////////////
@@ -322,6 +329,42 @@ QChar QMetaQStringParserBase::unescape(QChar c)
     return QChar(-1);
 }
 
+bool QMetaQStringParserBase::applyRule(int ruleId, int &pos, QVariant &result, ParseErrorPtr &pe)
+{
+    ENTRYV(ruleId, pos);
+
+    EXPECT(m_rule.contains(ruleId));
+
+    {
+        MemoKey key = {ruleId, pos};
+
+        if (m_memo.contains(key)) {
+            MemoEntry me = m_memo.value(key);
+            if (me.nextPos < 0) {
+                //RETURN_FAILURE("Left recursion detected.");
+                RETURN_FAILURE();
+            }
+            result = me.result;
+            pos = me.nextPos;
+            RETURN_SUCCESS();
+        }
+
+        QVariant res;
+
+        RuleFuncPtr ruleFunc = m_rule[ruleId];
+        m_memo.insert(key, {FAIL, res});
+
+        EXPECT(ruleFunc(this, pos, res, cpe));
+
+        m_memo.insert(key, {pos, res});
+        result = res;
+    }
+
+    RETURN_SUCCESS();
+
+    EXITV(result);
+}
+
 void QMetaQStringParserBase::initRuleMap()
 {
 #pragma GCC diagnostic push
@@ -337,4 +380,9 @@ void QMetaQStringParserBase::initRuleMap()
 QString QMetaQStringParserBase::mid(int pos0, int pos1)
 {
     return m_input.mid(pos0, pos1 - pos0);
+}
+
+inline uint qHash(const QMetaQStringParserBase::MemoKey &key, uint seed)
+{
+    return qHash(key.ruleId, seed) ^ qHash(key.position, seed);
 }

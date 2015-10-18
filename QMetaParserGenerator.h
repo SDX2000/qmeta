@@ -6,7 +6,7 @@
 class QMetaParserGenerator : public QMetaQVariantListParserBase
 {
 public:
-    QMetaParserGenerator();
+    QMetaParserGenerator(int ruleId, const QVariant &input);
 
     enum RuleEnum {
         GRAMMAR = NEXT_RULE,
@@ -24,17 +24,17 @@ public:
 
 private:
     //Use applyRule() to access these functions
-    bool grammar(int& pos, QVariant& output, ParseErrorPtr& pe);
-    bool rule(int& pos, QVariant& output, ParseErrorPtr& pe);
-    bool _and(int& pos, QVariant& output, ParseErrorPtr& pe);
-    bool _or(int& pos, QVariant& output, ParseErrorPtr& pe);
-    bool _not(int& pos, QVariant& output, ParseErrorPtr& pe);
-    bool apply(int& pos, QVariant& output, ParseErrorPtr& pe);
-    bool optional(int& pos, QVariant& output, ParseErrorPtr& pe);
-    bool zeroOrMore(int& pos, QVariant& output, ParseErrorPtr& pe);
-    bool oneOrMore(int& pos, QVariant& output, ParseErrorPtr& pe);
-    bool hostExpr(int& pos, QVariant& output, ParseErrorPtr& pe);
-    bool anything(int& pos, QVariant& output, ParseErrorPtr& pe);
+    bool grammar(QVariant &inp, QVariant& output, ParseErrorPtr& pe);
+    bool rule(QVariant &inp, QVariant& output, ParseErrorPtr& pe);
+    bool _and(QVariant &inp, QVariant& output, ParseErrorPtr& pe);
+    bool _or(QVariant &inp, QVariant& output, ParseErrorPtr& pe);
+    bool _not(QVariant &inp, QVariant& output, ParseErrorPtr& pe);
+    bool apply(QVariant &inp, QVariant& output, ParseErrorPtr& pe);
+    bool optional(QVariant &inp, QVariant& output, ParseErrorPtr& pe);
+    bool zeroOrMore(QVariant &inp, QVariant& output, ParseErrorPtr& pe);
+    bool oneOrMore(QVariant &inp, QVariant& output, ParseErrorPtr& pe);
+    bool hostExpr(QVariant &inp, QVariant& output, ParseErrorPtr& pe);
+    bool anything(QVariant &inp, QVariant& output, ParseErrorPtr& pe);
 
 private:
     void initRuleMap();

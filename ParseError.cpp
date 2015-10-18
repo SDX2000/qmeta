@@ -30,6 +30,14 @@ ParseError::ParseError(int pos, QString ruleName, QString fileName, int lineNumb
 {
 }
 
+ParseError::ParseError(const QVariant &inp, QString ruleName, QString fileName, int lineNumber)
+    : m_inp(inp)
+    , m_ruleName(ruleName)
+    , m_msg(fileName)
+    , m_lineNumber(lineNumber)
+{
+}
+
 void ParseError::addChild(ParseError *pe)
 {
     m_children.append(pe);
