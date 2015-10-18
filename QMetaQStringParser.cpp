@@ -1,13 +1,14 @@
 #include "QMetaQStringParser.h"
 
-bool QMetaQStringParser::parse(int ruleId, const QString& inp, QVariant& ast)
-{
-    return QMetaQStringParserBase::parse(ruleId, inp, ast);
-}
-
-QMetaQStringParser::QMetaQStringParser()
+QMetaQStringParser::QMetaQStringParser(int ruleId, const QString &inp)
+    : QMetaQStringParserBase(ruleId, inp)
 {
     initRuleMap();
+}
+
+bool QMetaQStringParser::parse(QVariant& ast)
+{
+    return QMetaQStringParserBase::parse(ast);
 }
 
 void QMetaQStringParser::initRuleMap()

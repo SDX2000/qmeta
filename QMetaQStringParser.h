@@ -8,8 +8,8 @@
 class QMetaQStringParser : public QMetaQStringParserBase
 {
 public:
-    QMetaQStringParser();
-    bool parse(int ruleId, const QString &inp, QVariant& ast);
+    QMetaQStringParser(int ruleId, const QString &inp);
+    bool parse(QVariant& ast);
     bool parse(int ruleId, int pos, QVariant& ast, ParseErrorPtr &pe) override;
 
     enum RuleEnum {

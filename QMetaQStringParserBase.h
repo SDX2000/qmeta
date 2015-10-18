@@ -6,10 +6,10 @@
 class QMetaQStringParserBase : public QMetaParserBase
 {
 public:
-    QMetaQStringParserBase();
-    virtual bool parse(int ruleId, const QString& inp, QVariant& ast);
+    QMetaQStringParserBase(int ruleId, const QString &inp);
+    virtual bool parse(QVariant& ast);
     virtual bool parse(int ruleId, int pos, QVariant& ast, ParseErrorPtr& pe) = 0;
-    virtual ~QMetaQStringParserBase() {}
+    virtual ~QMetaQStringParserBase();
 public:
     enum RuleEnum {
         //TERMINALS
@@ -64,6 +64,7 @@ private:
 
 private:
     QString m_input;
+    int     m_ruleId;
 };
 
 #endif // QMETAQSTRINGPARSERBASE_H

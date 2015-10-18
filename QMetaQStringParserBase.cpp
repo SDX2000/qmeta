@@ -6,18 +6,21 @@
 
 //////////////////// PUBLIC FUNCTIONS ///////////////////
 
-QMetaQStringParserBase::QMetaQStringParserBase()
+QMetaQStringParserBase::QMetaQStringParserBase(int ruleId, const QString &inp)
+    : m_input(inp)
+    , m_ruleId(ruleId)
 {
     initRuleMap();
 }
 
-bool QMetaQStringParserBase::parse(int ruleId, const QString &inp, QVariant& ast)
+QMetaQStringParserBase::~QMetaQStringParserBase()
 {
-    m_input = inp;
-    m_memo.clear();
-    m_indentLevel = 0;
     safeDelete(m_error);
-    return parse(ruleId, 0, ast, m_error);
+}
+
+bool QMetaQStringParserBase::parse(QVariant& ast)
+{
+    return parse(m_ruleId, 0, ast, m_error);
 }
 
 /////////////////////  TERMINALS  //////////////////////
