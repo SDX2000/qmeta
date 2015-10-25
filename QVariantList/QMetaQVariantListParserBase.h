@@ -67,7 +67,7 @@
         if (X) { \
             RETURN_SUCCESS() \
         } \
-        inp = _checkPoint; \
+        input = _checkPoint; \
     } \
     while(0);
 
@@ -82,12 +82,12 @@
     } \
 
 #define CHECK_POINT(CP) \
-    QVariant CP = inp;
+    QVariant CP = input;
 
 class QMetaQVariantListParserBase
 {
 public:
-    QMetaQVariantListParserBase(int ruleId, const QVariant &inp);
+    QMetaQVariantListParserBase(int ruleId, const QVariant &input);
     virtual bool parse(QVariant& output) = 0;
     virtual ~QMetaQVariantListParserBase() {}
 
@@ -112,10 +112,10 @@ public:
     struct MemoKey
     {
         int      ruleId;
-        QVariant inp;
+        QVariant input;
 
         bool operator < (const MemoKey& rhs) const {
-            return ruleId < rhs.ruleId && inp < rhs.inp;
+            return ruleId < rhs.ruleId && input < rhs.input;
         }
     };
 
@@ -128,29 +128,29 @@ public:
 
 protected:
     //TERMINALS//
-    bool string(QVariant &inp, QVariant& output, ParseErrorPtr &pe);
-    bool thisStr(QVariant &inp, const QString& thisStr, ParseErrorPtr& pe);
-    bool digit(QVariant &inp, int& digit, ParseErrorPtr& pe);
-    bool anyChar(QVariant &inp, ParseErrorPtr& pe);
-    bool someChar(QVariant &inp, QChar& c, ParseErrorPtr& pe);
-    bool someCharOf(QVariant &inp, bool (QChar::*is_x)() const, ParseErrorPtr& pe);
-    bool someCharOf(QVariant &inp, QChar &c, bool (QChar::*is_x)() const, ParseErrorPtr& pe);
-    bool thisChar(QVariant &inp, QChar c, ParseErrorPtr& pe);
-    bool oneOf(QVariant &inp, const QString& chars, QChar &outCh, ParseErrorPtr& pe);
-    bool anything(QVariant &inp, QVariant &val, ParseErrorPtr& pe);
+    bool string(QVariant &input, QVariant& output, ParseErrorPtr &pe);
+    bool thisStr(QVariant &input, const QString& thisStr, ParseErrorPtr& pe);
+    bool digit(QVariant &input, int& digit, ParseErrorPtr& pe);
+    bool anyChar(QVariant &input, ParseErrorPtr& pe);
+    bool someChar(QVariant &input, QChar& c, ParseErrorPtr& pe);
+    bool someCharOf(QVariant &input, bool (QChar::*is_x)() const, ParseErrorPtr& pe);
+    bool someCharOf(QVariant &input, QChar &c, bool (QChar::*is_x)() const, ParseErrorPtr& pe);
+    bool thisChar(QVariant &input, QChar c, ParseErrorPtr& pe);
+    bool oneOf(QVariant &input, const QString& chars, QChar &outCh, ParseErrorPtr& pe);
+    bool anything(QVariant &input, QVariant &val, ParseErrorPtr& pe);
 
     //HELPER FUNCTIONS//
     virtual QChar unescape(QChar c);
 
 private:
     //Accessible only through applyRule
-    bool integer(QVariant &inp, QVariant &integer, ParseErrorPtr& pe);
+    bool integer(QVariant &input, QVariant &integer, ParseErrorPtr& pe);
     void initRuleMap();
 
 protected:
-    virtual bool applyRule(int ruleId, QVariant &inp, QVariant& result, ParseErrorPtr& pe);
-    typedef bool (QMetaQVariantListParserBase::*RuleMemberFuncPtr)(QVariant &inp, QVariant &result, ParseErrorPtr& pe);
-    typedef bool (*RuleFuncPtr)(QMetaQVariantListParserBase* self, QVariant &inp, QVariant &result, ParseErrorPtr& pe);
+    virtual bool applyRule(int ruleId, QVariant &input, QVariant& result, ParseErrorPtr& pe);
+    typedef bool (QMetaQVariantListParserBase::*RuleMemberFuncPtr)(QVariant &input, QVariant &result, ParseErrorPtr& pe);
+    typedef bool (*RuleFuncPtr)(QMetaQVariantListParserBase* self, QVariant &input, QVariant &result, ParseErrorPtr& pe);
     QHash<int, RuleFuncPtr> m_rule;
 
     QMap<MemoKey, MemoEntry>   m_memo;

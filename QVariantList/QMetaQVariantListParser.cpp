@@ -1,104 +1,104 @@
 #include "QMetaQVariantListParser.h"
 
-QMetaParserGenerator::QMetaParserGenerator(int ruleId, const QVariant &inp)
-    : QMetaQVariantListParserBase(ruleId, inp)
+QMetaParserGenerator::QMetaParserGenerator(int ruleId, const QVariant &input)
+    : QMetaQVariantListParserBase(ruleId, input)
 {
     initRuleMap();
 }
 
-bool QMetaParserGenerator::grammar(QVariant &inp, QVariant &output, ParseErrorPtr &pe)
+bool QMetaParserGenerator::grammar(QVariant &input, QVariant &output, ParseErrorPtr &pe)
 {
-    ENTRYV(inp);
+    ENTRYV(input);
 
     RETURN_SUCCESS();
 
     EXITV(output);
 }
 
-bool QMetaParserGenerator::rule(QVariant &inp, QVariant &output, ParseErrorPtr &pe)
+bool QMetaParserGenerator::rule(QVariant &input, QVariant &output, ParseErrorPtr &pe)
 {
-    ENTRYV(inp);
+    ENTRYV(input);
 
     RETURN_SUCCESS();
 
     EXITV(output);
 }
 
-bool QMetaParserGenerator::_and(QVariant &inp, QVariant &output, ParseErrorPtr &pe)
+bool QMetaParserGenerator::_and(QVariant &input, QVariant &output, ParseErrorPtr &pe)
 {
-    ENTRYV(inp);
+    ENTRYV(input);
 
     RETURN_SUCCESS();
 
     EXITV(output);
 }
 
-bool QMetaParserGenerator::_or(QVariant &inp, QVariant &output, ParseErrorPtr &pe)
+bool QMetaParserGenerator::_or(QVariant &input, QVariant &output, ParseErrorPtr &pe)
 {
-    ENTRYV(inp);
+    ENTRYV(input);
 
     RETURN_SUCCESS();
 
     EXITV(output);
 }
 
-bool QMetaParserGenerator::_not(QVariant &inp, QVariant &output, ParseErrorPtr &pe)
+bool QMetaParserGenerator::_not(QVariant &input, QVariant &output, ParseErrorPtr &pe)
 {
-    ENTRYV(inp);
+    ENTRYV(input);
 
     RETURN_SUCCESS();
 
     EXITV(output);
 }
 
-bool QMetaParserGenerator::apply(QVariant &inp, QVariant &output, ParseErrorPtr &pe)
+bool QMetaParserGenerator::apply(QVariant &input, QVariant &output, ParseErrorPtr &pe)
 {
-    ENTRYV(inp);
+    ENTRYV(input);
 
     RETURN_SUCCESS();
 
     EXITV(output);
 }
 
-bool QMetaParserGenerator::optional(QVariant &inp, QVariant &output, ParseErrorPtr &pe)
+bool QMetaParserGenerator::optional(QVariant &input, QVariant &output, ParseErrorPtr &pe)
 {
-    ENTRYV(inp);
+    ENTRYV(input);
 
     RETURN_SUCCESS();
 
     EXITV(output);
 }
 
-bool QMetaParserGenerator::zeroOrMore(QVariant &inp, QVariant &output, ParseErrorPtr &pe)
+bool QMetaParserGenerator::zeroOrMore(QVariant &input, QVariant &output, ParseErrorPtr &pe)
 {
-    ENTRYV(inp);
+    ENTRYV(input);
 
     RETURN_SUCCESS();
 
     EXITV(output);
 }
 
-bool QMetaParserGenerator::oneOrMore(QVariant &inp, QVariant &output, ParseErrorPtr &pe)
+bool QMetaParserGenerator::oneOrMore(QVariant &input, QVariant &output, ParseErrorPtr &pe)
 {
-    ENTRYV(inp);
+    ENTRYV(input);
 
     RETURN_SUCCESS();
 
     EXITV(output);
 }
 
-bool QMetaParserGenerator::hostExpr(QVariant &inp, QVariant &output, ParseErrorPtr &pe)
+bool QMetaParserGenerator::hostExpr(QVariant &input, QVariant &output, ParseErrorPtr &pe)
 {
-    ENTRYV(inp);
+    ENTRYV(input);
 
     RETURN_SUCCESS();
 
     EXITV(output);
 }
 
-bool QMetaParserGenerator::anything(QVariant &inp, QVariant &output, ParseErrorPtr &pe)
+bool QMetaParserGenerator::anything(QVariant &input, QVariant &output, ParseErrorPtr &pe)
 {
-    ENTRYV(inp);
+    ENTRYV(input);
 
     RETURN_SUCCESS();
 

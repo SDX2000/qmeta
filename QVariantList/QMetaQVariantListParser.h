@@ -24,17 +24,17 @@ public:
 
 private:
     //Use applyRule() to access these functions
-    bool grammar(QVariant &inp, QVariant& output, ParseErrorPtr& pe);
-    bool rule(QVariant &inp, QVariant& output, ParseErrorPtr& pe);
-    bool _and(QVariant &inp, QVariant& output, ParseErrorPtr& pe);
-    bool _or(QVariant &inp, QVariant& output, ParseErrorPtr& pe);
-    bool _not(QVariant &inp, QVariant& output, ParseErrorPtr& pe);
-    bool apply(QVariant &inp, QVariant& output, ParseErrorPtr& pe);
-    bool optional(QVariant &inp, QVariant& output, ParseErrorPtr& pe);
-    bool zeroOrMore(QVariant &inp, QVariant& output, ParseErrorPtr& pe);
-    bool oneOrMore(QVariant &inp, QVariant& output, ParseErrorPtr& pe);
-    bool hostExpr(QVariant &inp, QVariant& output, ParseErrorPtr& pe);
-    bool anything(QVariant &inp, QVariant& output, ParseErrorPtr& pe);
+    bool grammar(QVariant &input, QVariant& output, ParseErrorPtr& pe);
+    bool rule(QVariant &input, QVariant& output, ParseErrorPtr& pe);
+    bool _and(QVariant &input, QVariant& output, ParseErrorPtr& pe);
+    bool _or(QVariant &input, QVariant& output, ParseErrorPtr& pe);
+    bool _not(QVariant &input, QVariant& output, ParseErrorPtr& pe);
+    bool apply(QVariant &input, QVariant& output, ParseErrorPtr& pe);
+    bool optional(QVariant &input, QVariant& output, ParseErrorPtr& pe);
+    bool zeroOrMore(QVariant &input, QVariant& output, ParseErrorPtr& pe);
+    bool oneOrMore(QVariant &input, QVariant& output, ParseErrorPtr& pe);
+    bool hostExpr(QVariant &input, QVariant& output, ParseErrorPtr& pe);
+    bool anything(QVariant &input, QVariant& output, ParseErrorPtr& pe);
 
 private:
     void initRuleMap();
