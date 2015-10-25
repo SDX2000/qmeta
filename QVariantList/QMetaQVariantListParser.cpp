@@ -1,12 +1,12 @@
 #include "QMetaQVariantListParser.h"
 
-QMetaParserGenerator::QMetaParserGenerator(int ruleId, const QVariant &input)
+QMetaQVariantListParser::QMetaQVariantListParser(int ruleId, const QVariant &input)
     : QMetaQVariantListParserBase(ruleId, input)
 {
     initRuleMap();
 }
 
-bool QMetaParserGenerator::grammar(QVariant &input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantListParser::grammar(QVariant &input, QVariant &output, ParseErrorPtr &pe)
 {
     ENTRYV(input);
 
@@ -31,7 +31,7 @@ bool QMetaParserGenerator::grammar(QVariant &input, QVariant &output, ParseError
     EXITV(output);
 }
 
-bool QMetaParserGenerator::rule(QVariant &input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantListParser::rule(QVariant &input, QVariant &output, ParseErrorPtr &pe)
 {
     ENTRYV(input);
 
@@ -56,7 +56,7 @@ bool QMetaParserGenerator::rule(QVariant &input, QVariant &output, ParseErrorPtr
     EXITV(output);
 }
 
-bool QMetaParserGenerator::expr(QVariant &input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantListParser::expr(QVariant &input, QVariant &output, ParseErrorPtr &pe)
 {
     ENTRYV(input);
 
@@ -72,7 +72,7 @@ bool QMetaParserGenerator::expr(QVariant &input, QVariant &output, ParseErrorPtr
     EXITV(output);
 }
 
-bool QMetaParserGenerator::boolExpr(QVariant &input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantListParser::boolExpr(QVariant &input, QVariant &output, ParseErrorPtr &pe)
 {
     ENTRYV(input);
 
@@ -98,7 +98,7 @@ choice2:
     EXITV(output);
 }
 
-bool QMetaParserGenerator::loopExpr(QVariant &input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantListParser::loopExpr(QVariant &input, QVariant &output, ParseErrorPtr &pe)
 {
     ENTRYV(input);
 
@@ -122,7 +122,7 @@ choice1:
     EXITV(output);
 }
 
-bool QMetaParserGenerator::optionalExpr(QVariant &input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantListParser::optionalExpr(QVariant &input, QVariant &output, ParseErrorPtr &pe)
 {
     ENTRYV(input);
 
@@ -144,7 +144,7 @@ bool QMetaParserGenerator::optionalExpr(QVariant &input, QVariant &output, Parse
     EXITV(output);
 }
 
-bool QMetaParserGenerator::varDef(QVariant &input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantListParser::varDef(QVariant &input, QVariant &output, ParseErrorPtr &pe)
 {
     ENTRYV(input);
 
@@ -169,7 +169,7 @@ bool QMetaParserGenerator::varDef(QVariant &input, QVariant &output, ParseErrorP
     EXITV(output);
 }
 
-bool QMetaParserGenerator::hostExpr(QVariant &input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantListParser::hostExpr(QVariant &input, QVariant &output, ParseErrorPtr &pe)
 {
     ENTRYV(input);
 
@@ -194,7 +194,7 @@ bool QMetaParserGenerator::hostExpr(QVariant &input, QVariant &output, ParseErro
     EXITV(output);
 }
 
-bool QMetaParserGenerator::ruleApp(QVariant &input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantListParser::ruleApp(QVariant &input, QVariant &output, ParseErrorPtr &pe)
 {
     ENTRYV(input);
 
@@ -216,18 +216,18 @@ bool QMetaParserGenerator::ruleApp(QVariant &input, QVariant &output, ParseError
     EXITV(output);
 }
 
-void QMetaParserGenerator::initRuleMap()
+void QMetaQVariantListParser::initRuleMap()
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpmf-conversions"
-    m_rule[GRAMMAR] = reinterpret_cast<RuleFuncPtr>(&QMetaParserGenerator::grammar);
-    m_rule[RULE] = reinterpret_cast<RuleFuncPtr>(&QMetaParserGenerator::rule);
-    m_rule[EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaParserGenerator::expr);
-    m_rule[BOOL_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaParserGenerator::boolExpr);
-    m_rule[LOOP_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaParserGenerator::loopExpr);
-    m_rule[OPTIONAL_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaParserGenerator::optionalExpr);
-    m_rule[VAR_DEF] = reinterpret_cast<RuleFuncPtr>(&QMetaParserGenerator::varDef);
-    m_rule[HOST_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaParserGenerator::hostExpr);
-    m_rule[RULE_APP] = reinterpret_cast<RuleFuncPtr>(&QMetaParserGenerator::ruleApp);
+    m_rule[GRAMMAR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::grammar);
+    m_rule[RULE] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::rule);
+    m_rule[EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::expr);
+    m_rule[BOOL_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::boolExpr);
+    m_rule[LOOP_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::loopExpr);
+    m_rule[OPTIONAL_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::optionalExpr);
+    m_rule[VAR_DEF] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::varDef);
+    m_rule[HOST_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::hostExpr);
+    m_rule[RULE_APP] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::ruleApp);
 #pragma GCC diagnostic pop
 }
