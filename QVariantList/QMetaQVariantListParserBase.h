@@ -5,6 +5,7 @@
 #include <QVariantList>
 
 #include "ParseError.h"
+#include "ParseFail.h"
 
 #define ENTRYV(...) \
     CHECK_POINT(_inp0); \
@@ -86,12 +87,15 @@
 class QMetaQVariantListParserBase
 {
 public:
-    QMetaQVariantListParserBase(int ruleId, const QVariant &input);
+    QMetaQVariantListParserBase(int ruleId, const QVariant &inp);
     virtual bool parse(QVariant& output) = 0;
     virtual ~QMetaQVariantListParserBase() {}
+
+    const int FAIL = -1;
 public:
     enum RuleEnum {
         //TERMINALS
+        STRING,
         THIS_STR,       //Cannot memoize rule with arguments yet
         DIGIT,
         SOME_CHAR,
@@ -105,8 +109,26 @@ public:
         NEXT_RULE,
     };
 
+    struct MemoKey
+    {
+        int      ruleId;
+        QVariant inp;
+
+        bool operator < (const MemoKey& rhs) const {
+            return ruleId < rhs.ruleId && inp < rhs.inp;
+        }
+    };
+
+    struct MemoEntry
+    {
+        QVariant   rest;
+        QVariant   result;
+    };
+
+
 protected:
     //TERMINALS//
+    bool string(QVariant &inp, QVariant& output, ParseErrorPtr &pe);
     bool thisStr(QVariant &inp, const QString& thisStr, ParseErrorPtr& pe);
     bool digit(QVariant &inp, int& digit, ParseErrorPtr& pe);
     bool anyChar(QVariant &inp, ParseErrorPtr& pe);
@@ -126,6 +148,13 @@ private:
     void initRuleMap();
 
 protected:
+    virtual bool applyRule(int ruleId, QVariant &inp, QVariant& result, ParseErrorPtr& pe);
+    typedef bool (QMetaQVariantListParserBase::*RuleMemberFuncPtr)(QVariant &inp, QVariant &result, ParseErrorPtr& pe);
+    typedef bool (*RuleFuncPtr)(QMetaQVariantListParserBase* self, QVariant &inp, QVariant &result, ParseErrorPtr& pe);
+    QHash<int, RuleFuncPtr> m_rule;
+
+    QMap<MemoKey, MemoEntry>   m_memo;
+    ParseError*                 m_error;
     int             m_indentLevel;
 
 private:

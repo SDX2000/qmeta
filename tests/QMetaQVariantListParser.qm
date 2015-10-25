@@ -1,6 +1,5 @@
 qmeta QMetaQVariantListParser {
-    grammar         = ["GRAMMAR", string, rules];
-    rules           = rule+;
+    grammar         = ["GRAMMAR", string, rule+];
     rule            = ["RULE", string, expr+];
     expr            = boolExpr | loopExpr | optionalExpr | varDef | hostExpr | ruleExpr;
     boolExpr        = ["OR"|"AND"|"NOT", expr+];

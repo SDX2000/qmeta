@@ -17,10 +17,11 @@ TEMPLATE = app
 SOURCES += main.cpp \
     ParseError.cpp \
     utils.cpp \
-    QVariantList/QMetaParserGenerator.cpp \
     QVariantList/QMetaQVariantListParserBase.cpp \
     QString/QMetaQStringParser.cpp \
-    QString/QMetaQStringParserBase.cpp
+    QString/QMetaQStringParserBase.cpp \
+    QVariantList/QMetaQVariantListParser.cpp \
+    QVariantList/ParseFail.cpp
 
 DEFINES += QT_RESTRICTED_CAST_FROM_ASCII \
            QT_NO_CAST_TO_ASCII
@@ -28,10 +29,11 @@ DEFINES += QT_RESTRICTED_CAST_FROM_ASCII \
 HEADERS += \
     ParseError.h \
     utils.h \
-    QVariantList/QMetaParserGenerator.h \
     QVariantList/QMetaQVariantListParserBase.h \
     QString/QMetaQStringParser.h \
-    QString/QMetaQStringParserBase.h
+    QString/QMetaQStringParserBase.h \
+    QVariantList/QMetaQVariantListParser.h \
+    QVariantList/ParseFail.h
 
 DISTFILES += \
     TODO \

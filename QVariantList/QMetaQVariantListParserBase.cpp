@@ -1,9 +1,9 @@
 #include "QMetaQVariantListParserBase.h"
 
-QMetaQVariantListParserBase::QMetaQVariantListParserBase(int ruleId, const QVariant& input)
+QMetaQVariantListParserBase::QMetaQVariantListParserBase(int ruleId, const QVariant& inp)
     : m_indentLevel(0)
     , m_startRuleId(ruleId)
-    , m_input(input)
+    , m_input(inp)
 {
     initRuleMap();
 }
@@ -12,9 +12,46 @@ void QMetaQVariantListParserBase::initRuleMap()
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpmf-conversions"
-//    m_rule[ANYTHING] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParserBase::anything);
-//    m_rule[INTEGER] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParserBase::integer);
+    m_rule[STRING] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParserBase::string);
 #pragma GCC diagnostic pop
+}
+
+bool QMetaQVariantListParserBase::applyRule(int ruleId, QVariant &inp, QVariant &result, ParseErrorPtr &pe)
+{
+    ENTRYV(ruleId, inp);
+
+    EXPECT(m_rule.contains(ruleId));
+
+    {
+        MemoKey key = {ruleId, inp};
+
+        if (m_memo.contains(key)) {
+            MemoEntry me = m_memo.value(key);
+            if (me.rest.canConvert<ParseFail>()) {
+                //RETURN_FAILURE("Left recursion detected.");
+                RETURN_FAILURE();
+            }
+            result = me.result;
+            inp = me.rest;
+            RETURN_SUCCESS();
+        }
+
+        QVariant res;
+        QVariant fail;
+        fail.setValue(ParseFail());
+
+        RuleFuncPtr ruleFunc = m_rule[ruleId];
+        m_memo.insert(key, {fail, res});
+
+        EXPECT(ruleFunc(this, inp, res, cpe));
+
+        m_memo.insert(key, {inp, res});
+        result = res;
+    }
+
+    RETURN_SUCCESS();
+
+    EXITV(result);
 }
 
 /////////////////////  TERMINALS  //////////////////////
@@ -143,6 +180,19 @@ bool QMetaQVariantListParserBase::thisStr(QVariant &inp, const QString& str, Par
     EXIT();
 }
 
+bool QMetaQVariantListParserBase::string(QVariant &inp, QVariant& output, ParseErrorPtr &pe)
+{
+    ENTRYV(inp, output);
+
+    EXPECT(inp.type() == QVariant::String);
+
+    {
+        output = inp;
+    }
+
+    EXIT();
+}
+
 
 
 /////////////////////  NONTERMINALS  //////////////////////
@@ -160,7 +210,6 @@ bool QMetaQVariantListParserBase::anything(QVariant &inp, QVariant& val, ParseEr
 
     EXITV(val);
 }
-
 
 bool QMetaQVariantListParserBase::integer(QVariant &inp, QVariant& integer, ParseErrorPtr &pe)
 {
@@ -200,4 +249,3 @@ QChar QMetaQVariantListParserBase::unescape(QChar c)
 
     return QChar(-1);
 }
-

@@ -1,7 +1,7 @@
-#include "QMetaParserGenerator.h"
+#include "QMetaQVariantListParser.h"
 
-QMetaParserGenerator::QMetaParserGenerator(int ruleId, const QVariant &input)
-    : QMetaQVariantListParserBase(ruleId, input)
+QMetaParserGenerator::QMetaParserGenerator(int ruleId, const QVariant &inp)
+    : QMetaQVariantListParserBase(ruleId, inp)
 {
     initRuleMap();
 }
