@@ -1,0 +1,24 @@
+qmeta QMetaQStringParserGenerator {
+  grammar           = "qmeta" identifier "{" rules "}";
+  rules             = (rule ";")+;
+  rule              = identifier "=" choices;
+  choices           = choice "|" choices
+                    | choice;
+  choice            = (term spaces)* ( "->" hostExpr)?;
+  hostExpr          = "{" .* "}";
+  term              = term1 ":" identifier
+                    | term1;
+  term1             = "~"  term2
+                    | term2 "*"
+                    | term2 "+"
+                    | term2 "?"
+                    | term2;
+  term2             = '\''  (~'\'' escapedChar) '\''
+                    | someToken
+                    | identifier
+                    | '.'
+                    | "(" choice ")";
+  someToken         = spaces? '"' (~'"'  escapedChar)* '"' spaces?;
+  escapedChar       = '\\' char
+                    | char;
+}
