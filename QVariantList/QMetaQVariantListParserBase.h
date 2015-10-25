@@ -63,7 +63,7 @@
 #define TRY_CHOICE(X) \
     do \
     { \
-        QVariant _checkPoint = pos; \
+        QVariant _checkPoint = input; \
         if (X) { \
             RETURN_SUCCESS() \
         } \

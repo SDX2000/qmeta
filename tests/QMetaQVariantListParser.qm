@@ -1,11 +1,11 @@
 qmeta QMetaQVariantListParser {
     grammar         = ["GRAMMAR", string, rule+];
     rule            = ["RULE", string, expr+];
-    expr            = boolExpr | loopExpr | optionalExpr | varDef | hostExpr | ruleExpr;
+    expr            = ruleApp | boolExpr | loopExpr | optionalExpr | varDef | hostExpr;
     boolExpr        = ["OR"|"AND"|"NOT", expr+];
     loopExpr        = ["ZERO_OR_MORE"|"ONE_OR_MORE", expr+];
     optionalExpr    = ["OPTIONAL", expr+];
     varDef          = ["DEFINE", string, expr+];
     hostExpr        = ["HOST_EXPR", expr+, string];
-    ruleExpr        = ["APPLY", string];
+    ruleApp         = ["APPLY", string];
 }

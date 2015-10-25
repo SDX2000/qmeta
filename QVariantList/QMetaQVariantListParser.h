@@ -11,30 +11,26 @@ public:
     enum RuleEnum {
         GRAMMAR = NEXT_RULE,
         RULE,
-        AND,
-        OR,
-        NOT,
-        APPLY,
-        OPTIONAL,
-        ZERO_OR_MORE,
-        ONE_OR_MORE,
+        EXPR,
+        BOOL_EXPR,
+        LOOP_EXPR,
+        OPTIONAL_EXPR,
+        VAR_DEF,
         HOST_EXPR,
-        ANYTHING,
+        RULE_APP,
     };
 
 private:
     //Use applyRule() to access these functions
     bool grammar(QVariant &input, QVariant& output, ParseErrorPtr& pe);
     bool rule(QVariant &input, QVariant& output, ParseErrorPtr& pe);
-    bool _and(QVariant &input, QVariant& output, ParseErrorPtr& pe);
-    bool _or(QVariant &input, QVariant& output, ParseErrorPtr& pe);
-    bool _not(QVariant &input, QVariant& output, ParseErrorPtr& pe);
-    bool apply(QVariant &input, QVariant& output, ParseErrorPtr& pe);
-    bool optional(QVariant &input, QVariant& output, ParseErrorPtr& pe);
-    bool zeroOrMore(QVariant &input, QVariant& output, ParseErrorPtr& pe);
-    bool oneOrMore(QVariant &input, QVariant& output, ParseErrorPtr& pe);
+    bool expr(QVariant &input, QVariant& output, ParseErrorPtr& pe);
+    bool boolExpr(QVariant &input, QVariant& output, ParseErrorPtr& pe);
+    bool loopExpr(QVariant &input, QVariant& output, ParseErrorPtr& pe);
+    bool optionalExpr(QVariant &input, QVariant& output, ParseErrorPtr& pe);
+    bool varDef(QVariant &input, QVariant& output, ParseErrorPtr& pe);
     bool hostExpr(QVariant &input, QVariant& output, ParseErrorPtr& pe);
-    bool anything(QVariant &input, QVariant& output, ParseErrorPtr& pe);
+    bool ruleApp(QVariant &input, QVariant& output, ParseErrorPtr& pe);
 
 private:
     void initRuleMap();
