@@ -33,7 +33,9 @@ HEADERS += \
     QString/QMetaQStringParser.h \
     QString/QMetaQStringParserBase.h \
     QVariantList/QMetaQVariantListParser.h \
-    QVariantList/ParseFail.h
+    QVariantList/ParseFail.h \
+    QVariantList/macros.h \
+    QString/macros.h
 
 DISTFILES += \
     TODO \

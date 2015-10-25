@@ -3,6 +3,8 @@
 #include <assert.h>
 #include <algorithm>
 
+#include "QString/macros.h"
+
 
 //////////////////// PUBLIC FUNCTIONS ///////////////////
 

@@ -1,7 +1,9 @@
 #include "QMetaQVariantListParserBase.h"
+#include "QVariantList/macros.h"
 
 QMetaQVariantListParserBase::QMetaQVariantListParserBase(int ruleId, const QVariant& input)
-    : m_indentLevel(0)
+    : m_error(nullptr)
+    , m_indentLevel(0)
     , m_startRuleId(ruleId)
     , m_input(input)
 {

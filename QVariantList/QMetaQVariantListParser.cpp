@@ -1,9 +1,20 @@
 #include "QMetaQVariantListParser.h"
+#include "QVariantList/macros.h"
 
 QMetaQVariantListParser::QMetaQVariantListParser(int ruleId, const QVariant &input)
     : QMetaQVariantListParserBase(ruleId, input)
 {
     initRuleMap();
+}
+
+bool QMetaQVariantListParser::parse(QVariant &output)
+{
+    return applyRule(m_startRuleId, m_input, output, m_error);
+}
+
+const ParseError *QMetaQVariantListParser::getError() const
+{
+    return m_error;
 }
 
 bool QMetaQVariantListParser::grammar(QVariant &input, QVariant &output, ParseErrorPtr &pe)

@@ -1,4 +1,5 @@
 #include "QMetaQStringParser.h"
+#include "QString/macros.h"
 
 QMetaQStringParser::QMetaQStringParser(int ruleId, const QString &inp)
     : QMetaQStringParserBase(ruleId, inp)

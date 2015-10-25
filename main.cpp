@@ -7,6 +7,8 @@
 #include <QDebug>
 
 #include "QString/QMetaQStringParser.h"
+#include "QVariantList/QMetaQVariantListParser.h"
+
 #include "utils.h"
 
 void doREPL()
@@ -23,16 +25,17 @@ void doREPL()
             break;
         }
 
-        QMetaQStringParser interp((int)QMetaQStringParser::RULES, inp);
+        QMetaQStringParser parser(QMetaQStringParser::RULES, inp);
+
 
         QVariant result;
 
-        bool ok = interp.parse(result);
+        bool ok = parser.parse(result);
         if (ok) {
             qStdOut() << endl << result << endl;
         } else {
             qStdOut() << "Generated errors... " <<endl;
-            interp.getError()->print(qStdOut());
+            parser.getError()->print(qStdOut());
         }
     }
 }
@@ -41,14 +44,25 @@ void execute(QString prog)
 {
     QMetaQStringParser interp(QMetaQStringParser::GRAMMAR, prog);
 
+
     QVariant result;
 
     bool ok = interp.parse(result);
 
     if (ok) {
         qStdOut() << endl << result << endl;
+        QMetaQVariantListParser xformer(QMetaQVariantListParser::GRAMMAR, result);
+        QVariant xformedResult;
+        ok = xformer.parse(xformedResult);
+
+        if (ok) {
+            qStdOut() << endl << xformedResult << endl;
+        } else {
+            qStdOut() << "Errors generated in the transformation phase... " <<endl;
+            xformer.getError()->print(qStdOut());
+        }
     } else {
-        qStdOut() << "Generated errors... " <<endl;
+        qStdOut() << "Errors generated in the parse phase... " <<endl;
         interp.getError()->print(qStdOut());
     }
 }

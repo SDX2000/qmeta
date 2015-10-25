@@ -3,10 +3,12 @@
 
 #include "QMetaQVariantListParserBase.h"
 
-class QMetaParserGenerator : public QMetaQVariantListParserBase
+class QMetaQVariantListParser : public QMetaQVariantListParserBase
 {
 public:
-    QMetaParserGenerator(int ruleId, const QVariant &input);
+    QMetaQVariantListParser(int ruleId, const QVariant &input);
+    bool parse(QVariant& output) override;
+    const ParseError *getError() const;
 
     enum RuleEnum {
         GRAMMAR = NEXT_RULE,
