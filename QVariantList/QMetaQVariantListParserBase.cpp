@@ -52,7 +52,6 @@ bool QMetaQVariantListParserBase::applyRule(int ruleId, QVariant &input, QVarian
     }
 
     RETURN_SUCCESS();
-
     EXITV(result);
 }
 
@@ -74,6 +73,7 @@ bool QMetaQVariantListParserBase::digit(QVariant &input, int& digit, ParseErrorP
         digit = c.digitValue();
     }
 
+    RETURN_SUCCESS();
     EXITV(digit);
 }
 
@@ -88,6 +88,7 @@ bool QMetaQVariantListParserBase::someChar(QVariant &input, QChar& c, ParseError
         c = input.value<QChar>();
     }
 
+    RETURN_SUCCESS();
     EXITV(c);
 }
 
@@ -98,6 +99,7 @@ bool QMetaQVariantListParserBase::anyChar(QVariant &input, ParseErrorPtr &pe)
 
     EXPECT(input.type() == QVariant::Char);
 
+    RETURN_SUCCESS();
     EXIT();
 }
 
@@ -114,6 +116,7 @@ bool QMetaQVariantListParserBase::someCharOf(QVariant &input, bool (QChar::*is_x
         EXPECT((ch.*is_x)());
     }
 
+    RETURN_SUCCESS();
     EXIT();
 }
 
@@ -132,6 +135,7 @@ bool QMetaQVariantListParserBase::someCharOf(QVariant &input, QChar &c, bool (QC
         c = ch;
     }
 
+    RETURN_SUCCESS();
     EXITV(c);
 }
 
@@ -151,6 +155,7 @@ bool QMetaQVariantListParserBase::oneOf(QVariant &input, const QString& chars, Q
 
     }
 
+    RETURN_SUCCESS();
     EXITV(outCh);
 }
 
@@ -163,9 +168,9 @@ bool QMetaQVariantListParserBase::thisChar(QVariant &input, QChar c, ParseErrorP
 
     EXPECT(c == input.value<QChar>());
 
+    RETURN_SUCCESS();
     EXIT();
 }
-
 
 bool QMetaQVariantListParserBase::thisStr(QVariant &input, const QString& str, ParseErrorPtr &pe)
 {
@@ -179,6 +184,7 @@ bool QMetaQVariantListParserBase::thisStr(QVariant &input, const QString& str, P
         EXPECT(s == str);
     }
 
+    RETURN_SUCCESS();
     EXIT();
 }
 
@@ -192,6 +198,7 @@ bool QMetaQVariantListParserBase::string(QVariant &input, QVariant& output, Pars
         output = input;
     }
 
+    RETURN_SUCCESS();
     EXIT();
 }
 
@@ -210,6 +217,8 @@ bool QMetaQVariantListParserBase::anything(QVariant &input, QVariant& val, Parse
 
     val = input;
 
+
+    RETURN_SUCCESS();
     EXITV(val);
 }
 
@@ -221,6 +230,7 @@ bool QMetaQVariantListParserBase::integer(QVariant &input, QVariant& integer, Pa
 
     integer = input;
 
+    RETURN_SUCCESS();
     EXITV(integer);
 }
 

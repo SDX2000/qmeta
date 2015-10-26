@@ -34,11 +34,19 @@ bool QMetaQVariantListParser::grammar(QVariant &input, QVariant &output, ParseEr
             QVariant str;
             EXPECT(string(l[1], str, cpe));
 
-            QVariant rules;
-            EXPECT(applyRule(RULE, l[2], rules, cpe));
+            auto inp2 = l[2].value<QVariantList>();
+
+            QVariantList rules;
+
+            foreach(QVariant inp, inp2) {
+                QVariant rule;
+                EXPECT(applyRule(RULE, inp, rule, cpe));
+                rules.append(rule);
+            }
         }
     }
 
+    RETURN_SUCCESS();
     EXITV(output);
 }
 
@@ -59,11 +67,19 @@ bool QMetaQVariantListParser::rule(QVariant &input, QVariant &output, ParseError
             QVariant str;
             EXPECT(string(l[1], str, cpe));
 
-            QVariant expr;
-            EXPECT(applyRule(EXPR, l[2], expr, cpe));
+            auto inp2 = l[2].value<QVariantList>();
+
+            QVariantList exprs;
+
+            foreach(QVariant inp, inp2) {
+                QVariant expr;
+                EXPECT(applyRule(EXPR, inp, expr, cpe));
+                exprs.append(expr);
+            }
         }
     }
 
+    RETURN_SUCCESS();
     EXITV(output);
 }
 
@@ -80,6 +96,7 @@ bool QMetaQVariantListParser::expr(QVariant &input, QVariant &output, ParseError
 
     RETURN_FAILURE();
 
+    RETURN_SUCCESS();
     EXITV(output);
 }
 
@@ -101,11 +118,19 @@ choice2:
         EXPECT(thisStr(l[0], "NOT", cpe));
 
         {
-            QVariant expr;
-            EXPECT(applyRule(EXPR, l[1], expr, cpe));
+            auto inp1 = l[1].value<QVariantList>();
+
+            QVariantList exprs;
+
+            foreach(QVariant inp, inp1) {
+                QVariant expr;
+                EXPECT(applyRule(EXPR, inp, expr, cpe));
+                exprs.append(expr);
+            }
         }
     }
 
+    RETURN_SUCCESS();
     EXITV(output);
 }
 
@@ -125,11 +150,19 @@ choice1:
         EXPECT(thisStr(l[0], "ONE_OR_MORE", cpe));
 
         {
-            QVariant expr;
-            EXPECT(applyRule(EXPR, l[1], expr, cpe));
+            auto inp1 = l[1].value<QVariantList>();
+
+            QVariantList exprs;
+
+            foreach(QVariant inp, inp1) {
+                QVariant expr;
+                EXPECT(applyRule(EXPR, inp, expr, cpe));
+                exprs.append(expr);
+            }
         }
     }
 
+    RETURN_SUCCESS();
     EXITV(output);
 }
 
@@ -147,11 +180,19 @@ bool QMetaQVariantListParser::optionalExpr(QVariant &input, QVariant &output, Pa
         EXPECT(thisStr(l[0], "OPTIONAL", cpe));
 
         {
-            QVariant expr;
-            EXPECT(applyRule(EXPR, l[1], expr, cpe));
+            auto inp1 = l[1].value<QVariantList>();
+
+            QVariantList exprs;
+
+            foreach(QVariant inp, inp1) {
+                QVariant expr;
+                EXPECT(applyRule(EXPR, inp, expr, cpe));
+                exprs.append(expr);
+            }
         }
     }
 
+    RETURN_SUCCESS();
     EXITV(output);
 }
 
@@ -172,11 +213,21 @@ bool QMetaQVariantListParser::varDef(QVariant &input, QVariant &output, ParseErr
             QVariant name;
             EXPECT(string(l[1], name, cpe));
 
-            QVariant expr;
-            EXPECT(applyRule(EXPR, l[2], expr, cpe));
+            {
+                auto inp2 = l[2].value<QVariantList>();
+
+                QVariantList exprs;
+
+                foreach(QVariant inp, inp2) {
+                    QVariant expr;
+                    EXPECT(applyRule(EXPR, inp, expr, cpe));
+                    exprs.append(expr);
+                }
+            }
         }
     }
 
+    RETURN_SUCCESS();
     EXITV(output);
 }
 
@@ -194,14 +245,24 @@ bool QMetaQVariantListParser::hostExpr(QVariant &input, QVariant &output, ParseE
         EXPECT(thisStr(l[0], "HOST_EXPR", cpe));
 
         {
-            QVariant expr;
-            EXPECT(applyRule(EXPR, l[1], expr, cpe));
+            {
+                auto inp1 = l[1].value<QVariantList>();
+
+                QVariantList exprs;
+
+                foreach(QVariant inp, inp1) {
+                    QVariant expr;
+                    EXPECT(applyRule(EXPR, inp, expr, cpe));
+                    exprs.append(expr);
+                }
+            }
 
             QVariant hexpr;
             EXPECT(string(l[2], hexpr, cpe));
         }
     }
 
+    RETURN_SUCCESS();
     EXITV(output);
 }
 
@@ -224,6 +285,7 @@ bool QMetaQVariantListParser::ruleApp(QVariant &input, QVariant &output, ParseEr
         }
     }
 
+    RETURN_SUCCESS();
     EXITV(output);
 }
 
