@@ -39,32 +39,6 @@ bool QMetaQStringParser::parse(int ruleId, int pos, QVariant &ast, ParseErrorPtr
     EXITV(ast);
 }
 
-bool QMetaQStringParser::rules(int& pos, QVariant &ast, ParseErrorPtr& pe)
-{
-    ENTRYV(pos);
-
-    QList<QVariant> l;
-
-    QVariant _ast;
-
-    EXPECT(applyRule(RULE, pos, _ast, cpe));
-
-    do {
-        EXPECT(thisToken(pos, QSL(";"), cpe));
-        l.append(_ast);
-    } while (applyRule(RULE, pos, _ast, cpe));
-
-    if(l.length() == 1) {
-        ast = l.at(0);
-    } else {
-        ast = l;
-    }
-
-    RETURN_SUCCESS();
-
-    EXITV(ast);
-}
-
 bool QMetaQStringParser::grammar(int &pos, QVariant &ast, ParseErrorPtr& pe)
 {
     ENTRYV(pos);
@@ -91,6 +65,32 @@ bool QMetaQStringParser::grammar(int &pos, QVariant &ast, ParseErrorPtr& pe)
     EXPECT(thisToken(pos, "}", cpe));
 
     ast = l;
+
+    RETURN_SUCCESS();
+
+    EXITV(ast);
+}
+
+bool QMetaQStringParser::rules(int& pos, QVariant &ast, ParseErrorPtr& pe)
+{
+    ENTRYV(pos);
+
+    QList<QVariant> l;
+
+    QVariant _ast;
+
+    EXPECT(applyRule(RULE, pos, _ast, cpe));
+
+    do {
+        EXPECT(thisToken(pos, QSL(";"), cpe));
+        l.append(_ast);
+    } while (applyRule(RULE, pos, _ast, cpe));
+
+    if(l.length() == 1) {
+        ast = l.at(0);
+    } else {
+        ast = l;
+    }
 
     RETURN_SUCCESS();
 
