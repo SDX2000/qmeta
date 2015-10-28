@@ -1,7 +1,7 @@
-#include "QMetaQVariantListParserBase.h"
+#include "QMetaQVariantTransformerBase.h"
 #include "QVariantList/macros.h"
 
-QMetaQVariantListParserBase::QMetaQVariantListParserBase(int ruleId, const QVariant& input)
+QMetaQVariantTransformerBase::QMetaQVariantTransformerBase(int ruleId, const QVariant& input)
     : m_error(nullptr)
     , m_indentLevel(0)
     , m_startRuleId(ruleId)
@@ -11,15 +11,15 @@ QMetaQVariantListParserBase::QMetaQVariantListParserBase(int ruleId, const QVari
     initRuleMap();
 }
 
-void QMetaQVariantListParserBase::initRuleMap()
+void QMetaQVariantTransformerBase::initRuleMap()
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpmf-conversions"
-    m_rule[STRING] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParserBase::string);
+    m_rule[STRING] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantTransformerBase::string);
 #pragma GCC diagnostic pop
 }
 
-bool QMetaQVariantListParserBase::applyRule(int ruleId, QVariantConstPtr input, QVariant &result, ParseErrorPtr &pe)
+bool QMetaQVariantTransformerBase::applyRule(int ruleId, QVariantConstPtr input, QVariant &result, ParseErrorPtr &pe)
 {
     ENTRYV(ruleId, *input);
 
@@ -58,7 +58,7 @@ bool QMetaQVariantListParserBase::applyRule(int ruleId, QVariantConstPtr input, 
 
 
 
-bool QMetaQVariantListParserBase::digit(QVariantConstPtr input, int& digit, ParseErrorPtr &pe)
+bool QMetaQVariantTransformerBase::digit(QVariantConstPtr input, int& digit, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -77,7 +77,7 @@ bool QMetaQVariantListParserBase::digit(QVariantConstPtr input, int& digit, Pars
 }
 
 
-bool QMetaQVariantListParserBase::someChar(QVariantConstPtr input, QChar& c, ParseErrorPtr &pe)
+bool QMetaQVariantTransformerBase::someChar(QVariantConstPtr input, QChar& c, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -92,7 +92,7 @@ bool QMetaQVariantListParserBase::someChar(QVariantConstPtr input, QChar& c, Par
 }
 
 
-bool QMetaQVariantListParserBase::anyChar(QVariantConstPtr input, ParseErrorPtr &pe)
+bool QMetaQVariantTransformerBase::anyChar(QVariantConstPtr input, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -103,7 +103,7 @@ bool QMetaQVariantListParserBase::anyChar(QVariantConstPtr input, ParseErrorPtr 
 }
 
 
-bool QMetaQVariantListParserBase::someCharOf(QVariantConstPtr input, bool (QChar::*is_x)() const, ParseErrorPtr &pe)
+bool QMetaQVariantTransformerBase::someCharOf(QVariantConstPtr input, bool (QChar::*is_x)() const, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -120,7 +120,7 @@ bool QMetaQVariantListParserBase::someCharOf(QVariantConstPtr input, bool (QChar
 }
 
 
-bool QMetaQVariantListParserBase::someCharOf(QVariantConstPtr input, QChar &c, bool (QChar::*is_x)() const, ParseErrorPtr &pe)
+bool QMetaQVariantTransformerBase::someCharOf(QVariantConstPtr input, QChar &c, bool (QChar::*is_x)() const, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -139,7 +139,7 @@ bool QMetaQVariantListParserBase::someCharOf(QVariantConstPtr input, QChar &c, b
 }
 
 
-bool QMetaQVariantListParserBase::oneOf(QVariantConstPtr input, const QString& chars, QChar &outCh, ParseErrorPtr &pe)
+bool QMetaQVariantTransformerBase::oneOf(QVariantConstPtr input, const QString& chars, QChar &outCh, ParseErrorPtr &pe)
 {
     ENTRYV(*input, chars);
 
@@ -159,7 +159,7 @@ bool QMetaQVariantListParserBase::oneOf(QVariantConstPtr input, const QString& c
 }
 
 
-bool QMetaQVariantListParserBase::thisChar(QVariantConstPtr input, QChar c, ParseErrorPtr &pe)
+bool QMetaQVariantTransformerBase::thisChar(QVariantConstPtr input, QChar c, ParseErrorPtr &pe)
 {
     ENTRYV(*input, c);
 
@@ -171,7 +171,7 @@ bool QMetaQVariantListParserBase::thisChar(QVariantConstPtr input, QChar c, Pars
     EXIT();
 }
 
-bool QMetaQVariantListParserBase::thisStr(QVariantConstPtr input, const QString& str, ParseErrorPtr &pe)
+bool QMetaQVariantTransformerBase::thisStr(QVariantConstPtr input, const QString& str, ParseErrorPtr &pe)
 {
     ENTRYV(*input, str);
 
@@ -187,7 +187,7 @@ bool QMetaQVariantListParserBase::thisStr(QVariantConstPtr input, const QString&
     EXIT();
 }
 
-bool QMetaQVariantListParserBase::string(QVariantConstPtr input, QVariant& output, ParseErrorPtr &pe)
+bool QMetaQVariantTransformerBase::string(QVariantConstPtr input, QVariant& output, ParseErrorPtr &pe)
 {
     ENTRYV(*input, output);
 
@@ -208,7 +208,7 @@ bool QMetaQVariantListParserBase::string(QVariantConstPtr input, QVariant& outpu
 
 /// For the time being anything is implemented interms of someChar
 /// untill QMetaQStringParserGeneratorBase can operate on non-char streams.
-bool QMetaQVariantListParserBase::anything(QVariantConstPtr input, QVariant& val, ParseErrorPtr &pe)
+bool QMetaQVariantTransformerBase::anything(QVariantConstPtr input, QVariant& val, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -221,7 +221,7 @@ bool QMetaQVariantListParserBase::anything(QVariantConstPtr input, QVariant& val
     EXITV(val);
 }
 
-bool QMetaQVariantListParserBase::integer(QVariantConstPtr input, QVariant& integer, ParseErrorPtr &pe)
+bool QMetaQVariantTransformerBase::integer(QVariantConstPtr input, QVariant& integer, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -233,7 +233,7 @@ bool QMetaQVariantListParserBase::integer(QVariantConstPtr input, QVariant& inte
     EXITV(integer);
 }
 
-QChar QMetaQVariantListParserBase::unescape(QChar c)
+QChar QMetaQVariantTransformerBase::unescape(QChar c)
 {
     if ('\'' == c)
         return '\'';
@@ -261,7 +261,7 @@ QChar QMetaQVariantListParserBase::unescape(QChar c)
     return QChar(-1);
 }
 
-inline uint qHash(const QMetaQVariantListParserBase::MemoKey &key, uint seed)
+inline uint qHash(const QMetaQVariantTransformerBase::MemoKey &key, uint seed)
 {
     return qHash(key.ruleId, seed) ^ qHash(key.input, seed);
 }

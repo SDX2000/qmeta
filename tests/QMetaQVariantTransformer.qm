@@ -1,4 +1,4 @@
-qmeta QMetaQVariantListParser {
+qmeta QMetaQVariantTransformer {
     grammar         = ["GRAMMAR", string, rule+];
 
     rule            = ["RULE", string, expr];

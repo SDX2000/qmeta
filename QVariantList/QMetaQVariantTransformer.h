@@ -1,12 +1,12 @@
 #ifndef QMETAPARSERGENERATOR_H
 #define QMETAPARSERGENERATOR_H
 
-#include "QMetaQVariantListParserBase.h"
+#include "QMetaQVariantTransformerBase.h"
 
-class QMetaQVariantListParser : public QMetaQVariantListParserBase
+class QMetaQVariantTransformer : public QMetaQVariantTransformerBase
 {
 public:
-    QMetaQVariantListParser(int ruleId, const QVariant& input);
+    QMetaQVariantTransformer(int ruleId, const QVariant& input);
     bool parse(QVariant& output) override;
     const ParseError *getError() const;
 

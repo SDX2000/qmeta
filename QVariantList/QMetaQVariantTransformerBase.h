@@ -9,12 +9,12 @@
 #include "ParseFail.h"
 #include "utils.h"
 
-class QMetaQVariantListParserBase
+class QMetaQVariantTransformerBase
 {
 public:
-    QMetaQVariantListParserBase(int ruleId, const QVariant &input);
+    QMetaQVariantTransformerBase(int ruleId, const QVariant &input);
     virtual bool parse(QVariant& output) = 0;
-    virtual ~QMetaQVariantListParserBase() {}
+    virtual ~QMetaQVariantTransformerBase() {}
 
     const int FAIL = -1;
 public:
@@ -74,8 +74,8 @@ private:
 
 protected:
     virtual bool applyRule(int ruleId, QVariantConstPtr input, QVariant& result, ParseErrorPtr& pe);
-    typedef bool (QMetaQVariantListParserBase::*RuleMemberFuncPtr)(QVariantConstPtr input, QVariant &result, ParseErrorPtr& pe);
-    typedef bool (*RuleFuncPtr)(QMetaQVariantListParserBase* self, QVariantConstPtr input, QVariant &result, ParseErrorPtr& pe);
+    typedef bool (QMetaQVariantTransformerBase::*RuleMemberFuncPtr)(QVariantConstPtr input, QVariant &result, ParseErrorPtr& pe);
+    typedef bool (*RuleFuncPtr)(QMetaQVariantTransformerBase* self, QVariantConstPtr input, QVariant &result, ParseErrorPtr& pe);
     QHash<int, RuleFuncPtr> m_rule;
 
     QHash<MemoKey, MemoEntry>   m_memo;

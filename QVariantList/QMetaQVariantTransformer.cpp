@@ -1,23 +1,23 @@
-#include "QMetaQVariantListParser.h"
+#include "QMetaQVariantTransformer.h"
 #include "QVariantList/macros.h"
 
-QMetaQVariantListParser::QMetaQVariantListParser(int ruleId, const QVariant& input)
-    : QMetaQVariantListParserBase(ruleId, input)
+QMetaQVariantTransformer::QMetaQVariantTransformer(int ruleId, const QVariant& input)
+    : QMetaQVariantTransformerBase(ruleId, input)
 {
     initRuleMap();
 }
 
-bool QMetaQVariantListParser::parse(QVariant &output)
+bool QMetaQVariantTransformer::parse(QVariant &output)
 {
     return applyRule(m_startRuleId, &m_input, output, m_error);
 }
 
-const ParseError *QMetaQVariantListParser::getError() const
+const ParseError *QMetaQVariantTransformer::getError() const
 {
     return m_error;
 }
 
-bool QMetaQVariantListParser::grammar(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantTransformer::grammar(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -50,7 +50,7 @@ bool QMetaQVariantListParser::grammar(QVariantConstPtr input, QVariant &output, 
     EXITV(output);
 }
 
-bool QMetaQVariantListParser::rule(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantTransformer::rule(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -76,7 +76,7 @@ bool QMetaQVariantListParser::rule(QVariantConstPtr input, QVariant &output, Par
     EXITV(output);
 }
 
-bool QMetaQVariantListParser::expr(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantTransformer::expr(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -93,7 +93,7 @@ bool QMetaQVariantListParser::expr(QVariantConstPtr input, QVariant &output, Par
     EXITV(output);
 }
 
-bool QMetaQVariantListParser::compoundExpr(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantTransformer::compoundExpr(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -121,7 +121,7 @@ bool QMetaQVariantListParser::compoundExpr(QVariantConstPtr input, QVariant &out
     EXITV(output);
 }
 
-bool QMetaQVariantListParser::notExpr(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantTransformer::notExpr(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -144,7 +144,7 @@ bool QMetaQVariantListParser::notExpr(QVariantConstPtr input, QVariant &output, 
     EXITV(output);
 }
 
-bool QMetaQVariantListParser::loopExpr(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantTransformer::loopExpr(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -169,7 +169,7 @@ choice1:
     EXITV(output);
 }
 
-bool QMetaQVariantListParser::optionalExpr(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantTransformer::optionalExpr(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -192,7 +192,7 @@ bool QMetaQVariantListParser::optionalExpr(QVariantConstPtr input, QVariant &out
     EXITV(output);
 }
 
-bool QMetaQVariantListParser::varDef(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantTransformer::varDef(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -220,7 +220,7 @@ bool QMetaQVariantListParser::varDef(QVariantConstPtr input, QVariant &output, P
     EXITV(output);
 }
 
-bool QMetaQVariantListParser::hostExpr(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantTransformer::hostExpr(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -248,7 +248,7 @@ bool QMetaQVariantListParser::hostExpr(QVariantConstPtr input, QVariant &output,
     EXITV(output);
 }
 
-bool QMetaQVariantListParser::ruleApp(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantTransformer::ruleApp(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -273,19 +273,19 @@ bool QMetaQVariantListParser::ruleApp(QVariantConstPtr input, QVariant &output, 
     EXITV(output);
 }
 
-void QMetaQVariantListParser::initRuleMap()
+void QMetaQVariantTransformer::initRuleMap()
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpmf-conversions"
-    m_rule[GRAMMAR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::grammar);
-    m_rule[RULE] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::rule);
-    m_rule[EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::expr);
-    m_rule[COMPOUND_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::compoundExpr);
-    m_rule[NOT_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::notExpr);
-    m_rule[LOOP_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::loopExpr);
-    m_rule[OPTIONAL_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::optionalExpr);
-    m_rule[VAR_DEF] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::varDef);
-    m_rule[HOST_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::hostExpr);
-    m_rule[RULE_APP] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::ruleApp);
+    m_rule[GRAMMAR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantTransformer::grammar);
+    m_rule[RULE] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantTransformer::rule);
+    m_rule[EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantTransformer::expr);
+    m_rule[COMPOUND_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantTransformer::compoundExpr);
+    m_rule[NOT_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantTransformer::notExpr);
+    m_rule[LOOP_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantTransformer::loopExpr);
+    m_rule[OPTIONAL_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantTransformer::optionalExpr);
+    m_rule[VAR_DEF] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantTransformer::varDef);
+    m_rule[HOST_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantTransformer::hostExpr);
+    m_rule[RULE_APP] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantTransformer::ruleApp);
 #pragma GCC diagnostic pop
 }

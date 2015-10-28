@@ -17,11 +17,11 @@ TEMPLATE = app
 SOURCES += main.cpp \
     ParseError.cpp \
     utils.cpp \
-    QVariantList/QMetaQVariantListParserBase.cpp \
     QString/QMetaQStringParser.cpp \
     QString/QMetaQStringParserBase.cpp \
-    QVariantList/QMetaQVariantListParser.cpp \
-    QVariantList/ParseFail.cpp
+    QVariantList/ParseFail.cpp \
+    QVariantList/QMetaQVariantTransformer.cpp \
+    QVariantList/QMetaQVariantTransformerBase.cpp
 
 DEFINES += QT_RESTRICTED_CAST_FROM_ASCII \
            QT_NO_CAST_TO_ASCII
@@ -29,13 +29,13 @@ DEFINES += QT_RESTRICTED_CAST_FROM_ASCII \
 HEADERS += \
     ParseError.h \
     utils.h \
-    QVariantList/QMetaQVariantListParserBase.h \
     QString/QMetaQStringParser.h \
     QString/QMetaQStringParserBase.h \
-    QVariantList/QMetaQVariantListParser.h \
     QVariantList/ParseFail.h \
     QVariantList/macros.h \
-    QString/macros.h
+    QString/macros.h \
+    QVariantList/QMetaQVariantTransformer.h \
+    QVariantList/QMetaQVariantTransformerBase.h
 
 DISTFILES += \
     TODO \
@@ -43,5 +43,5 @@ DISTFILES += \
     tests/Calc.qm \
     tests/QMetaParser.qm \
     AST/QMetaParser.ast \
-    tests/QMetaQVariantListParser.qm \
-    AST/Calc.ast
+    AST/Calc.ast \
+    tests/QMetaQVariantTransformer.qm
