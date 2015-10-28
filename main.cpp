@@ -53,6 +53,7 @@ void execute(QString prog)
         qStdOut() << endl << result << endl;
         QMetaQVariantListParser xformer(QMetaQVariantListParser::GRAMMAR, result);
         QVariant xformedResult;
+        qStdOut() << endl << "+++++++ START OF TRANSFORMATION PHASE +++++++" <<endl<<endl;
         ok = xformer.parse(xformedResult);
 
         if (ok) {

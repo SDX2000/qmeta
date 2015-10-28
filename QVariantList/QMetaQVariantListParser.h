@@ -6,7 +6,7 @@
 class QMetaQVariantListParser : public QMetaQVariantListParserBase
 {
 public:
-    QMetaQVariantListParser(int ruleId, const QVariant &input);
+    QMetaQVariantListParser(int ruleId, const QVariant& input);
     bool parse(QVariant& output) override;
     const ParseError *getError() const;
 
@@ -24,15 +24,15 @@ public:
 
 private:
     //Use applyRule() to access these functions
-    bool grammar(QVariant &input, QVariant& output, ParseErrorPtr& pe);
-    bool rule(QVariant &input, QVariant& output, ParseErrorPtr& pe);
-    bool expr(QVariant &input, QVariant& output, ParseErrorPtr& pe);
-    bool boolExpr(QVariant &input, QVariant& output, ParseErrorPtr& pe);
-    bool loopExpr(QVariant &input, QVariant& output, ParseErrorPtr& pe);
-    bool optionalExpr(QVariant &input, QVariant& output, ParseErrorPtr& pe);
-    bool varDef(QVariant &input, QVariant& output, ParseErrorPtr& pe);
-    bool hostExpr(QVariant &input, QVariant& output, ParseErrorPtr& pe);
-    bool ruleApp(QVariant &input, QVariant& output, ParseErrorPtr& pe);
+    bool grammar(QVariantConstPtr input, QVariant& output, ParseErrorPtr& pe);
+    bool rule(QVariantConstPtr input, QVariant& output, ParseErrorPtr& pe);
+    bool expr(QVariantConstPtr input, QVariant& output, ParseErrorPtr& pe);
+    bool boolExpr(QVariantConstPtr input, QVariant& output, ParseErrorPtr& pe);
+    bool loopExpr(QVariantConstPtr input, QVariant& output, ParseErrorPtr& pe);
+    bool optionalExpr(QVariantConstPtr input, QVariant& output, ParseErrorPtr& pe);
+    bool varDef(QVariantConstPtr input, QVariant& output, ParseErrorPtr& pe);
+    bool hostExpr(QVariantConstPtr input, QVariant& output, ParseErrorPtr& pe);
+    bool ruleApp(QVariantConstPtr input, QVariant& output, ParseErrorPtr& pe);
 
 private:
     void initRuleMap();

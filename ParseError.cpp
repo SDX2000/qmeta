@@ -24,13 +24,14 @@ ParseError::~ParseError()
 
 ParseError::ParseError(int pos, QString ruleName, QString fileName, int lineNumber)
     : m_pos(pos)
+    , m_inp(nullptr)
     , m_ruleName(ruleName)
     , m_msg(fileName)
     , m_lineNumber(lineNumber)
 {
 }
 
-ParseError::ParseError(const QVariant &inp, QString ruleName, QString fileName, int lineNumber)
+ParseError::ParseError(const QVariantConstPtr inp, QString ruleName, QString fileName, int lineNumber)
     : m_inp(inp)
     , m_ruleName(ruleName)
     , m_msg(fileName)

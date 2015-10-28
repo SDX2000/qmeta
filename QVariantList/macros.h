@@ -57,7 +57,7 @@
 #define TRY_CHOICE(X) \
     do \
     { \
-        QVariant _checkPoint = input; \
+        QVariantConstPtr _checkPoint = input; \
         if (X) { \
             RETURN_SUCCESS() \
         } \
@@ -76,7 +76,7 @@
     } \
 
 #define CHECK_POINT(CP) \
-    QVariant CP = input;
+    QVariantConstPtr CP = input;
 
 #endif // Q_VARIANT_LIST_MACROS_H
 

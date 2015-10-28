@@ -4,6 +4,8 @@
 #include <QString>
 #include <QTextStream>
 
+typedef const QVariant* QVariantConstPtr;
+
 #define QSL(str) QStringLiteral(str)
 
 

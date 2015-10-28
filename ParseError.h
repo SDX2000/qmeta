@@ -5,13 +5,11 @@
 #include <QString>
 #include "utils.h"
 
-
-
 class ParseError
 {
 public:
     ParseError(int pos, QString ruleName, QString fileName, int lineNumber);
-    ParseError(const QVariant& inp, QString ruleName, QString fileName, int lineNumber);
+    ParseError(const QVariantConstPtr inp, QString ruleName, QString fileName, int lineNumber);
 
     void addChild(ParseError * pe);
 
@@ -23,7 +21,7 @@ public:
 
 private:
     int                 m_pos;
-    QVariant            m_inp;
+    const QVariantConstPtr   m_inp;
     QString             m_ruleName;
     QString             m_msg;
     QList<ParseError*>  m_children;

@@ -7,6 +7,7 @@ QMetaQVariantListParserBase::QMetaQVariantListParserBase(int ruleId, const QVari
     , m_startRuleId(ruleId)
     , m_input(input)
 {
+    m_fail.setValue(ParseFail());
     initRuleMap();
 }
 
@@ -18,9 +19,9 @@ void QMetaQVariantListParserBase::initRuleMap()
 #pragma GCC diagnostic pop
 }
 
-bool QMetaQVariantListParserBase::applyRule(int ruleId, QVariant &input, QVariant &result, ParseErrorPtr &pe)
+bool QMetaQVariantListParserBase::applyRule(int ruleId, QVariantConstPtr input, QVariant &result, ParseErrorPtr &pe)
 {
-    ENTRYV(ruleId, input);
+    ENTRYV(ruleId, *input);
 
     EXPECT(m_rule.contains(ruleId));
 
@@ -29,7 +30,7 @@ bool QMetaQVariantListParserBase::applyRule(int ruleId, QVariant &input, QVarian
 
         if (m_memo.contains(key)) {
             MemoEntry me = m_memo.value(key);
-            if (me.rest.canConvert<ParseFail>()) {
+            if (me.rest->canConvert<ParseFail>()) {
                 //RETURN_FAILURE("Left recursion detected.");
                 RETURN_FAILURE();
             }
@@ -39,11 +40,9 @@ bool QMetaQVariantListParserBase::applyRule(int ruleId, QVariant &input, QVarian
         }
 
         QVariant res;
-        QVariant fail;
-        fail.setValue(ParseFail());
 
         RuleFuncPtr ruleFunc = m_rule[ruleId];
-        m_memo.insert(key, {fail, res});
+        m_memo.insert(key, {&m_fail, res});
 
         EXPECT(ruleFunc(this, input, res, cpe));
 
@@ -59,14 +58,14 @@ bool QMetaQVariantListParserBase::applyRule(int ruleId, QVariant &input, QVarian
 
 
 
-bool QMetaQVariantListParserBase::digit(QVariant &input, int& digit, ParseErrorPtr &pe)
+bool QMetaQVariantListParserBase::digit(QVariantConstPtr input, int& digit, ParseErrorPtr &pe)
 {
-    ENTRYV(input);
+    ENTRYV(*input);
 
     {
-        EXPECT(input.type() == QVariant::Char);
+        EXPECT(input->type() == QVariant::Char);
 
-        QChar c = input.value<QChar>();
+        QChar c = input->value<QChar>();
 
         EXPECT(c.isDigit());
 
@@ -78,14 +77,14 @@ bool QMetaQVariantListParserBase::digit(QVariant &input, int& digit, ParseErrorP
 }
 
 
-bool QMetaQVariantListParserBase::someChar(QVariant &input, QChar& c, ParseErrorPtr &pe)
+bool QMetaQVariantListParserBase::someChar(QVariantConstPtr input, QChar& c, ParseErrorPtr &pe)
 {
-    ENTRYV(input);
+    ENTRYV(*input);
 
     {
-        EXPECT(input.type() == QVariant::Char);
+        EXPECT(input->type() == QVariant::Char);
 
-        c = input.value<QChar>();
+        c = input->value<QChar>();
     }
 
     RETURN_SUCCESS();
@@ -93,25 +92,25 @@ bool QMetaQVariantListParserBase::someChar(QVariant &input, QChar& c, ParseError
 }
 
 
-bool QMetaQVariantListParserBase::anyChar(QVariant &input, ParseErrorPtr &pe)
+bool QMetaQVariantListParserBase::anyChar(QVariantConstPtr input, ParseErrorPtr &pe)
 {
-    ENTRYV(input);
+    ENTRYV(*input);
 
-    EXPECT(input.type() == QVariant::Char);
+    EXPECT(input->type() == QVariant::Char);
 
     RETURN_SUCCESS();
     EXIT();
 }
 
 
-bool QMetaQVariantListParserBase::someCharOf(QVariant &input, bool (QChar::*is_x)() const, ParseErrorPtr &pe)
+bool QMetaQVariantListParserBase::someCharOf(QVariantConstPtr input, bool (QChar::*is_x)() const, ParseErrorPtr &pe)
 {
-    ENTRYV(input);
+    ENTRYV(*input);
 
     {
-        EXPECT(input.type() == QVariant::Char);
+        EXPECT(input->type() == QVariant::Char);
 
-        QChar ch = input.value<QChar>();
+        QChar ch = input->value<QChar>();
 
         EXPECT((ch.*is_x)());
     }
@@ -121,14 +120,14 @@ bool QMetaQVariantListParserBase::someCharOf(QVariant &input, bool (QChar::*is_x
 }
 
 
-bool QMetaQVariantListParserBase::someCharOf(QVariant &input, QChar &c, bool (QChar::*is_x)() const, ParseErrorPtr &pe)
+bool QMetaQVariantListParserBase::someCharOf(QVariantConstPtr input, QChar &c, bool (QChar::*is_x)() const, ParseErrorPtr &pe)
 {
-    ENTRYV(input);
+    ENTRYV(*input);
 
     {
-        EXPECT(input.type() == QVariant::Char);
+        EXPECT(input->type() == QVariant::Char);
 
-        QChar ch = input.value<QChar>();
+        QChar ch = input->value<QChar>();
 
         EXPECT((ch.*is_x)());
 
@@ -140,14 +139,14 @@ bool QMetaQVariantListParserBase::someCharOf(QVariant &input, QChar &c, bool (QC
 }
 
 
-bool QMetaQVariantListParserBase::oneOf(QVariant &input, const QString& chars, QChar &outCh, ParseErrorPtr &pe)
+bool QMetaQVariantListParserBase::oneOf(QVariantConstPtr input, const QString& chars, QChar &outCh, ParseErrorPtr &pe)
 {
-    ENTRYV(input, chars);
+    ENTRYV(*input, chars);
 
     {
-        EXPECT(input.type() == QVariant::Char);
+        EXPECT(input->type() == QVariant::Char);
 
-        QChar c = input.value<QChar>();
+        QChar c = input->value<QChar>();
 
         EXPECT(chars.contains(c));
 
@@ -160,26 +159,26 @@ bool QMetaQVariantListParserBase::oneOf(QVariant &input, const QString& chars, Q
 }
 
 
-bool QMetaQVariantListParserBase::thisChar(QVariant &input, QChar c, ParseErrorPtr &pe)
+bool QMetaQVariantListParserBase::thisChar(QVariantConstPtr input, QChar c, ParseErrorPtr &pe)
 {
-    ENTRYV(input, c);
+    ENTRYV(*input, c);
 
-    EXPECT(input.type() == QVariant::Char);
+    EXPECT(input->type() == QVariant::Char);
 
-    EXPECT(c == input.value<QChar>());
+    EXPECT(c == input->value<QChar>());
 
     RETURN_SUCCESS();
     EXIT();
 }
 
-bool QMetaQVariantListParserBase::thisStr(QVariant &input, const QString& str, ParseErrorPtr &pe)
+bool QMetaQVariantListParserBase::thisStr(QVariantConstPtr input, const QString& str, ParseErrorPtr &pe)
 {
-    ENTRYV(input, str);
+    ENTRYV(*input, str);
 
-    EXPECT(input.type() == QVariant::String);
+    EXPECT(input->type() == QVariant::String);
 
     {
-        QString s = input.value<QString>();
+        QString s = input->value<QString>();
 
         EXPECT(s == str);
     }
@@ -188,11 +187,11 @@ bool QMetaQVariantListParserBase::thisStr(QVariant &input, const QString& str, P
     EXIT();
 }
 
-bool QMetaQVariantListParserBase::string(QVariant &input, QVariant& output, ParseErrorPtr &pe)
+bool QMetaQVariantListParserBase::string(QVariantConstPtr input, QVariant& output, ParseErrorPtr &pe)
 {
-    ENTRYV(input, output);
+    ENTRYV(*input, output);
 
-    EXPECT(input.type() == QVariant::String);
+    EXPECT(input->type() == QVariant::String);
 
     {
         output = input;
@@ -209,11 +208,11 @@ bool QMetaQVariantListParserBase::string(QVariant &input, QVariant& output, Pars
 
 /// For the time being anything is implemented interms of someChar
 /// untill QMetaQStringParserGeneratorBase can operate on non-char streams.
-bool QMetaQVariantListParserBase::anything(QVariant &input, QVariant& val, ParseErrorPtr &pe)
+bool QMetaQVariantListParserBase::anything(QVariantConstPtr input, QVariant& val, ParseErrorPtr &pe)
 {
-    ENTRYV(input);
+    ENTRYV(*input);
 
-    EXPECT(!input.isNull());
+    EXPECT(!input->isNull());
 
     val = input;
 
@@ -222,11 +221,11 @@ bool QMetaQVariantListParserBase::anything(QVariant &input, QVariant& val, Parse
     EXITV(val);
 }
 
-bool QMetaQVariantListParserBase::integer(QVariant &input, QVariant& integer, ParseErrorPtr &pe)
+bool QMetaQVariantListParserBase::integer(QVariantConstPtr input, QVariant& integer, ParseErrorPtr &pe)
 {
-    ENTRYV(input);
+    ENTRYV(*input);
 
-    EXPECT(input.type() == QVariant::Int);
+    EXPECT(input->type() == QVariant::Int);
 
     integer = input;
 
@@ -260,4 +259,9 @@ QChar QMetaQVariantListParserBase::unescape(QChar c)
         return '\v';
 
     return QChar(-1);
+}
+
+inline uint qHash(const QMetaQVariantListParserBase::MemoKey &key, uint seed)
+{
+    return qHash(key.ruleId, seed) ^ qHash(key.input, seed);
 }

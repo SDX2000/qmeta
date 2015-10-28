@@ -43,6 +43,5 @@ DISTFILES += \
     tests/Calc.qm \
     tests/QMetaParser.qm \
     AST/QMetaParser.ast \
-    tests/QMetaQStringParserGenerator.qm \
     tests/QMetaQVariantListParser.qm \
     AST/Calc.ast
