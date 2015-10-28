@@ -67,15 +67,8 @@ bool QMetaQVariantListParser::rule(QVariantConstPtr input, QVariant &output, Par
             QVariant str;
             EXPECT(string(&l[1], str, cpe));
 
-            const QVariantList& inp2 = l[2].value<QVariantList>();
-
-            QVariantList exprs;
-
-            foreach(const QVariant& inp, inp2) {
-                QVariant expr;
-                EXPECT(applyRule(EXPR, &inp, expr, cpe));
-                exprs.append(expr);
-            }
+            QVariant expr;
+            EXPECT(applyRule(EXPR, &l[2], expr, cpe));
         }
     }
 
@@ -87,8 +80,9 @@ bool QMetaQVariantListParser::expr(QVariantConstPtr input, QVariant &output, Par
 {
     ENTRYV(*input);
 
+    TRY_CHOICE(applyRule(COMPOUND_EXPR, input, output, pe));
     TRY_CHOICE(applyRule(RULE_APP, input, output, pe));
-    TRY_CHOICE(applyRule(BOOL_EXPR, input, output, pe));
+    TRY_CHOICE(applyRule(NOT_EXPR, input, output, pe));
     TRY_CHOICE(applyRule(LOOP_EXPR, input, output, pe));
     TRY_CHOICE(applyRule(OPTIONAL_EXPR, input, output, pe));
     TRY_CHOICE(applyRule(VAR_DEF, input, output, pe));
@@ -96,11 +90,38 @@ bool QMetaQVariantListParser::expr(QVariantConstPtr input, QVariant &output, Par
 
     RETURN_FAILURE();
 
+    EXITV(output);
+}
+
+bool QMetaQVariantListParser::compoundExpr(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
+{
+    ENTRYV(*input);
+
+    EXPECT(input->type() == QVariant::List);
+
+    {
+        const QVariantList& l = input->value<QVariantList>();
+
+        EXPECT(l.count() >= 2);
+
+        EXPECT(thisStr(&l[0], "AND", cpe) || thisStr(&l[0], "OR", cpe));
+
+        {
+            QVariantList exprs;
+
+            for(int i = 1; i < l.length(); i++) {
+                QVariant expr;
+                EXPECT(applyRule(EXPR, &l[i], expr, cpe));
+                exprs.append(expr);
+            }
+        }
+    }
+
     RETURN_SUCCESS();
     EXITV(output);
 }
 
-bool QMetaQVariantListParser::boolExpr(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantListParser::notExpr(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -111,22 +132,11 @@ bool QMetaQVariantListParser::boolExpr(QVariantConstPtr input, QVariant &output,
 
         EXPECT(l.count() == 2);
 
-        TRY(thisStr(&l[0], "OR", cpe), choice1);
-choice1:
-        TRY(thisStr(&l[0], "AND", cpe), choice2);
-choice2:
         EXPECT(thisStr(&l[0], "NOT", cpe));
 
         {
-            const QVariantList& inp1 = l[1].value<QVariantList>();
-
-            QVariantList exprs;
-
-            foreach(const QVariant& inp, inp1) {
-                QVariant expr;
-                EXPECT(applyRule(EXPR, &inp, expr, cpe));
-                exprs.append(expr);
-            }
+            QVariant expr;
+            EXPECT(applyRule(EXPR, &l[1], expr, cpe));
         }
     }
 
@@ -150,15 +160,8 @@ choice1:
         EXPECT(thisStr(&l[0], "ONE_OR_MORE", cpe));
 
         {
-            const QVariantList& inp1 = l[1].value<QVariantList>();
-
-            QVariantList exprs;
-
-            foreach(const QVariant& inp, inp1) {
-                QVariant expr;
-                EXPECT(applyRule(EXPR, &inp, expr, cpe));
-                exprs.append(expr);
-            }
+            QVariant expr;
+            EXPECT(applyRule(EXPR, &l[1], expr, cpe));
         }
     }
 
@@ -180,15 +183,8 @@ bool QMetaQVariantListParser::optionalExpr(QVariantConstPtr input, QVariant &out
         EXPECT(thisStr(&l[0], "OPTIONAL", cpe));
 
         {
-            const QVariantList& inp1 = l[1].value<QVariantList>();
-
-            QVariantList exprs;
-
-            foreach(const QVariant& inp, inp1) {
-                QVariant expr;
-                EXPECT(applyRule(EXPR, &inp, expr, cpe));
-                exprs.append(expr);
-            }
+            QVariant expr;
+            EXPECT(applyRule(EXPR, &l[1], expr, cpe));
         }
     }
 
@@ -214,15 +210,8 @@ bool QMetaQVariantListParser::varDef(QVariantConstPtr input, QVariant &output, P
             EXPECT(string(&l[1], name, cpe));
 
             {
-                const QVariantList& inp2 = l[2].value<QVariantList>();
-
-                QVariantList exprs;
-
-                foreach(const QVariant& inp, inp2) {
-                    QVariant expr;
-                    EXPECT(applyRule(EXPR, &inp, expr, cpe));
-                    exprs.append(expr);
-                }
+                QVariant expr;
+                EXPECT(applyRule(EXPR, &l[2], expr, cpe));
             }
         }
     }
@@ -246,15 +235,8 @@ bool QMetaQVariantListParser::hostExpr(QVariantConstPtr input, QVariant &output,
 
         {
             {
-                const QVariantList& inp1 = l[1].value<QVariantList>();
-
-                QVariantList exprs;
-
-                foreach(const QVariant& inp, inp1) {
-                    QVariant expr;
-                    EXPECT(applyRule(EXPR, &inp, expr, cpe));
-                    exprs.append(expr);
-                }
+                QVariant expr;
+                EXPECT(applyRule(EXPR, &l[1], expr, cpe));
             }
 
             QVariant hexpr;
@@ -275,13 +257,15 @@ bool QMetaQVariantListParser::ruleApp(QVariantConstPtr input, QVariant &output, 
     {
         const QVariantList& l = input->value<QVariantList>();
 
-        EXPECT(l.count() == 2);
+        EXPECT(l.count() >= 2);
 
         EXPECT(thisStr(&l[0], "APPLY", cpe));
 
         {
             QVariant ruleName;
             EXPECT(string(&l[1], ruleName, cpe));
+
+            QVariant ruleArgs = l.mid(2);
         }
     }
 
@@ -296,7 +280,8 @@ void QMetaQVariantListParser::initRuleMap()
     m_rule[GRAMMAR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::grammar);
     m_rule[RULE] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::rule);
     m_rule[EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::expr);
-    m_rule[BOOL_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::boolExpr);
+    m_rule[COMPOUND_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::compoundExpr);
+    m_rule[NOT_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::notExpr);
     m_rule[LOOP_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::loopExpr);
     m_rule[OPTIONAL_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::optionalExpr);
     m_rule[VAR_DEF] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantListParser::varDef);

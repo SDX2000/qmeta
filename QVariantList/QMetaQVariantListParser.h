@@ -14,7 +14,8 @@ public:
         GRAMMAR = NEXT_RULE,
         RULE,
         EXPR,
-        BOOL_EXPR,
+        COMPOUND_EXPR,
+        NOT_EXPR,
         LOOP_EXPR,
         OPTIONAL_EXPR,
         VAR_DEF,
@@ -27,7 +28,8 @@ private:
     bool grammar(QVariantConstPtr input, QVariant& output, ParseErrorPtr& pe);
     bool rule(QVariantConstPtr input, QVariant& output, ParseErrorPtr& pe);
     bool expr(QVariantConstPtr input, QVariant& output, ParseErrorPtr& pe);
-    bool boolExpr(QVariantConstPtr input, QVariant& output, ParseErrorPtr& pe);
+    bool compoundExpr(QVariantConstPtr input, QVariant& output, ParseErrorPtr& pe);
+    bool notExpr(QVariantConstPtr input, QVariant& output, ParseErrorPtr& pe);
     bool loopExpr(QVariantConstPtr input, QVariant& output, ParseErrorPtr& pe);
     bool optionalExpr(QVariantConstPtr input, QVariant& output, ParseErrorPtr& pe);
     bool varDef(QVariantConstPtr input, QVariant& output, ParseErrorPtr& pe);
