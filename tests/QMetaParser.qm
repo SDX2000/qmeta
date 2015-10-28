@@ -1,24 +1,25 @@
 qmeta QMetaParser {
-  grammar           = "qmeta" identifier:name "{" rules:rules "}"-> {["GRAMMAR", $name, $rules]};
-  rules             = (rule ";")+;
-  rule              = identifier "=" choices;
-  choices           = choice "|" choices
+  grammar           = "qmeta" identifier:id "{" rules:rs "}"            -> {['GRAMMAR', id, rs]};
+  rules             = (rule:r ";" -> {r})+:rs                           -> {rs};
+  rule              = identifier:id "=" choices:e                       -> {['RULE', id, e]};
+  choices           = choice:c "|" choices:c1                           -> {['OR', [c, c1]]}
                     | choice;
-  choice            = (term spaces)* ( "->" hostExpr)?;
-  hostExpr          = "{" .* "}";
-  term              = term1 ":" identifier
+  choice            = (term:t spaces -> {t})*:ts ( "->" hostExpr:h)?    -> {['HOST_EXPR', ['AND', ts], h]}
+                    | (term:t spaces -> {t})*:ts                        -> {['AND', ts]};
+  hostExpr          = "{" .*:h "}"                                      -> {h};
+  term              = term1:t ":" identifier:id                         -> {['DEFINE', id, t]}
                     | term1;
-  term1             = "~"  term2
-                    | term2 "*"
-                    | term2 "+"
-                    | term2 "?"
+  term1             = "~"  term2:t                                      -> {['NOT', t]}
+                    | term2:t "*"                                       -> {['ZERO_OR_MANY', t]}
+                    | term2:t "+"                                       -> {['ONE_OR_MANY', t]}
+                    | term2:t "?"                                       -> {['OPTIONAL', t]}
                     | term2;
-  term2             = '\''  (~'\'' escapedChar) '\''
+  term2             = '\''  (~'\'' escapedChar:ec) '\''                 -> {ec}
                     | someToken
                     | identifier
                     | '.'
-                    | "(" choice ")";
-  someToken         = spaces? '"' (~'"'  escapedChar)* '"' spaces?;
-  escapedChar       = '\\' char
+                    | "(" choice:c ")"                                  -> {c};
+  someToken         = spaces? '"' (~'"'  escapedChar)*:ts '"' spaces?   -> {ts};
+  escapedChar       = '\\' char:c                                       -> {escape(c)}
                     | char;
 }
