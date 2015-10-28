@@ -155,9 +155,7 @@ bool QMetaQVariantTransformer::loopExpr(QVariantConstPtr input, QVariant &output
 
         EXPECT(l.count() == 2);
 
-        TRY(thisStr(&l[0], "ZERO_OR_MORE", cpe), choice1);
-choice1:
-        EXPECT(thisStr(&l[0], "ONE_OR_MORE", cpe));
+        EXPECT(thisStr(&l[0], "ZERO_OR_MORE", cpe) || thisStr(&l[0], "ONE_OR_MORE", cpe));
 
         {
             QVariant expr;

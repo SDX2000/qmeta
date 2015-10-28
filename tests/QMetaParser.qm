@@ -1,5 +1,5 @@
 qmeta QMetaParser {
-  grammar           = "qmeta" identifier "{" rules "}";
+  grammar           = "qmeta" identifier:name "{" rules:rules "}"-> {["GRAMMAR", $name, $rules]};
   rules             = (rule ";")+;
   rule              = identifier "=" choices;
   choices           = choice "|" choices
