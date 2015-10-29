@@ -1,3 +1,11 @@
+- Update QMetaQStringParser to accept the pseudo host expressions
+in QMetaParser.qm and turn it into a real language by using it to
+generate the final output.
+    - Write a parser/transformer for the pseudo language! Do this by
+    expanding the hostExpr rule (it is not necessary to write a separate grammar).
+    Also rename hostExpr to something more appropriate for this.
+    - Then write the Calc interpreter using these parsers
+
 - Optimize AST generation
 
 - Error reporting/handling

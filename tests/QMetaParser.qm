@@ -4,7 +4,7 @@ qmeta QMetaParser {
   rule              = identifier:id "=" choices:e                       -> {['RULE', id, e]};
   choices           = choice:c "|" choices:c1                           -> {['OR', [c, c1]]}
                     | choice;
-  choice            = (term:t spaces -> {t})*:ts ( "->" hostExpr:h)?    -> {['HOST_EXPR', ['AND', ts], h]}
+  choice            = (term:t spaces -> {t})*:ts ( "->" hostExpr:h)     -> {['HOST_EXPR', ['AND', ts], h]}
                     | (term:t spaces -> {t})*:ts                        -> {['AND', ts]};
   hostExpr          = "{" .*:h "}"                                      -> {h};
   term              = term1:t ":" identifier:id                         -> {['DEFINE', id, t]}
