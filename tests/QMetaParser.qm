@@ -1,5 +1,5 @@
 qmeta QMetaParser {
-  grammar           = "qmeta" identifier:id "{" rules:rs "}"            -> {['GRAMMAR', id, rs]};
+  grammar           = "qmeta" identifier:id "{" rules:rs "}" eof        -> {['GRAMMAR', id, rs]};
   rules             = (rule:r ";" -> {r})+:rs                           -> {rs};
   rule              = identifier:id "=" choices:e                       -> {['RULE', id, e]};
   choices           = choice:c "|" choices:c1                           -> {['OR', [c, c1]]}

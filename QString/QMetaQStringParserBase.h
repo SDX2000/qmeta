@@ -19,22 +19,25 @@ public:
     const int FAIL = -1;
 
 public:
+    //Note: We cannot memoize rule with arguments yet
     enum RuleEnum {
         //TERMINALS
-        THIS_STR,       //Cannot memoize rule with arguments yet
+        THIS_STR,
         DIGIT,
-        STR_OF,         //Cannot memoize rule with arguments yet
+        STR_OF,
         SOME_CHAR,
-        SOME_CHAR_OF,   //Cannot memoize rule with arguments yet
-        THIS_CHAR,      //Cannot memoize rule with arguments yet
-        ONE_OF,         //Cannot memoize rule with arguments yet
-        ANYTHING,       //Cannot memoize rule with arguments yet
+        SOME_CHAR_OF,
+        THIS_CHAR,
+        ONE_OF,
+        ANYTHING,
+        RULE_EOF,
+        RULE_EOL,
 
         //NONTERMINALS
         SPACES,
-        IDENTIFIER,     //8
+        IDENTIFIER,
         INTEGER,
-        THIS_TOKEN,     //Cannot memoize rule with arguments yet
+        THIS_TOKEN,
 
         NEXT_RULE,
     };
@@ -68,6 +71,8 @@ protected:
     bool someCharOf(int &pos, QChar &c, bool (QChar::*is_x)() const, ParseErrorPtr& pe);
     bool thisChar(int &pos, QChar c, ParseErrorPtr& pe);
     bool oneOf(int& pos, QString operators, QChar &opOut, ParseErrorPtr& pe);
+    bool eof(int& pos, ParseErrorPtr& pe);
+    bool eol(int& pos, ParseErrorPtr& pe);
 
     //NONTERMINALS//
     virtual bool spaces(int &pos, ParseErrorPtr& pe);

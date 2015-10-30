@@ -66,6 +66,8 @@ bool QMetaQStringParser::grammar(int &pos, QVariant &ast, ParseErrorPtr& pe)
 
     ast = l;
 
+    EXPECT(eof(pos, cpe));
+
     RETURN_SUCCESS();
 
     EXITV(ast);

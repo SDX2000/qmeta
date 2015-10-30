@@ -147,6 +147,34 @@ bool QMetaQStringParserBase::oneOf(int& pos, QString chars, QChar &outCh, ParseE
     EXITV(outCh);
 }
 
+bool QMetaQStringParserBase::eof(int &pos, ParseErrorPtr &pe)
+{
+    ENTRYV(pos);
+    EXPECT(pos >= m_input.length());
+    EXIT();
+}
+
+bool QMetaQStringParserBase::eol(int &pos, ParseErrorPtr &pe)
+{
+    ENTRYV(pos);
+    EXPECT(pos < m_input.length());
+    {
+        QChar c = m_input.at(pos);
+        if (c == '\n') {
+            RETURN_SUCCESS();
+        }
+
+        if (c == '\r') {
+            pos++;
+            EXPECT(pos < m_input.length());
+            c = m_input.at(pos);
+            EXPECT(m_input.at(pos) == '\n');
+        }
+    }
+
+    EXIT();
+}
+
 
 bool QMetaQStringParserBase::thisChar(int &pos, QChar c, ParseErrorPtr &pe)
 {
