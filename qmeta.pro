@@ -44,4 +44,8 @@ DISTFILES += \
     tests/QMetaParser.qm \
     AST/QMetaParser.ast \
     AST/Calc.ast \
-    tests/QMetaQVariantTransformer.qm
+    tests/QMetaQVariantTransformer.qm \
+    templates/grammar
+
+RESOURCES += \
+    resourcefiles.qrc

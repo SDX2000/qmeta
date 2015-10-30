@@ -261,6 +261,13 @@ QChar QMetaQVariantTransformerBase::unescape(QChar c)
     return QChar(-1);
 }
 
+void QMetaQVariantTransformerBase::render(QTextStream &out
+                                          , QString templateName
+                                          , const QVariantHash &vars)
+{
+
+}
+
 inline uint qHash(const QMetaQVariantTransformerBase::MemoKey &key, uint seed)
 {
     return qHash(key.ruleId, seed) ^ qHash(key.input, seed);

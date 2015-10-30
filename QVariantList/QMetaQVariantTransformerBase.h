@@ -66,6 +66,7 @@ protected:
 
     //HELPER FUNCTIONS//
     virtual QChar unescape(QChar c);
+    void render(QTextStream &out, QString templateName, const QVariantHash &vars);
 
 private:
     //Accessible only through applyRule
