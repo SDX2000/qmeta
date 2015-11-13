@@ -1,7 +1,7 @@
-#include "QMetaQVariantTransformerBase.h"
+#include "QMetaQVariantToQStringTransformer.h"
 #include "QVariantList/macros.h"
 
-QMetaQVariantTransformerBase::QMetaQVariantTransformerBase(int ruleId, const QVariant& input)
+QMetaQVariantToQStringTransformer::QMetaQVariantToQStringTransformer(int ruleId, const QVariant& input)
     : m_error(nullptr)
     , m_indentLevel(0)
     , m_startRuleId(ruleId)
@@ -11,15 +11,15 @@ QMetaQVariantTransformerBase::QMetaQVariantTransformerBase(int ruleId, const QVa
     initRuleMap();
 }
 
-void QMetaQVariantTransformerBase::initRuleMap()
+void QMetaQVariantToQStringTransformer::initRuleMap()
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpmf-conversions"
-    m_rule[STRING] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantTransformerBase::string);
+    m_rule[STRING] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantToQStringTransformer::string);
 #pragma GCC diagnostic pop
 }
 
-bool QMetaQVariantTransformerBase::applyRule(int ruleId, QVariantConstPtr input, QString &result, ParseErrorPtr &pe)
+bool QMetaQVariantToQStringTransformer::applyRule(int ruleId, QVariantConstPtr input, QString &result, ParseErrorPtr &pe)
 {
     ENTRYV(ruleId, *input);
 
@@ -58,7 +58,7 @@ bool QMetaQVariantTransformerBase::applyRule(int ruleId, QVariantConstPtr input,
 
 
 
-bool QMetaQVariantTransformerBase::digit(QVariantConstPtr input, int& digit, ParseErrorPtr &pe)
+bool QMetaQVariantToQStringTransformer::digit(QVariantConstPtr input, int& digit, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -77,7 +77,7 @@ bool QMetaQVariantTransformerBase::digit(QVariantConstPtr input, int& digit, Par
 }
 
 
-bool QMetaQVariantTransformerBase::someChar(QVariantConstPtr input, QChar& c, ParseErrorPtr &pe)
+bool QMetaQVariantToQStringTransformer::someChar(QVariantConstPtr input, QChar& c, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -92,7 +92,7 @@ bool QMetaQVariantTransformerBase::someChar(QVariantConstPtr input, QChar& c, Pa
 }
 
 
-bool QMetaQVariantTransformerBase::anyChar(QVariantConstPtr input, ParseErrorPtr &pe)
+bool QMetaQVariantToQStringTransformer::anyChar(QVariantConstPtr input, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -103,7 +103,7 @@ bool QMetaQVariantTransformerBase::anyChar(QVariantConstPtr input, ParseErrorPtr
 }
 
 
-bool QMetaQVariantTransformerBase::someCharOf(QVariantConstPtr input, bool (QChar::*is_x)() const, ParseErrorPtr &pe)
+bool QMetaQVariantToQStringTransformer::someCharOf(QVariantConstPtr input, bool (QChar::*is_x)() const, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -120,7 +120,7 @@ bool QMetaQVariantTransformerBase::someCharOf(QVariantConstPtr input, bool (QCha
 }
 
 
-bool QMetaQVariantTransformerBase::someCharOf(QVariantConstPtr input, QChar &c, bool (QChar::*is_x)() const, ParseErrorPtr &pe)
+bool QMetaQVariantToQStringTransformer::someCharOf(QVariantConstPtr input, QChar &c, bool (QChar::*is_x)() const, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -139,7 +139,7 @@ bool QMetaQVariantTransformerBase::someCharOf(QVariantConstPtr input, QChar &c, 
 }
 
 
-bool QMetaQVariantTransformerBase::oneOf(QVariantConstPtr input, const QString& chars, QChar &outCh, ParseErrorPtr &pe)
+bool QMetaQVariantToQStringTransformer::oneOf(QVariantConstPtr input, const QString& chars, QChar &outCh, ParseErrorPtr &pe)
 {
     ENTRYV(*input, chars);
 
@@ -159,7 +159,7 @@ bool QMetaQVariantTransformerBase::oneOf(QVariantConstPtr input, const QString& 
 }
 
 
-bool QMetaQVariantTransformerBase::thisChar(QVariantConstPtr input, QChar c, ParseErrorPtr &pe)
+bool QMetaQVariantToQStringTransformer::thisChar(QVariantConstPtr input, QChar c, ParseErrorPtr &pe)
 {
     ENTRYV(*input, c);
 
@@ -171,7 +171,7 @@ bool QMetaQVariantTransformerBase::thisChar(QVariantConstPtr input, QChar c, Par
     EXIT();
 }
 
-bool QMetaQVariantTransformerBase::thisStr(QVariantConstPtr input, const QString& str, ParseErrorPtr &pe)
+bool QMetaQVariantToQStringTransformer::thisStr(QVariantConstPtr input, const QString& str, ParseErrorPtr &pe)
 {
     ENTRYV(*input, str);
 
@@ -187,7 +187,7 @@ bool QMetaQVariantTransformerBase::thisStr(QVariantConstPtr input, const QString
     EXIT();
 }
 
-bool QMetaQVariantTransformerBase::string(QVariantConstPtr input, QVariant& output, ParseErrorPtr &pe)
+bool QMetaQVariantToQStringTransformer::string(QVariantConstPtr input, QVariant& output, ParseErrorPtr &pe)
 {
     ENTRYV(*input, output);
 
@@ -208,7 +208,7 @@ bool QMetaQVariantTransformerBase::string(QVariantConstPtr input, QVariant& outp
 
 /// For the time being anything is implemented interms of someChar
 /// untill QMetaQStringParserGeneratorBase can operate on non-char streams.
-bool QMetaQVariantTransformerBase::anything(QVariantConstPtr input, QVariant& val, ParseErrorPtr &pe)
+bool QMetaQVariantToQStringTransformer::anything(QVariantConstPtr input, QVariant& val, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -221,7 +221,7 @@ bool QMetaQVariantTransformerBase::anything(QVariantConstPtr input, QVariant& va
     EXITV(val);
 }
 
-bool QMetaQVariantTransformerBase::integer(QVariantConstPtr input, QVariant& integer, ParseErrorPtr &pe)
+bool QMetaQVariantToQStringTransformer::integer(QVariantConstPtr input, QVariant& integer, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -233,7 +233,7 @@ bool QMetaQVariantTransformerBase::integer(QVariantConstPtr input, QVariant& int
     EXITV(integer);
 }
 
-QChar QMetaQVariantTransformerBase::unescape(QChar c)
+QChar QMetaQVariantToQStringTransformer::unescape(QChar c)
 {
     if ('\'' == c)
         return '\'';
@@ -261,14 +261,14 @@ QChar QMetaQVariantTransformerBase::unescape(QChar c)
     return QChar(-1);
 }
 
-void QMetaQVariantTransformerBase::render(QString &out
+void QMetaQVariantToQStringTransformer::render(QString &out
                                           , QString templateName
                                           , const QVariantHash &vars)
 {
 
 }
 
-inline uint qHash(const QMetaQVariantTransformerBase::MemoKey &key, uint seed)
+inline uint qHash(const QMetaQVariantToQStringTransformer::MemoKey &key, uint seed)
 {
     return qHash(key.ruleId, seed) ^ qHash(key.input, seed);
 }

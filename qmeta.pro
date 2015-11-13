@@ -21,7 +21,7 @@ SOURCES += main.cpp \
     QString/QMetaQStringParserBase.cpp \
     QVariantList/ParseFail.cpp \
     QVariantList/QMetaQVariantTransformer.cpp \
-    QVariantList/QMetaQVariantTransformerBase.cpp
+    QVariantList/QMetaQVariantToQStringTransformer.cpp
 
 DEFINES += QT_RESTRICTED_CAST_FROM_ASCII \
            QT_NO_CAST_TO_ASCII
@@ -35,7 +35,7 @@ HEADERS += \
     QVariantList/macros.h \
     QString/macros.h \
     QVariantList/QMetaQVariantTransformer.h \
-    QVariantList/QMetaQVariantTransformerBase.h
+    QVariantList/QMetaQVariantToQStringTransformer.h
 
 DISTFILES += \
     TODO \

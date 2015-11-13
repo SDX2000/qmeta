@@ -2,7 +2,7 @@
 #include "QVariantList/macros.h"
 
 QMetaQVariantTransformer::QMetaQVariantTransformer(int ruleId, const QVariant& input)
-    : QMetaQVariantTransformerBase(ruleId, input)
+    : QMetaQVariantToQStringTransformer(ruleId, input)
 {
     initRuleMap();
 }

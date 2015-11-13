@@ -1,9 +1,9 @@
 #ifndef QMETAPARSERGENERATOR_H
 #define QMETAPARSERGENERATOR_H
 
-#include "QMetaQVariantTransformerBase.h"
+#include "QMetaQVariantToQStringTransformer.h"
 
-class QMetaQVariantTransformer : public QMetaQVariantTransformerBase
+class QMetaQVariantTransformer : public QMetaQVariantToQStringTransformer
 {
 public:
     QMetaQVariantTransformer(int ruleId, const QVariant& input);
