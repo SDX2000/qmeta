@@ -1,9 +1,9 @@
 #ifndef ${gaurd}
 #define ${gaurd}
 
-#include "QMetaQVariantTransformerBase.h"
+#include "QMetaQVariantToQStringTransformer.h"
 
-class ${className} : public QMetaQVariantTransformerBase
+class ${className} : public QMetaQVariantToQStringTransformer
 {
 public:
     ${className}(int ruleId, const QVariant& input);

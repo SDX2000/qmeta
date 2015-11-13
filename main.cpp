@@ -6,7 +6,7 @@
 #include <QFile>
 #include <QDebug>
 
-#include "QString/QMetaQStringParser.h"
+#include "QString/QMetaParser.h"
 #include "QVariantList/QMetaCodeGenerator.h"
 
 #include "utils.h"
@@ -25,7 +25,7 @@ void doREPL()
             break;
         }
 
-        QMetaQStringParser parser(QMetaQStringParser::RULES, inp);
+        QMetaParser parser(QMetaParser::RULES, inp);
 
 
         QVariant result;
@@ -42,7 +42,7 @@ void doREPL()
 
 void execute(QString prog)
 {
-    QMetaQStringParser interp(QMetaQStringParser::GRAMMAR, prog);
+    QMetaParser interp(QMetaParser::GRAMMAR, prog);
 
 
     QVariant result;

@@ -6,11 +6,11 @@
 #include "utils.h"
 #include "ParseError.h"
 
-class QMetaQStringParserBase
+class QMetaQStringToQVariantTransformer
 {
 public:
-    QMetaQStringParserBase(int ruleId, const QString &inp);
-    virtual ~QMetaQStringParserBase();
+    QMetaQStringToQVariantTransformer(int ruleId, const QString &inp);
+    virtual ~QMetaQStringToQVariantTransformer();
 
     virtual bool parse(QVariant& ast);
     virtual bool parse(int ruleId, int pos, QVariant& ast, ParseErrorPtr& pe) = 0;
@@ -93,8 +93,8 @@ private:
 
 protected:
     virtual bool applyRule(int ruleId, int &pos, QVariant& result, ParseErrorPtr& pe);
-    typedef bool (QMetaQStringParserBase::*RuleMemberFuncPtr)(int &pos, QVariant &result, ParseErrorPtr& pe);
-    typedef bool (*RuleFuncPtr)(QMetaQStringParserBase* self, int &pos, QVariant &result, ParseErrorPtr& pe);
+    typedef bool (QMetaQStringToQVariantTransformer::*RuleMemberFuncPtr)(int &pos, QVariant &result, ParseErrorPtr& pe);
+    typedef bool (*RuleFuncPtr)(QMetaQStringToQVariantTransformer* self, int &pos, QVariant &result, ParseErrorPtr& pe);
     QHash<int, RuleFuncPtr> m_rule;
 
     QHash<MemoKey, MemoEntry>   m_memo;

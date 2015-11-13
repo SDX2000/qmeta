@@ -1,4 +1,4 @@
-qmeta QMetaQVariantTransformer {
+qmeta QMetaCodeGenerator {
     grammar         = ["GRAMMAR", string:className, rule+:rs]
                     -> {
                             vars["gaurd"] = getGaurdName(className);

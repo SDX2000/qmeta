@@ -17,11 +17,11 @@ TEMPLATE = app
 SOURCES += main.cpp \
     ParseError.cpp \
     utils.cpp \
-    QString/QMetaQStringParser.cpp \
-    QString/QMetaQStringParserBase.cpp \
     QVariantList/ParseFail.cpp \
     QVariantList/QMetaQVariantToQStringTransformer.cpp \
-    QVariantList/QMetaCodeGenerator.cpp
+    QVariantList/QMetaCodeGenerator.cpp \
+    QString/QMetaQStringToQVariantTransformer.cpp \
+    QString/QMetaParser.cpp
 
 DEFINES += QT_RESTRICTED_CAST_FROM_ASCII \
            QT_NO_CAST_TO_ASCII
@@ -29,13 +29,13 @@ DEFINES += QT_RESTRICTED_CAST_FROM_ASCII \
 HEADERS += \
     ParseError.h \
     utils.h \
-    QString/QMetaQStringParser.h \
-    QString/QMetaQStringParserBase.h \
     QVariantList/ParseFail.h \
     QVariantList/macros.h \
     QString/macros.h \
     QVariantList/QMetaQVariantToQStringTransformer.h \
-    QVariantList/QMetaCodeGenerator.h
+    QVariantList/QMetaCodeGenerator.h \
+    QString/QMetaQStringToQVariantTransformer.h \
+    QString/QMetaParser.h
 
 DISTFILES += \
     TODO \
@@ -44,8 +44,8 @@ DISTFILES += \
     tests/QMetaParser.qm \
     AST/QMetaParser.ast \
     AST/Calc.ast \
-    tests/QMetaQVariantTransformer.qm \
-    templates/grammar
+    templates/grammar \
+    tests/QMetaCodeGenerator.qm
 
 RESOURCES += \
     resourcefiles.qrc
