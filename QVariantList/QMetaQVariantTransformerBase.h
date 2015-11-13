@@ -13,7 +13,7 @@ class QMetaQVariantTransformerBase
 {
 public:
     QMetaQVariantTransformerBase(int ruleId, const QVariant &input);
-    virtual bool parse(QVariant& output) = 0;
+    virtual bool parse(QString& output) = 0;
     virtual ~QMetaQVariantTransformerBase() {}
 
     const int FAIL = -1;
@@ -47,7 +47,7 @@ public:
     struct MemoEntry
     {
         QVariantConstPtr rest;
-        QVariant    result;
+        QString          result;
     };
 
 
@@ -66,7 +66,7 @@ protected:
 
     //HELPER FUNCTIONS//
     virtual QChar unescape(QChar c);
-    void render(QTextStream &out, QString templateName, const QVariantHash &vars);
+    void render(QString &out, QString templateName, const QVariantHash &vars);
 
 private:
     //Accessible only through applyRule
@@ -74,9 +74,9 @@ private:
     void initRuleMap();
 
 protected:
-    virtual bool applyRule(int ruleId, QVariantConstPtr input, QVariant& result, ParseErrorPtr& pe);
-    typedef bool (QMetaQVariantTransformerBase::*RuleMemberFuncPtr)(QVariantConstPtr input, QVariant &result, ParseErrorPtr& pe);
-    typedef bool (*RuleFuncPtr)(QMetaQVariantTransformerBase* self, QVariantConstPtr input, QVariant &result, ParseErrorPtr& pe);
+    virtual bool applyRule(int ruleId, QVariantConstPtr input, QString& result, ParseErrorPtr& pe);
+    typedef bool (QMetaQVariantTransformerBase::*RuleMemberFuncPtr)(QVariantConstPtr input, QString &result, ParseErrorPtr& pe);
+    typedef bool (*RuleFuncPtr)(QMetaQVariantTransformerBase* self, QVariantConstPtr input, QString &result, ParseErrorPtr& pe);
     QHash<int, RuleFuncPtr> m_rule;
 
     QHash<MemoKey, MemoEntry>   m_memo;

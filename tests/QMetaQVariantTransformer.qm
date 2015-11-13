@@ -1,7 +1,13 @@
 qmeta QMetaQVariantTransformer {
-    grammar         = ["GRAMMAR", string:n, rule+:rs]               -> {render(out, "grammar", vars)};
+    grammar         = ["GRAMMAR", string:className, rule+:rs]
+                    -> {
+                            vars["gaurd"] = getGaurdName(className);
+                            vars["ruleEnums"] = getRuleEnums(rs);
+                            vars["ruleProtos"] = getRuleProtos(rs);
+                            xform(out, "grammar", vars);
+                       };
 
-    rule            = ["RULE", string:n, expr:e]                    -> {render(out, "rule", vars)};
+    rule            = ["RULE", string:n, expr:e]                    -> {xform(out, "rule", vars)};
 
     expr            = compoundExpr
                     | ruleApp
@@ -11,17 +17,17 @@ qmeta QMetaQVariantTransformer {
                     | varDef
                     | hostExpr;
 
-    compoundExpr    = [("OR"|"AND"):op, expr+:es]                   -> {render(out, "compoundExpr", vars)};
+    compoundExpr    = [("OR"|"AND"):op, expr+:es]                   -> {xform(out, "compoundExpr", vars)};
 
-    notExpr         = ["NOT", expr:e]                               -> {render(out, "notExpr", vars)};
+    notExpr         = ["NOT", expr:e]                               -> {xform(out, "notExpr", vars)};
 
-    loopExpr        = [("ZERO_OR_MORE"|"ONE_OR_MORE"):op, expr:e]   -> {render(out, "loopExpr", vars)};
+    loopExpr        = [("ZERO_OR_MORE"|"ONE_OR_MORE"):op, expr:e]   -> {xform(out, "loopExpr", vars)};
 
-    optionalExpr    = ["OPTIONAL", expr:e]                          -> {render(out, "optionalExpr", vars)};
+    optionalExpr    = ["OPTIONAL", expr:e]                          -> {xform(out, "optionalExpr", vars)};
 
-    varDef          = ["DEFINE", string:n, expr:e]                  -> {render(out, "varDef", vars)};
+    varDef          = ["DEFINE", string:n, expr:e]                  -> {xform(out, "varDef", vars)};
 
-    hostExpr        = ["HOST_EXPR", expr:e, string:hexp]            -> {render(out, "hostExpr", vars)};
+    hostExpr        = ["HOST_EXPR", expr:e, string:hexp]            -> {xform(out, "hostExpr", vars)};
 
-    ruleApp         = ["APPLY", string]                             -> {render(out, "ruleApp", vars)};
+    ruleApp         = ["APPLY", string]                             -> {xform(out, "ruleApp", vars)};
 }

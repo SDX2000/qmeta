@@ -19,7 +19,7 @@ void QMetaQVariantTransformerBase::initRuleMap()
 #pragma GCC diagnostic pop
 }
 
-bool QMetaQVariantTransformerBase::applyRule(int ruleId, QVariantConstPtr input, QVariant &result, ParseErrorPtr &pe)
+bool QMetaQVariantTransformerBase::applyRule(int ruleId, QVariantConstPtr input, QString &result, ParseErrorPtr &pe)
 {
     ENTRYV(ruleId, *input);
 
@@ -39,7 +39,7 @@ bool QMetaQVariantTransformerBase::applyRule(int ruleId, QVariantConstPtr input,
             RETURN_SUCCESS();
         }
 
-        QVariant res;
+        QString res;
 
         RuleFuncPtr ruleFunc = m_rule[ruleId];
         m_memo.insert(key, {&m_fail, res});
@@ -261,7 +261,7 @@ QChar QMetaQVariantTransformerBase::unescape(QChar c)
     return QChar(-1);
 }
 
-void QMetaQVariantTransformerBase::render(QTextStream &out
+void QMetaQVariantTransformerBase::render(QString &out
                                           , QString templateName
                                           , const QVariantHash &vars)
 {

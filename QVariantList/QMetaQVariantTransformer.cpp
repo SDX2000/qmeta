@@ -7,7 +7,7 @@ QMetaQVariantTransformer::QMetaQVariantTransformer(int ruleId, const QVariant& i
     initRuleMap();
 }
 
-bool QMetaQVariantTransformer::parse(QVariant &output)
+bool QMetaQVariantTransformer::parse(QString& output)
 {
     return applyRule(m_startRuleId, &m_input, output, m_error);
 }
@@ -17,7 +17,7 @@ const ParseError *QMetaQVariantTransformer::getError() const
     return m_error;
 }
 
-bool QMetaQVariantTransformer::grammar(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantTransformer::grammar(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -39,7 +39,7 @@ bool QMetaQVariantTransformer::grammar(QVariantConstPtr input, QVariant &output,
             QVariantList rules;
 
             foreach(const QVariant& inp, inp2) {
-                QVariant rule;
+                QString rule;
                 EXPECT(applyRule(RULE, &inp, rule, cpe));
                 rules.append(rule);
             }
@@ -50,7 +50,7 @@ bool QMetaQVariantTransformer::grammar(QVariantConstPtr input, QVariant &output,
     EXITV(output);
 }
 
-bool QMetaQVariantTransformer::rule(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantTransformer::rule(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -67,7 +67,7 @@ bool QMetaQVariantTransformer::rule(QVariantConstPtr input, QVariant &output, Pa
             QVariant str;
             EXPECT(string(&l[1], str, cpe));
 
-            QVariant expr;
+            QString expr;
             EXPECT(applyRule(EXPR, &l[2], expr, cpe));
         }
     }
@@ -76,7 +76,7 @@ bool QMetaQVariantTransformer::rule(QVariantConstPtr input, QVariant &output, Pa
     EXITV(output);
 }
 
-bool QMetaQVariantTransformer::expr(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantTransformer::expr(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -93,7 +93,7 @@ bool QMetaQVariantTransformer::expr(QVariantConstPtr input, QVariant &output, Pa
     EXITV(output);
 }
 
-bool QMetaQVariantTransformer::compoundExpr(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantTransformer::compoundExpr(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -110,7 +110,7 @@ bool QMetaQVariantTransformer::compoundExpr(QVariantConstPtr input, QVariant &ou
             QVariantList exprs;
 
             for(int i = 1; i < l.length(); i++) {
-                QVariant expr;
+                QString expr;
                 EXPECT(applyRule(EXPR, &l[i], expr, cpe));
                 exprs.append(expr);
             }
@@ -121,7 +121,7 @@ bool QMetaQVariantTransformer::compoundExpr(QVariantConstPtr input, QVariant &ou
     EXITV(output);
 }
 
-bool QMetaQVariantTransformer::notExpr(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantTransformer::notExpr(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -135,7 +135,7 @@ bool QMetaQVariantTransformer::notExpr(QVariantConstPtr input, QVariant &output,
         EXPECT(thisStr(&l[0], "NOT", cpe));
 
         {
-            QVariant expr;
+            QString expr;
             EXPECT(applyRule(EXPR, &l[1], expr, cpe));
         }
     }
@@ -144,7 +144,7 @@ bool QMetaQVariantTransformer::notExpr(QVariantConstPtr input, QVariant &output,
     EXITV(output);
 }
 
-bool QMetaQVariantTransformer::loopExpr(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantTransformer::loopExpr(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -158,7 +158,7 @@ bool QMetaQVariantTransformer::loopExpr(QVariantConstPtr input, QVariant &output
         EXPECT(thisStr(&l[0], "ZERO_OR_MORE", cpe) || thisStr(&l[0], "ONE_OR_MORE", cpe));
 
         {
-            QVariant expr;
+            QString expr;
             EXPECT(applyRule(EXPR, &l[1], expr, cpe));
         }
     }
@@ -167,7 +167,7 @@ bool QMetaQVariantTransformer::loopExpr(QVariantConstPtr input, QVariant &output
     EXITV(output);
 }
 
-bool QMetaQVariantTransformer::optionalExpr(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantTransformer::optionalExpr(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -181,7 +181,7 @@ bool QMetaQVariantTransformer::optionalExpr(QVariantConstPtr input, QVariant &ou
         EXPECT(thisStr(&l[0], "OPTIONAL", cpe));
 
         {
-            QVariant expr;
+            QString expr;
             EXPECT(applyRule(EXPR, &l[1], expr, cpe));
         }
     }
@@ -190,7 +190,7 @@ bool QMetaQVariantTransformer::optionalExpr(QVariantConstPtr input, QVariant &ou
     EXITV(output);
 }
 
-bool QMetaQVariantTransformer::varDef(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantTransformer::varDef(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -208,7 +208,7 @@ bool QMetaQVariantTransformer::varDef(QVariantConstPtr input, QVariant &output, 
             EXPECT(string(&l[1], name, cpe));
 
             {
-                QVariant expr;
+                QString expr;
                 EXPECT(applyRule(EXPR, &l[2], expr, cpe));
             }
         }
@@ -218,7 +218,7 @@ bool QMetaQVariantTransformer::varDef(QVariantConstPtr input, QVariant &output, 
     EXITV(output);
 }
 
-bool QMetaQVariantTransformer::hostExpr(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantTransformer::hostExpr(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -233,7 +233,7 @@ bool QMetaQVariantTransformer::hostExpr(QVariantConstPtr input, QVariant &output
 
         {
             {
-                QVariant expr;
+                QString expr;
                 EXPECT(applyRule(EXPR, &l[1], expr, cpe));
             }
 
@@ -246,7 +246,7 @@ bool QMetaQVariantTransformer::hostExpr(QVariantConstPtr input, QVariant &output
     EXITV(output);
 }
 
-bool QMetaQVariantTransformer::ruleApp(QVariantConstPtr input, QVariant &output, ParseErrorPtr &pe)
+bool QMetaQVariantTransformer::ruleApp(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
