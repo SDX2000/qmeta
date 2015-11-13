@@ -1,3 +1,9 @@
+- Rename:-
+    - QMetaQVariantTransformerBase to QMetaQVariantToQStringTransformer
+    - QMetaQVariantTransformer to QMetaCodeGenerator
+
+- Split QMetaCodeGenerator into QMetaHeaderFileGenerator and QMetaCppFileGenerator.
+
 - Update QMetaQStringParser to accept the pseudo host expressions
 in QMetaParser.qm and turn it into a real language by using it to
 generate the final output.
