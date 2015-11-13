@@ -1,23 +1,23 @@
-#include "QMetaQVariantTransformer.h"
+#include "QMetaCodeGenerator.h"
 #include "QVariantList/macros.h"
 
-QMetaQVariantTransformer::QMetaQVariantTransformer(int ruleId, const QVariant& input)
+QMetaCodeGenerator::QMetaCodeGenerator(int ruleId, const QVariant& input)
     : QMetaQVariantToQStringTransformer(ruleId, input)
 {
     initRuleMap();
 }
 
-bool QMetaQVariantTransformer::parse(QString& output)
+bool QMetaCodeGenerator::parse(QString& output)
 {
     return applyRule(m_startRuleId, &m_input, output, m_error);
 }
 
-const ParseError *QMetaQVariantTransformer::getError() const
+const ParseError *QMetaCodeGenerator::getError() const
 {
     return m_error;
 }
 
-bool QMetaQVariantTransformer::grammar(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
+bool QMetaCodeGenerator::grammar(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -50,7 +50,7 @@ bool QMetaQVariantTransformer::grammar(QVariantConstPtr input, QString& output, 
     EXITV(output);
 }
 
-bool QMetaQVariantTransformer::rule(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
+bool QMetaCodeGenerator::rule(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -76,7 +76,7 @@ bool QMetaQVariantTransformer::rule(QVariantConstPtr input, QString& output, Par
     EXITV(output);
 }
 
-bool QMetaQVariantTransformer::expr(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
+bool QMetaCodeGenerator::expr(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -93,7 +93,7 @@ bool QMetaQVariantTransformer::expr(QVariantConstPtr input, QString& output, Par
     EXITV(output);
 }
 
-bool QMetaQVariantTransformer::compoundExpr(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
+bool QMetaCodeGenerator::compoundExpr(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -121,7 +121,7 @@ bool QMetaQVariantTransformer::compoundExpr(QVariantConstPtr input, QString& out
     EXITV(output);
 }
 
-bool QMetaQVariantTransformer::notExpr(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
+bool QMetaCodeGenerator::notExpr(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -144,7 +144,7 @@ bool QMetaQVariantTransformer::notExpr(QVariantConstPtr input, QString& output, 
     EXITV(output);
 }
 
-bool QMetaQVariantTransformer::loopExpr(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
+bool QMetaCodeGenerator::loopExpr(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -167,7 +167,7 @@ bool QMetaQVariantTransformer::loopExpr(QVariantConstPtr input, QString& output,
     EXITV(output);
 }
 
-bool QMetaQVariantTransformer::optionalExpr(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
+bool QMetaCodeGenerator::optionalExpr(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -190,7 +190,7 @@ bool QMetaQVariantTransformer::optionalExpr(QVariantConstPtr input, QString& out
     EXITV(output);
 }
 
-bool QMetaQVariantTransformer::varDef(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
+bool QMetaCodeGenerator::varDef(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -218,7 +218,7 @@ bool QMetaQVariantTransformer::varDef(QVariantConstPtr input, QString& output, P
     EXITV(output);
 }
 
-bool QMetaQVariantTransformer::hostExpr(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
+bool QMetaCodeGenerator::hostExpr(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -246,7 +246,7 @@ bool QMetaQVariantTransformer::hostExpr(QVariantConstPtr input, QString& output,
     EXITV(output);
 }
 
-bool QMetaQVariantTransformer::ruleApp(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
+bool QMetaCodeGenerator::ruleApp(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
 {
     ENTRYV(*input);
 
@@ -271,19 +271,19 @@ bool QMetaQVariantTransformer::ruleApp(QVariantConstPtr input, QString& output, 
     EXITV(output);
 }
 
-void QMetaQVariantTransformer::initRuleMap()
+void QMetaCodeGenerator::initRuleMap()
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpmf-conversions"
-    m_rule[GRAMMAR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantTransformer::grammar);
-    m_rule[RULE] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantTransformer::rule);
-    m_rule[EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantTransformer::expr);
-    m_rule[COMPOUND_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantTransformer::compoundExpr);
-    m_rule[NOT_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantTransformer::notExpr);
-    m_rule[LOOP_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantTransformer::loopExpr);
-    m_rule[OPTIONAL_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantTransformer::optionalExpr);
-    m_rule[VAR_DEF] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantTransformer::varDef);
-    m_rule[HOST_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantTransformer::hostExpr);
-    m_rule[RULE_APP] = reinterpret_cast<RuleFuncPtr>(&QMetaQVariantTransformer::ruleApp);
+    m_rule[GRAMMAR] = reinterpret_cast<RuleFuncPtr>(&QMetaCodeGenerator::grammar);
+    m_rule[RULE] = reinterpret_cast<RuleFuncPtr>(&QMetaCodeGenerator::rule);
+    m_rule[EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaCodeGenerator::expr);
+    m_rule[COMPOUND_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaCodeGenerator::compoundExpr);
+    m_rule[NOT_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaCodeGenerator::notExpr);
+    m_rule[LOOP_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaCodeGenerator::loopExpr);
+    m_rule[OPTIONAL_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaCodeGenerator::optionalExpr);
+    m_rule[VAR_DEF] = reinterpret_cast<RuleFuncPtr>(&QMetaCodeGenerator::varDef);
+    m_rule[HOST_EXPR] = reinterpret_cast<RuleFuncPtr>(&QMetaCodeGenerator::hostExpr);
+    m_rule[RULE_APP] = reinterpret_cast<RuleFuncPtr>(&QMetaCodeGenerator::ruleApp);
 #pragma GCC diagnostic pop
 }

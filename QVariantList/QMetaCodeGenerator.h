@@ -3,10 +3,10 @@
 
 #include "QMetaQVariantToQStringTransformer.h"
 
-class QMetaQVariantTransformer : public QMetaQVariantToQStringTransformer
+class QMetaCodeGenerator : public QMetaQVariantToQStringTransformer
 {
 public:
-    QMetaQVariantTransformer(int ruleId, const QVariant& input);
+    QMetaCodeGenerator(int ruleId, const QVariant& input);
     bool parse(QString& output) override;
     const ParseError *getError() const;
 

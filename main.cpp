@@ -7,7 +7,7 @@
 #include <QDebug>
 
 #include "QString/QMetaQStringParser.h"
-#include "QVariantList/QMetaQVariantTransformer.h"
+#include "QVariantList/QMetaCodeGenerator.h"
 
 #include "utils.h"
 
@@ -51,7 +51,7 @@ void execute(QString prog)
 
     if (ok) {
         qStdOut() << endl << result << endl;
-        QMetaQVariantTransformer xformer(QMetaQVariantTransformer::GRAMMAR, result);
+        QMetaCodeGenerator xformer(QMetaCodeGenerator::GRAMMAR, result);
         QString xformedResult;
         qStdOut() << endl << "+++++++ START OF TRANSFORMATION PHASE +++++++" <<endl<<endl;
         ok = xformer.parse(xformedResult);
