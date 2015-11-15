@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>QMetaCodeGenerator/grammar</file>
+    </qresource>
+</RCC>

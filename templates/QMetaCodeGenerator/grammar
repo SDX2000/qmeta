@@ -3,17 +3,18 @@
 
 #include "QMetaQVariantToQStringTransformer.h"
 
+${headerProlog}
+
 class ${className} : public QMetaQVariantToQStringTransformer
 {
+${classProlog}
+
 public:
     ${className}(int ruleId, const QVariant& input);
     bool parse(QString& output) override;
     const ParseError *getError() const;
 
-    enum RuleEnum {
-        NEXT_RULE,
-        ${ruleEnums}
-    };
+    ${ruleEnum}
 
 private:
     //Use applyRule() to access these functions
@@ -21,6 +22,9 @@ private:
 
 private:
     void initRuleMap();
+${classEpilog}
 };
 
-#endif // ${GUARD}
+${headerEpilog}
+
+#endif // ${gaurd}

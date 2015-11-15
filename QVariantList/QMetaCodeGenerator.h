@@ -1,5 +1,5 @@
-#ifndef QMETAPARSERGENERATOR_H
-#define QMETAPARSERGENERATOR_H
+#ifndef QMETACODERGENERATOR_H
+#define QMETACODERGENERATOR_H
 
 #include "QMetaQVariantToQStringTransformer.h"
 
@@ -40,4 +40,4 @@ private:
     void initRuleMap();
 };
 
-#endif // QMETAPARSERGENERATOR_H
+#endif // QMETACODERGENERATOR_H

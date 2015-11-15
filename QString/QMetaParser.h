@@ -1,5 +1,5 @@
-#ifndef PROGRAMINTERPRETER_H
-#define PROGRAMINTERPRETER_H
+#ifndef QMETAPARSER_H
+#define QMETAPARSER_H
 
 #include <QString>
 #include <QHash>
@@ -48,4 +48,4 @@ private:
     void initRuleMap();
 };
 
-#endif // PROGRAMINTERPRETER_H
+#endif // QMETAPARSER_H

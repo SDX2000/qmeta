@@ -44,8 +44,7 @@ DISTFILES += \
     tests/QMetaParser.qm \
     AST/QMetaParser.ast \
     AST/Calc.ast \
-    templates/grammar \
     tests/QMetaCodeGenerator.qm
 
 RESOURCES += \
-    resourcefiles.qrc
+    templates/resourcefiles.qrc
