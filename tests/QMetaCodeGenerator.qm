@@ -1,13 +1,156 @@
-qmeta QMetaCodeGenerator {
-    grammar         = ["GRAMMAR", string:className, rule+:rs]
+qmeta QMetaCodeGenerator
+{
+    header prolog {
+        #include <QHash>
+    }
+
+    class epilog {
+    private:
+        QString getGaurdName(QVariant className);
+        QString getRuleEnum(QVariant rules);
+        QString getRuleProtos(QVariant rules);
+
+    private:
+        QHash<QString, QString> m_rules;
+    }
+
+    impl prolog {
+        #include "QMetaCodeGenerator.h"
+    }
+
+    impl epilog {
+        QString QMetaCodeGenerator::getGaurdName(QVariant className)
+        {
+            return className.value<QString>().toUpper() + "_H";
+        }
+
+        QString QMetaCodeGenerator::getRuleEnum()
+        {
+            //Do something with m_rules
+            return "";
+        }
+
+        QString QMetaCodeGenerator::getRuleProtos()
+        {
+            //Do something with m_rules
+            return "";
+        }
+    }
+
+    resource HeaderFile {
+        #ifndef ${gaurd}
+        #define ${gaurd}
+
+        #include "QMetaQVariantToQStringTransformer.h"
+        #include "xform.h"
+
+        ${headerProlog}
+
+        class ${className} : public QMetaQVariantToQStringTransformer
+        {
+        ${classProlog}
+
+        public:
+            ${className}(int ruleId, const QVariant& input);
+            bool parse(QString& output) override;
+            const ParseError *getError() const;
+
+            ${ruleEnum}
+
+        private:
+            //Use applyRule() to access these functions
+            ${ruleProtos}
+
+        private:
+            void initRuleMap();
+        ${classEpilog}
+        };
+
+        ${headerEpilog}
+
+        #endif // ${gaurd}
+    }
+
+    resource CppFile {
+        ${implProlog}
+
+        #include "${className}.h"
+        #include "QVariantList/macros.h"
+
+        ${className}::${className}(int ruleId, const QVariant& input)
+            : QMetaQVariantToQStringTransformer(ruleId, input)
+        {
+            initRuleMap();
+        }
+
+        bool ${className}::parse(QString& output)
+        {
+            return applyRule(m_startRuleId, &m_input, output, m_error);
+        }
+
+        const ParseError *${className}::getError() const
+        {
+            return m_error;
+        }
+
+        void QMetaCodeGenerator::initRuleMap()
+        {
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wpmf-conversions"
+            ${ruleDispatchTable}
+        #pragma GCC diagnostic pop
+        }
+
+        ${implEpilog}
+    }
+
+    resource RuleFunction {
+        /*
+        ${ruleText}
+        */
+        bool ${className}::${ruleName}(QVariantConstPtr input, QString& output, ParseErrorPtr &pe)
+        {
+            ENTRYV(*input);
+
+            ${qVariantInputCheck};
+
+            {
+                const QVariantList& l = input->value<QVariantList>();
+
+                ${qVarianListInputCheck};
+
+                EXPECT(thisStr(&l[0], "AND", cpe) || thisStr(&l[0], "OR", cpe));
+
+                {
+                    QVariantList exprs;
+
+                    for(int i = 1; i < l.length(); i++) {
+                        QString expr;
+                        EXPECT(applyRule(EXPR, &l[i], expr, cpe));
+                        exprs.append(expr);
+                    }
+                }
+            }
+
+            RETURN_SUCCESS();
+            EXITV(output);
+        }
+    }
+
+    grammar         = ["GRAMMAR", string:className, rule+]
                     -> {
-                            vars["gaurd"] = getGaurdName(className);
-                            vars["ruleEnums"] = getRuleEnums(rs);
-                            vars["ruleProtos"] = getRuleProtos(rs);
-                            xform(out, "grammar", vars);
+                            QHash<QString, QString> vars;
+                            vars["className"]   = className.value<QString>();
+                            vars["gaurd"]       = getGaurdName(className);
+                            vars["ruleEnum"]    = getRuleEnum();
+                            vars["ruleProtos"]  = getRuleProtos();
+                            out = xform("/QMetaCodeGenerator/HeaderFile", vars);
                        };
 
-    rule            = ["RULE", string:n, expr:e]                    -> {xform(out, "rule", vars)};
+    rule            = ["RULE", string:n, expr:e]
+                    -> {
+                            m_rules[n] = e;
+                       };
 
     expr            = compoundExpr
                     | ruleApp
@@ -17,17 +160,24 @@ qmeta QMetaCodeGenerator {
                     | varDef
                     | hostExpr;
 
-    compoundExpr    = [("OR"|"AND"):op, expr+:es]                   -> {xform(out, "compoundExpr", vars)};
+    compoundExpr    = [("OR"|"AND"):op, expr+:es]
+                    -> {xform(out, "compoundExpr", vars)};
 
-    notExpr         = ["NOT", expr:e]                               -> {xform(out, "notExpr", vars)};
+    notExpr         = ["NOT", expr:e]
+                    -> {xform(out, "notExpr", vars)};
 
-    loopExpr        = [("ZERO_OR_MORE"|"ONE_OR_MORE"):op, expr:e]   -> {xform(out, "loopExpr", vars)};
+    loopExpr        = [("ZERO_OR_MORE"|"ONE_OR_MORE"):op, expr:e]
+                    -> {xform(out, "loopExpr", vars)};
 
-    optionalExpr    = ["OPTIONAL", expr:e]                          -> {xform(out, "optionalExpr", vars)};
+    optionalExpr    = ["OPTIONAL", expr:e]
+                    -> {xform(out, "optionalExpr", vars)};
 
-    varDef          = ["DEFINE", string:n, expr:e]                  -> {xform(out, "varDef", vars)};
+    varDef          = ["DEFINE", string:n, expr:e]
+                    -> {xform(out, "varDef", vars)};
 
-    hostExpr        = ["HOST_EXPR", expr:e, string:hexp]            -> {xform(out, "hostExpr", vars)};
+    hostExpr        = ["HOST_EXPR", expr:e, string:hexp]
+                    -> {xform(out, "hostExpr", vars)};
 
-    ruleApp         = ["APPLY", string]                             -> {xform(out, "ruleApp", vars)};
+    ruleApp         = ["APPLY", string]
+                    -> {xform(out, "ruleApp", vars)};
 }
