@@ -1,7 +1,9 @@
 qmeta QMetaParser {
-  grammar           = "qmeta" identifier:id "{" rules:rs "}" eof        -> {['GRAMMAR', id, rs]};
-  rules             = (rule:r ";" -> {r})+:rs                           -> {rs};
-  rule              = identifier:id "=" choices:e                       -> {['RULE', id, e]};
+  grammar           = "qmeta" identifier:id "{" stmnt+:s "}" eof        -> {['GRAMMAR', id, s]};
+  stmnt             = codeFrag
+                    | rule;
+  codeFrag          = ("header"|"class"|"impl"):t ("prolog"|"epilog"):p hostExpr:h -> {['FRAG', t, p, h]};
+  rule              = identifier:id "=" choices:e ";"                   -> {['RULE', id, e]};
   choices           = choice:c "|" choices:c1                           -> {['OR', [c, c1]]}
                     | choice;
   choice            = (term:t spaces -> {t})*:ts ( "->" hostExpr:h)     -> {['HOST_EXPR', ['AND', ts], h]}
@@ -18,7 +20,7 @@ qmeta QMetaParser {
                     | someToken
                     | identifier
                     | '.'
-                    | "(" choice:c ")"                                  -> {c};
+                    | "(" choices:c ")"                                 -> {c};
   someToken         = spaces? '"' (~'"'  escapedChar)*:ts '"' spaces?   -> {ts};
   escapedChar       = '\\' char:c                                       -> {escape(c)}
                     | char;

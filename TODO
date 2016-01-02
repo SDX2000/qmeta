@@ -1,5 +1,3 @@
-- Split QMetaCodeGenerator into QMetaHeaderFileGenerator and QMetaCppFileGenerator.
-
 - Grammar
     - file prolog
     - file epilog
@@ -26,3 +24,8 @@ generate the final output.
 - Rename:-
     - QMetaQVariantTransformerBase to QMetaQVariantToQStringTransformer
     - QMetaQVariantTransformer to QMetaCodeGenerator
+
+=======
+ LATER
+=======
+- Split QMetaCodeGenerator into QMetaHeaderFileGenerator and QMetaCppFileGenerator.

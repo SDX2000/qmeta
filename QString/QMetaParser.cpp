@@ -445,7 +445,7 @@ choice4:
         EXPECT(thisToken(pos, QSL("("), cpe));
 
         QVariant _ast;
-        EXPECT(applyRule(CHOICE, pos, _ast, cpe));
+        EXPECT(applyRule(CHOICES, pos, _ast, cpe));
 
         EXPECT(thisToken(pos, QSL(")"), cpe));
 

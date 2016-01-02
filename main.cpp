@@ -50,14 +50,16 @@ void execute(QString prog)
     bool ok = interp.parse(result);
 
     if (ok) {
-        qStdOut() << endl << result << endl;
         QMetaCodeGenerator xformer(QMetaCodeGenerator::GRAMMAR, result);
         QString xformedResult;
         qStdOut() << endl << "+++++++ START OF TRANSFORMATION PHASE +++++++" <<endl<<endl;
         ok = xformer.parse(xformedResult);
 
+
+        qStdOut() << "\n-----PARSE RESULT------\n" << endl << result << endl;
+
         if (ok) {
-            qStdOut() << endl << xformedResult << endl;
+            qStdOut() << "\n-----XFORMED RESULT------\n" << endl << xformedResult << endl;
         } else {
             qStdOut() << "Errors generated in the transformation phase... " <<endl;
             xformer.getError()->print(qStdOut());
